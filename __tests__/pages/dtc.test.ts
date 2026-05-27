@@ -93,3 +93,17 @@ describe('ItemList schema', () => {
     )
   })
 })
+
+describe('related DTCs', () => {
+  it('excludes the current DTC code from related list', () => {
+    const allCodes = [
+      { dtc_id: 1, dtc_code: 'B123698', description_en: 'Battery voltage fault', severity: 'WARNING' },
+      { dtc_id: 2, dtc_code: 'P0A0D', description_en: 'Drive motor temp', severity: 'CRITICAL' },
+      { dtc_id: 3, dtc_code: 'U0100', description_en: 'CAN bus lost', severity: 'INFO' },
+    ]
+    const currentId = 1
+    const related = allCodes.filter((d) => d.dtc_id !== currentId)
+    expect(related).toHaveLength(2)
+    expect(related.find((d) => d.dtc_id === 1)).toBeUndefined()
+  })
+})

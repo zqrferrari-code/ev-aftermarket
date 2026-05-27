@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { getDTCByCode, getDTCModelNote, getCasesForDTC } from '@/lib/db/dtcs'
+import { getDTCByCode, getDTCModelNote, getCasesForDTC, getRelatedDTCs } from '@/lib/db/dtcs'
 import { getModelBySlug } from '@/lib/db/models'
 import { SeverityBadge } from '@/components/SeverityBadge'
 import { DisclaimerBox } from '@/components/DisclaimerBox'
@@ -33,9 +33,10 @@ export default async function DtcCodePage({ params }: Props) {
   const [modelData, dtc] = await Promise.all([getModelBySlug(model), getDTCByCode(dtcCode)])
   if (!modelData || !dtc) notFound()
 
-  const [note, casesRaw] = await Promise.all([
+  const [note, casesRaw, relatedDtcs] = await Promise.all([
     getDTCModelNote(Number(dtc.dtc_id), modelData.model_id, market),
     getCasesForDTC(Number(dtc.dtc_id)),
+    getRelatedDTCs(modelData.model_id, Number(dtc.dtc_id)),
   ])
 
   const parsedCauses: string[] = note?.likely_causes
@@ -177,6 +178,24 @@ export default async function DtcCodePage({ params }: Props) {
             </section>
           )}
         </>
+      )}
+
+      {relatedDtcs.length > 0 && (
+        <section className="mb-8">
+          <h2 className="text-xl font-semibold mb-3">Other {modelData.model_name} Fault Codes</h2>
+          <div className="space-y-1">
+            {relatedDtcs.map((related) => (
+              <a
+                key={related.dtc_id}
+                href={`/${market}/dtc/${model}/${related.dtc_code?.toLowerCase()}`}
+                className="flex items-center gap-3 text-sm text-blue-700 hover:underline"
+              >
+                <code className="font-mono font-bold w-20">{related.dtc_code}</code>
+                <span className="text-gray-600">{related.description_en}</span>
+              </a>
+            ))}
+          </div>
+        </section>
       )}
 
       <RealWorldCases cases={casesRaw as unknown as Case[]} />

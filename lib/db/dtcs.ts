@@ -1,4 +1,4 @@
-import { eq, and } from 'drizzle-orm'
+import { eq, and, ne } from 'drizzle-orm'
 import { db } from './index'
 import { dtcs, dtcModelNotes, cases, caseDtcLinks, models } from './schema'
 
@@ -89,4 +89,23 @@ export async function getAllDTCCodesForSitemap() {
     .from(dtcModelNotes)
     .innerJoin(dtcs, eq(dtcModelNotes.dtc_id, dtcs.dtc_id))
     .innerJoin(models, eq(dtcModelNotes.model_id, models.model_id))
+}
+
+export async function getRelatedDTCs(modelId: string, excludeDtcId: number, limit = 5) {
+  return db
+    .select({
+      dtc_id: dtcs.dtc_id,
+      dtc_code: dtcs.dtc_code,
+      description_en: dtcs.description_en,
+      severity: dtcs.severity,
+    })
+    .from(dtcModelNotes)
+    .innerJoin(dtcs, eq(dtcModelNotes.dtc_id, dtcs.dtc_id))
+    .where(
+      and(
+        eq(dtcModelNotes.model_id, modelId),
+        ne(dtcModelNotes.dtc_id, excludeDtcId)
+      )
+    )
+    .limit(limit)
 }
