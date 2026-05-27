@@ -5,6 +5,7 @@ import { getModelBySlug } from '@/lib/db/models'
 import { SeverityBadge } from '@/components/SeverityBadge'
 import { DisclaimerBox } from '@/components/DisclaimerBox'
 import { RealWorldCases } from '@/components/RealWorldCases'
+import { JsonLd } from '@/components/JsonLd'
 import type { Severity, DataConfidence, Case } from '@/lib/types'
 
 export const revalidate = 86400
@@ -122,8 +123,58 @@ export default async function DtcCodePage({ params }: Props) {
       : (note.source_urls as string[])
     : []
 
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://yourdomain.com'
+
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: `What does ${dtcCode} mean on a ${modelData.model_name}?`,
+        acceptedAnswer: { '@type': 'Answer', text: dtc.description_en },
+      },
+      {
+        '@type': 'Question',
+        name: `Is ${dtcCode} serious on a ${modelData.model_name}?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text:
+            dtc.severity === 'CRITICAL'
+              ? `Yes — ${dtcCode} is a critical fault. Stop driving and contact a dealer immediately.`
+              : dtc.severity === 'WARNING'
+              ? `${dtcCode} is a moderate severity fault. Schedule a service appointment soon.`
+              : `${dtcCode} is a low severity fault. Monitor and schedule service at your next opportunity.`,
+        },
+      },
+      {
+        '@type': 'Question',
+        name: `Can I drive with ${dtcCode} on my ${modelData.model_name}?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text:
+            dtc.severity === 'CRITICAL'
+              ? 'No. Pull over safely and do not drive until inspected by a qualified technician.'
+              : 'In most cases yes, but monitor closely. If you notice loss of power or unusual noises, stop and contact your dealer.',
+        },
+      },
+    ],
+  }
+
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: market.toUpperCase(), item: `${baseUrl}/${market}` },
+      { '@type': 'ListItem', position: 2, name: `${modelData.model_name} Fault Codes`, item: `${baseUrl}/${market}/dtc/${model}` },
+      { '@type': 'ListItem', position: 3, name: dtcCode, item: `${baseUrl}/${market}/dtc/${model}/${code.toLowerCase()}` },
+    ],
+  }
+
   return (
     <article className="max-w-3xl">
+      <JsonLd schema={faqSchema} />
+      <JsonLd schema={breadcrumbSchema} />
       <nav className="text-sm text-gray-500 mb-6">
         <a href={`/${market}/dtc/${model}`} className="hover:text-gray-700">
           ← {modelData.model_name} fault codes

@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { getModelBySlug } from '@/lib/db/models'
 import { getDTCsByModel } from '@/lib/db/dtcs'
 import { SeverityBadge } from '@/components/SeverityBadge'
+import { JsonLd } from '@/components/JsonLd'
 import type { Severity } from '@/lib/types'
 
 export const revalidate = 3600
@@ -67,8 +68,33 @@ export default async function DtcModelPage({ params }: Props) {
 
   const dtcs = await getDTCsByModel(modelData.model_id)
 
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://yourdomain.com'
+
+  const itemListSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: `${modelData.model_name} Fault Codes`,
+    itemListElement: dtcs.map((dtc, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: `${dtc.dtc_code} — ${dtc.description_en}`,
+      url: `${baseUrl}/${market}/dtc/${model}/${dtc.dtc_code?.toLowerCase()}`,
+    })),
+  }
+
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: market.toUpperCase(), item: `${baseUrl}/${market}` },
+      { '@type': 'ListItem', position: 2, name: `${modelData.model_name} Fault Codes`, item: `${baseUrl}/${market}/dtc/${model}` },
+    ],
+  }
+
   return (
     <article className="max-w-3xl">
+      <JsonLd schema={itemListSchema} />
+      <JsonLd schema={breadcrumbSchema} />
       <h1 className="text-3xl font-bold text-gray-900 mb-4">
         {modelData.model_name} Fault Codes ({market.toUpperCase()})
       </h1>
