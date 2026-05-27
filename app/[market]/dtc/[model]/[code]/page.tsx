@@ -20,76 +20,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const [modelData, dtc] = await Promise.all([getModelBySlug(model), getDTCByCode(dtcCode)])
   if (!modelData || !dtc) return {}
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://yourdomain.com'
-
-  const faqSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: [
-      {
-        '@type': 'Question',
-        name: `What does ${dtcCode} mean on a ${modelData.model_name}?`,
-        acceptedAnswer: { '@type': 'Answer', text: dtc.description_en },
-      },
-      {
-        '@type': 'Question',
-        name: `Is ${dtcCode} serious on a ${modelData.model_name}?`,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text:
-            dtc.severity === 'CRITICAL'
-              ? `Yes — ${dtcCode} is a critical fault. Stop driving and contact a BYD dealer immediately.`
-              : dtc.severity === 'WARNING'
-              ? `${dtcCode} is a moderate severity fault. You can continue driving but should schedule a service appointment soon.`
-              : `${dtcCode} is a low severity fault. Monitor the situation and schedule service at your next opportunity.`,
-        },
-      },
-      {
-        '@type': 'Question',
-        name: `Can I drive with ${dtcCode} on my ${modelData.model_name}?`,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text:
-            dtc.severity === 'CRITICAL'
-              ? 'No. Pull over safely and do not drive until the fault has been inspected by a qualified technician.'
-              : 'In most cases yes, but monitor the warning closely. If additional symptoms appear such as loss of power or unusual noises, stop driving and contact your dealer.',
-        },
-      },
-    ],
-  }
-
-  const breadcrumbSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      {
-        '@type': 'ListItem',
-        position: 1,
-        name: market.toUpperCase(),
-        item: `${baseUrl}/${market}`,
-      },
-      {
-        '@type': 'ListItem',
-        position: 2,
-        name: `${modelData.model_name} Fault Codes`,
-        item: `${baseUrl}/${market}/dtc/${model}`,
-      },
-      {
-        '@type': 'ListItem',
-        position: 3,
-        name: dtcCode,
-        item: `${baseUrl}/${market}/dtc/${model}/${code.toLowerCase()}`,
-      },
-    ],
-  }
-
   return {
     title: `${modelData.model_name} ${dtcCode} Fault Code — Meaning, Causes & What To Do`,
     description: `${dtcCode} on ${modelData.model_name}: ${dtc.description_en}. See severity level, likely causes, and what steps to take next.`,
-    other: {
-      'script:ld+json:faq': JSON.stringify(faqSchema),
-      'script:ld+json:breadcrumb': JSON.stringify(breadcrumbSchema),
-    },
   }
 }
 

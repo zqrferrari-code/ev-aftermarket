@@ -17,47 +17,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const modelData = await getModelBySlug(model)
   if (!modelData) return {}
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://yourdomain.com'
-  const dtcs = await getDTCsByModel(modelData.model_id)
-
-  const itemListSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'ItemList',
-    name: `${modelData.model_name} Fault Codes`,
-    itemListElement: dtcs.map((dtc, i) => ({
-      '@type': 'ListItem',
-      position: i + 1,
-      name: `${dtc.dtc_code} — ${dtc.description_en}`,
-      url: `${baseUrl}/${market}/dtc/${model}/${dtc.dtc_code?.toLowerCase()}`,
-    })),
-  }
-
-  const breadcrumbSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      {
-        '@type': 'ListItem',
-        position: 1,
-        name: market.toUpperCase(),
-        item: `${baseUrl}/${market}`,
-      },
-      {
-        '@type': 'ListItem',
-        position: 2,
-        name: `${modelData.model_name} Fault Codes`,
-        item: `${baseUrl}/${market}/dtc/${model}`,
-      },
-    ],
-  }
-
   return {
     title: `${modelData.model_name} Fault Codes — Complete List (${market.toUpperCase()})`,
     description: `All known fault codes for the ${modelData.model_name} in ${market.toUpperCase()}: meanings, severity levels, and what to do when you see each warning light.`,
-    other: {
-      'script:ld+json:itemlist': JSON.stringify(itemListSchema),
-      'script:ld+json:breadcrumb': JSON.stringify(breadcrumbSchema),
-    },
   }
 }
 
