@@ -61,3 +61,35 @@ describe('BreadcrumbList schema', () => {
     )
   })
 })
+
+function buildItemListSchema(
+  baseUrl: string,
+  market: string,
+  modelSlug: string,
+  dtcs: Array<{ dtc_code: string; description_en: string }>
+) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    itemListElement: dtcs.map((dtc, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: `${dtc.dtc_code} — ${dtc.description_en}`,
+      url: `${baseUrl}/${market}/dtc/${modelSlug}/${dtc.dtc_code.toLowerCase()}`,
+    })),
+  }
+}
+
+describe('ItemList schema', () => {
+  it('maps DTC rows to ListItems with 1-based positions', () => {
+    const schema = buildItemListSchema('https://example.com', 'au', 'byd-atto-3', [
+      { dtc_code: 'B123698', description_en: 'Battery voltage fault' },
+      { dtc_code: 'P0A0D', description_en: 'Drive motor temperature too high' },
+    ])
+    expect(schema.itemListElement[0].position).toBe(1)
+    expect(schema.itemListElement[1].position).toBe(2)
+    expect(schema.itemListElement[0].url).toBe(
+      'https://example.com/au/dtc/byd-atto-3/b123698'
+    )
+  })
+})
