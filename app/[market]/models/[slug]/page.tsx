@@ -6,6 +6,7 @@ import { getUpdatesForModel } from '@/lib/db/updates'
 import { SeverityBadge } from '@/components/SeverityBadge'
 import type { Severity } from '@/lib/types'
 import { BASE_URL } from '@/lib/config'
+import { JsonLd } from '@/components/JsonLd'
 
 export const revalidate = 1800
 
@@ -77,7 +78,21 @@ export default async function ModelPage({
   const warningCount = dtcNotes.filter(n => n.severity === 'WARNING').length
 
   return (
-    <div className="page-wrapper">
+    <>
+      <JsonLd
+        schema={{
+          '@context': 'https://schema.org',
+          '@type': 'Product',
+          name: model.model_name,
+          brand: {
+            '@type': 'Brand',
+            name: model.brand_id,
+          },
+          description: `${model.model_name} specifications, common fault codes, and real owner experiences.`,
+          url: `${BASE_URL}/${market}/models/${slug}`,
+        }}
+      />
+      <div className="page-wrapper">
       <article className="dtc-card">
 
         {/* Breadcrumb */}
@@ -401,5 +416,6 @@ export default async function ModelPage({
 
       </article>
     </div>
+    </>
   )
 }
