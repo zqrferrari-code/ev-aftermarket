@@ -2,10 +2,9 @@ import type { MetadataRoute } from 'next'
 import { getAllMarkets } from '@/lib/db/markets'
 import { getAllModelSlugs } from '@/lib/db/models'
 import { getAllDTCCodesForSitemap } from '@/lib/db/dtcs'
+import { BASE_URL } from '@/lib/config'
 
 export const revalidate = 3600
-
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://yourdomain.com'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [markets, modelSlugs, dtcRows] = await Promise.all([
@@ -24,6 +23,54 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'weekly',
       priority: 0.9,
     })
+  }
+
+  // Model overview pages
+  for (const market of markets) {
+    for (const model of modelSlugs) {
+      pages.push({
+        url: `${BASE_URL}/${market.market_code}/models/${model.slug}`,
+        lastModified: new Date(),
+        changeFrequency: 'weekly',
+        priority: 0.8,
+      })
+    }
+  }
+
+  // Problems pages
+  for (const market of markets) {
+    for (const model of modelSlugs) {
+      pages.push({
+        url: `${BASE_URL}/${market.market_code}/problems/${model.slug}`,
+        lastModified: new Date(),
+        changeFrequency: 'weekly',
+        priority: 0.7,
+      })
+    }
+  }
+
+  // Charging pages
+  for (const market of markets) {
+    for (const model of modelSlugs) {
+      pages.push({
+        url: `${BASE_URL}/${market.market_code}/charging/${model.slug}`,
+        lastModified: new Date(),
+        changeFrequency: 'monthly',
+        priority: 0.6,
+      })
+    }
+  }
+
+  // Service pages
+  for (const market of markets) {
+    for (const model of modelSlugs) {
+      pages.push({
+        url: `${BASE_URL}/${market.market_code}/service/${model.slug}`,
+        lastModified: new Date(),
+        changeFrequency: 'monthly',
+        priority: 0.6,
+      })
+    }
   }
 
   // DTC list pages — one per market × model combination present in dtcModelNotes
@@ -51,6 +98,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'monthly',
       priority: 0.6,
     })
+  }
+
+  // Dealers pages — AU only for now, BYD + MG × 5 states
+  const AU_STATES = ['nsw', 'vic', 'qld', 'wa', 'sa']
+  for (const brand of ['byd', 'mg']) {
+    for (const state of AU_STATES) {
+      pages.push({
+        url: `${BASE_URL}/au/dealers/${brand}/${state}`,
+        lastModified: new Date(),
+        changeFrequency: 'monthly',
+        priority: 0.5,
+      })
+    }
   }
 
   return pages

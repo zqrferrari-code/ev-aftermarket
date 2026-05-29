@@ -5,6 +5,7 @@ import { getDTCsByModel } from '@/lib/db/dtcs'
 import { SeverityBadge } from '@/components/SeverityBadge'
 import { JsonLd } from '@/components/JsonLd'
 import type { Severity } from '@/lib/types'
+import { BASE_URL } from '@/lib/config'
 
 export const revalidate = 3600
 
@@ -17,9 +18,27 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const modelData = await getModelBySlug(model)
   if (!modelData) return {}
 
+  const title = `${modelData.model_name} Fault Codes — Complete List (${market.toUpperCase()})`
+  const description = `All known fault codes for the ${modelData.model_name} in ${market.toUpperCase()}: meanings, severity levels, and what to do when you see each warning light.`
+  const url = `${BASE_URL}/${market}/dtc/${model}`
+
   return {
-    title: `${modelData.model_name} Fault Codes — Complete List (${market.toUpperCase()})`,
-    description: `All known fault codes for the ${modelData.model_name} in ${market.toUpperCase()}: meanings, severity levels, and what to do when you see each warning light.`,
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      title,
+      description,
+      url,
+      siteName: 'EVAftermarket',
+      locale: 'en_AU',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary',
+      title,
+      description,
+    },
   }
 }
 
@@ -30,7 +49,10 @@ export default async function DtcModelPage({ params }: Props) {
 
   const dtcs = await getDTCsByModel(modelData.model_id)
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://yourdomain.com'
+  const baseUrl = BASE_URL
+
+  const criticalCount = dtcs.filter((d) => d.severity === 'CRITICAL').length
+  const warningCount = dtcs.filter((d) => d.severity === 'WARNING').length
 
   const itemListSchema = {
     '@context': 'https://schema.org',
@@ -54,34 +76,72 @@ export default async function DtcModelPage({ params }: Props) {
   }
 
   return (
-    <article className="max-w-3xl">
+    <>
       <JsonLd schema={itemListSchema} />
       <JsonLd schema={breadcrumbSchema} />
-      <h1 className="text-3xl font-bold text-gray-900 mb-4">
-        {modelData.model_name} Fault Codes ({market.toUpperCase()})
-      </h1>
-      <p className="text-gray-600 mb-8">
-        {dtcs.length > 0
-          ? `${dtcs.length} fault codes documented. Click any code for detailed information.`
-          : 'Building fault code database. Check back soon.'}
-      </p>
+      <div className="page-wrapper">
+        <div className="dtc-card">
+          <nav className="breadcrumb">
+            <a href={`/${market}`}>{market.toUpperCase()}</a>
+            <span className="sep">›</span>
+            <a href={`/${market}/dtc/${model}`}>{modelData.model_name}</a>
+            <span className="sep">›</span>
+            <span>Fault Codes</span>
+          </nav>
 
-      {dtcs.length > 0 && (
-        <div className="space-y-2">
-          {dtcs.map((dtc) => (
-            <a
-              key={dtc.dtc_id}
-              href={`/${market}/dtc/${model}/${dtc.dtc_code?.toLowerCase()}`}
-              className="flex items-center gap-4 border rounded p-3 hover:bg-gray-50"
-            >
-              <code className="font-mono font-bold text-sm w-20">{dtc.dtc_code}</code>
-              {dtc.severity && <SeverityBadge severity={dtc.severity as Severity} />}
-              <span className="text-sm text-gray-700 flex-1">{dtc.description_en}</span>
-              <span className="text-blue-600 text-sm">→</span>
-            </a>
-          ))}
+          <div className="list-hero">
+            <h1>{modelData.model_name} Fault Codes</h1>
+            <p>
+              All known diagnostic trouble codes for the {modelData.model_name} in{' '}
+              {market.toUpperCase()} — meanings, severity levels, and what to do.
+            </p>
+            {dtcs.length > 0 && (
+              <div className="list-stats">
+                <div className="stat">
+                  <span className="stat-num">{dtcs.length}</span>
+                  <span className="stat-label">Total codes</span>
+                </div>
+                {criticalCount > 0 && (
+                  <div className="stat">
+                    <span className="stat-num red">{criticalCount}</span>
+                    <span className="stat-label">Critical</span>
+                  </div>
+                )}
+                {warningCount > 0 && (
+                  <div className="stat">
+                    <span className="stat-num amber">{warningCount}</span>
+                    <span className="stat-label">Warning</span>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {dtcs.length === 0 ? (
+            <p style={{ padding: '32px 28px', color: 'var(--text-muted)', fontSize: '14px' }}>
+              Building fault code database. Check back soon.
+            </p>
+          ) : (
+            <ul className="dtc-list">
+              {dtcs.map((dtc) => (
+                <li key={dtc.dtc_id}>
+                  <a
+                    href={`/${market}/dtc/${model}/${dtc.dtc_code?.toLowerCase()}`}
+                    className="dtc-row"
+                  >
+                    <div className="dtc-row-top">
+                      <span className="dtc-code-cell">{dtc.dtc_code}</span>
+                      {dtc.severity && <SeverityBadge severity={dtc.severity as Severity} />}
+                      <span className="dtc-arrow">›</span>
+                    </div>
+                    <span className="dtc-desc-cell">{dtc.description_en}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
-      )}
-    </article>
+      </div>
+    </>
   )
 }
