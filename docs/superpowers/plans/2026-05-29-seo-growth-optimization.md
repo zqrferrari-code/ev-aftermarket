@@ -4,6 +4,93 @@
 
 **目标：** 在上线后 1 个月内，通过技术 SEO、内容优化、Analytics 监控和变现集成，提升 Google 收录率、搜索命中率、用户点击率和收益率。
 
+---
+
+## 执行进度（2026-05-29 更新）
+
+| 任务 | 类型 | 状态 | 提交 |
+|---|---|---|---|
+| 1. next.config 图片优化 | 代码 | ✅ 已完成 | `93bd469` |
+| 2. ISR revalidate 调优 | 代码 | ✅ 已完成 | `73e36e8` |
+| 3. Sitemap priority/changefreq | 代码 | ✅ 已完成 | `71fa23c` |
+| 4. Robots.txt crawl-delay | 代码 | ✅ 已完成 | `77b2a5a` |
+| 5. Organization schema | 代码 | ✅ 已完成 | `4939948` |
+| 6. Product schema（车型页）| 代码 | ✅ 已完成 | `f25a27a` |
+| 7. HowTo schema（充电页）| 代码 | ✅ 已完成 | `dfed0e9` |
+| 8. DTC 列表页 meta 优化 | 代码 | ✅ 已完成 | `cc5e1a6` |
+| 9. DTC 详情页 meta 优化 | 代码 | ✅ 已完成 | `e46129f` |
+| 10. Problems 聚合页（新建）| 代码 | ✅ 已完成 | `12d924f` |
+| 11. DTC 列表页介绍段落 | 代码 | ✅ 已完成 | `68b8097` |
+| 12. Plausible Analytics | 代码 | ✅ 已完成 | `156f5c5` |
+| 13. Google Search Console 提交 | **手动** | ⬜ 待执行 | — |
+| 14. Sitemap 添加 problems 页 | 代码 | ✅ 已完成 | `bde1aa0` |
+| 15. Privacy + Contact 页面 | 代码 | ✅ 已完成 | `ed79345` |
+| 16. Footer 链接 | 代码 | ✅ 已完成 | `905afcc` |
+| 17. 充电页联盟营销区块 | 代码 | ✅ 已完成 | `86072aa` |
+| 18. AdSense 申请 | **手动** | ⬜ 上线后 2-4 周 | — |
+| 19. 上线前技术审计 | **手动** | ⬜ 待执行 | — |
+| 20. 每周监控习惯 | **手动** | ⬜ 上线后持续 | — |
+
+---
+
+## ⬜ 剩余手动任务
+
+### 任务 13：提交 sitemap 到 Google Search Console
+**触发时机：** 域名上线后立即执行
+
+- [ ] 访问 https://search.google.com/search-console，添加域名资源
+- [ ] 在 DNS 后台（Cloudflare / Namecheap）添加 TXT 记录完成验证
+  - 主机名：`@`，值：`google-site-verification=xxxx`
+- [ ] GSC → Sitemaps → 提交 `sitemap.xml`
+- [ ] 同步到 Bing：https://www.bing.com/webmasters，提交同一 sitemap URL
+- [ ] GSC → URL 检查 → 手动请求收录 Top 20 页面（市场首页、热门车型页、充电页、DTC 列表页）
+
+### 任务 18：申请 Google AdSense
+**触发时机：** 上线后 2-4 周（需有一定真实访问量）
+
+- [ ] 确认前提条件：网站已上线、Privacy Policy 存在、Contact 存在、内容原创
+- [ ] 访问 https://adsense.google.com 注册并填写网站 URL
+- [ ] 等待审核（通常 2-4 周），期间持续更新内容
+- [ ] 审核通过后，在 `app/layout.tsx` 的 `<head>` 中添加 AdSense 脚本：
+  ```html
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXX" crossOrigin="anonymous" />
+  ```
+  （将 `ca-pub-XXXXXXXXXX` 替换为实际 Publisher ID）
+- [ ] 在 `app/[market]/dtc/[model]/[code]/page.tsx` 内容区中间添加广告位 `<ins>` 标签
+
+### 任务 19：上线前技术审计
+**触发时机：** 部署到生产环境后、公开推广前
+
+- [ ] 运行 `pnpm build`，确认 0 错误
+- [ ] 用 curl 验证所有关键路由返回 200：`/au`、`/au/problems`、`/au/dtc/byd-atto-3`、`/au/charging/byd-atto-3`、`/au/models/byd-atto-3`、`/privacy`、`/contact`
+- [ ] 访问 `https://yourdomain.com/sitemap.xml`，确认 XML 格式正确
+- [ ] 访问 `https://yourdomain.com/robots.txt`，确认包含 `Disallow: /api/` 和 Sitemap URL
+- [ ] 用 Google Rich Results Test 测试：市场首页、车型页、DTC 详情页、充电页
+- [ ] 用 PageSpeed Insights 测试首页，目标：Performance ≥ 70，SEO ≥ 90
+
+### 任务 20：建立每周监控习惯
+**触发时机：** 上线后持续执行
+
+**每周一：**
+- [ ] GSC → Coverage：检查 indexed 页面数量趋势，排查 crawl error
+- [ ] GSC → Core Web Vitals：检查是否有 Poor / Needs Improvement URL
+
+**每周三：**
+- [ ] Plausible 控制台：查看 Top Pages、Traffic Sources、Countries
+- [ ] 关注跳出率高的页面，考虑内容改进
+
+**每月初：**
+- [ ] GSC → Performance → Queries：找出 impressions 高但 CTR 低的词，优化对应页面的 meta description
+- [ ] 找出排名 11-20 的词，针对性优化内容
+- [ ] 运行数据采集更新案例：
+  ```bash
+  pnpm collect:reddit --model byd-atto-3
+  pnpm review --approve-all
+  ```
+- [ ] 为有新案例的页面在 GSC 请求重新收录
+
+---
+
 **架构：** 基于现有 Next.js 16 App Router + MySQL + Vercel 基础设施，逐步增强 SEO 信号和内容质量。优先保证 Google 能完整收录所有页面，其次提升排名，再优化点击率，最后接入变现。
 
 **技术栈：** Next.js 16.2.6 App Router · Drizzle ORM · MySQL · Vercel · TypeScript · Tailwind CSS v4
