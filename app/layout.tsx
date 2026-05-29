@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import "./globals.css";
 import { BASE_URL } from "@/lib/config";
 import { JsonLd } from "@/components/JsonLd";
@@ -46,6 +47,12 @@ export default function RootLayout({
           }}
         />
         {children}
+        <Script
+          defer
+          data-domain="evaftermarket.com"
+          src="https://plausible.io/js/script.js"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
