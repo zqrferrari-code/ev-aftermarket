@@ -37,7 +37,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  // Problems pages
+  // Problems index pages
+  const problemsIndexUrls = markets.map(m => ({
+    url: `${BASE_URL}/${m.market_code}/problems`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly' as const,
+    priority: 0.8,
+  }))
+  pages.push(...problemsIndexUrls)
+
+  // Problems detail pages
   for (const market of markets) {
     for (const model of modelSlugs) {
       pages.push({
