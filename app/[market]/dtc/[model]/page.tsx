@@ -18,27 +18,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const modelData = await getModelBySlug(model)
   if (!modelData) return {}
 
-  const title = `${modelData.model_name} Fault Codes — Complete List (${market.toUpperCase()})`
-  const description = `All known fault codes for the ${modelData.model_name} in ${market.toUpperCase()}: meanings, severity levels, and what to do when you see each warning light.`
+  const dtcs = await getDTCsByModel(modelData.model_id)
+  const count = dtcs.length
+
+  const title = `${modelData.model_name} Fault Codes — ${count} Codes Listed (${market.toUpperCase()})`
+  const description = `${count} fault codes for the ${modelData.model_name} in ${market.toUpperCase()}. Find DTC meanings, severity levels, and repair tips based on real owner cases. Updated ${new Date().getFullYear()}.`
   const url = `${BASE_URL}/${market}/dtc/${model}`
 
   return {
     title,
     description,
     alternates: { canonical: url },
-    openGraph: {
-      title,
-      description,
-      url,
-      siteName: 'EVAftermarket',
-      locale: 'en_AU',
-      type: 'website',
-    },
-    twitter: {
-      card: 'summary',
-      title,
-      description,
-    },
+    openGraph: { title, description, url, siteName: 'EVAftermarket', locale: 'en_AU', type: 'website' },
+    twitter: { card: 'summary', title, description },
   }
 }
 
@@ -91,6 +83,11 @@ export default async function DtcModelPage({ params }: Props) {
 
           <div className="list-hero">
             <h1>{modelData.model_name} Fault Codes</h1>
+            <p className="text-gray-600 max-w-2xl mt-2 mb-6">
+              Below is a complete list of known fault codes (DTC) for the {modelData.model_name} in {market.toUpperCase()}.
+              Each code includes its meaning, severity level, and links to real owner repair cases where available.
+              Use this list to diagnose warning lights and understand potential repair costs before visiting a service centre.
+            </p>
             <p>
               All known diagnostic trouble codes for the {modelData.model_name} in{' '}
               {market.toUpperCase()} — meanings, severity levels, and what to do.
