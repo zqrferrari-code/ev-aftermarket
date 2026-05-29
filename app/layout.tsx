@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { BASE_URL } from "@/lib/config";
+import { JsonLd } from "@/components/JsonLd";
 
 export const metadata: Metadata = {
   title: {
@@ -32,7 +33,20 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <JsonLd
+          schema={{
+            '@context': 'https://schema.org',
+            '@type': 'Organization',
+            name: 'EVAftermarket',
+            url: BASE_URL,
+            logo: `${BASE_URL}/logo.png`,
+            sameAs: [],
+            description: 'Fault codes, charging guides, and owner experiences for Chinese EVs in Australia and beyond.',
+          }}
+        />
+        {children}
+      </body>
     </html>
   );
 }
