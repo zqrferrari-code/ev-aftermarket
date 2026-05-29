@@ -42,8 +42,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     parsedCauses.length > 0 ||
     (Array.isArray(parsedActions) && parsedActions.length > 0)
 
-  const title = `${modelData.model_name} ${dtcCode} Fault Code — Meaning, Causes & What To Do`
-  const description = `${dtcCode} on ${modelData.model_name}: ${dtc.description_en}. See severity level, likely causes, and what steps to take next.`
+  const title = `${dtcCode} ${modelData.model_name} — Cause, Fix & Cost | EVAftermarket`
+  const description = `${dtcCode} on ${modelData.model_name}: ${dtc.description_en?.slice(0, 100) ?? 'fault code details'}. Severity: ${dtc.severity}. See real owner repair cases and estimated costs.`
   const url = `${BASE_URL}/${market}/dtc/${model}/${code.toLowerCase()}`
 
   return {
