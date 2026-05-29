@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import Link from "next/link";
 import "./globals.css";
 import { BASE_URL } from "@/lib/config";
 import { JsonLd } from "@/components/JsonLd";
@@ -47,6 +48,13 @@ export default function RootLayout({
           }}
         />
         {children}
+        <footer className="border-t mt-16 py-8 text-sm text-gray-500">
+          <div className="max-w-4xl mx-auto px-4 flex flex-wrap gap-4">
+            <span>© {new Date().getFullYear()} EVAftermarket</span>
+            <Link href="/privacy" className="hover:text-gray-700">Privacy Policy</Link>
+            <Link href="/contact" className="hover:text-gray-700">Contact</Link>
+          </div>
+        </footer>
         <Script
           defer
           data-domain="evaftermarket.com"
