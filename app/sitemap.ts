@@ -20,8 +20,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     pages.push({
       url: `${BASE_URL}/${market.market_code}`,
       lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.9,
+      changeFrequency: 'weekly' as const,
+      priority: 1.0,
     })
   }
 
@@ -31,8 +31,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       pages.push({
         url: `${BASE_URL}/${market.market_code}/models/${model.slug}`,
         lastModified: new Date(),
-        changeFrequency: 'weekly',
-        priority: 0.8,
+        changeFrequency: 'weekly' as const,
+        priority: 0.9,
       })
     }
   }
@@ -43,8 +43,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       pages.push({
         url: `${BASE_URL}/${market.market_code}/problems/${model.slug}`,
         lastModified: new Date(),
-        changeFrequency: 'weekly',
-        priority: 0.7,
+        changeFrequency: 'weekly' as const,
+        priority: 0.8,
       })
     }
   }
@@ -55,8 +55,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       pages.push({
         url: `${BASE_URL}/${market.market_code}/charging/${model.slug}`,
         lastModified: new Date(),
-        changeFrequency: 'monthly',
-        priority: 0.6,
+        changeFrequency: 'weekly' as const,
+        priority: 0.8,
       })
     }
   }
@@ -67,8 +67,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       pages.push({
         url: `${BASE_URL}/${market.market_code}/service/${model.slug}`,
         lastModified: new Date(),
-        changeFrequency: 'monthly',
-        priority: 0.6,
+        changeFrequency: 'weekly' as const,
+        priority: 0.8,
       })
     }
   }
@@ -84,8 +84,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     pages.push({
       url: `${BASE_URL}/${market}/dtc/${modelSlug}`,
       lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.7,
+      changeFrequency: 'monthly' as const,
+      priority: 0.8,
     })
   }
 
@@ -95,8 +95,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     pages.push({
       url: `${BASE_URL}/${row.market_code}/dtc/${row.model_slug}/${row.dtc_code.toLowerCase()}`,
       lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.6,
+      changeFrequency: 'monthly' as const,
+      priority: 0.7,
     })
   }
 
@@ -107,8 +107,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       pages.push({
         url: `${BASE_URL}/au/dealers/${brand}/${state}`,
         lastModified: new Date(),
-        changeFrequency: 'monthly',
-        priority: 0.5,
+        changeFrequency: 'monthly' as const,
+        priority: 0.6,
       })
     }
   }
