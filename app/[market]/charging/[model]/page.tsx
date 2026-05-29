@@ -69,6 +69,29 @@ export default async function ChargingPage({ params }: Props) {
           acceptedAnswer: { '@type': 'Answer', text: f.a },
         })),
       }} />
+      <JsonLd schema={{
+        '@context': 'https://schema.org',
+        '@type': 'HowTo',
+        name: `How to Charge ${vehicleModel.model_name} at Home`,
+        description: `Step-by-step guide to setting up home charging for the ${vehicleModel.model_name}.`,
+        step: [
+          {
+            '@type': 'HowToStep',
+            name: 'Choose a home charger',
+            text: 'Select a Level 2 charger (7kW or 22kW) compatible with your vehicle.',
+          },
+          {
+            '@type': 'HowToStep',
+            name: 'Install the charging unit',
+            text: 'Hire a licensed electrician to install a dedicated charging circuit and wall unit.',
+          },
+          {
+            '@type': 'HowToStep',
+            name: 'Connect and charge',
+            text: 'Plug the charging cable into your vehicle. Use the companion app to schedule overnight charging.',
+          },
+        ],
+      }} />
       <ChargingContent market={market} vehicleModel={vehicleModel} chargingCases={chargingCases} />
     </>
   )
