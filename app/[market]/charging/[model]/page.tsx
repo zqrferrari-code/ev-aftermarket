@@ -483,6 +483,36 @@ function ChargingContent({ market, vehicleModel, chargingCases }: {
           </>
         )}
 
+        {/* ── Recommended Home Chargers (Affiliate) ── */}
+        <section className="mt-12 border-t pt-8">
+          <h2 className="text-xl font-semibold mb-4">Recommended Home Chargers</h2>
+          <p className="text-sm text-gray-500 mb-4">
+            * Affiliate disclosure: we may earn a small commission if you purchase via these links, at no extra cost to you.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <a
+              href="https://evnex.com/products/e2"
+              rel="sponsored noopener noreferrer"
+              target="_blank"
+              className="border rounded-lg p-4 hover:border-blue-400 transition"
+            >
+              <div className="font-semibold">EVNEX E2 — 7.2kW</div>
+              <div className="text-sm text-gray-500 mt-1">Popular in AU/NZ. Smart scheduling, app control.</div>
+              <div className="text-blue-600 text-sm mt-2">View on EVNEX →</div>
+            </a>
+            <a
+              href="https://wallbox.com/en_au/catalogue/chargers"
+              rel="sponsored noopener noreferrer"
+              target="_blank"
+              className="border rounded-lg p-4 hover:border-blue-400 transition"
+            >
+              <div className="font-semibold">Wallbox Pulsar Plus — 7.4kW</div>
+              <div className="text-sm text-gray-500 mt-1">Compact design, Bluetooth + WiFi, myWallbox app.</div>
+              <div className="text-blue-600 text-sm mt-2">View on Wallbox →</div>
+            </a>
+          </div>
+        </section>
+
         {/* ── Back link ── */}
         <div style={{
           padding: '16px 28px',
