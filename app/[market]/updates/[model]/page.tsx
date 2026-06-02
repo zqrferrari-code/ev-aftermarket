@@ -4,6 +4,8 @@ import { getUpdatesByModel } from '@/lib/db/updates'
 import { getModelBySlug } from '@/lib/db/models'
 import { getActiveMarketCodes, getAllSlugs } from '@/lib/db/static-params'
 
+export const revalidate = 3600
+
 export const dynamicParams = true
 
 export async function generateStaticParams() {
