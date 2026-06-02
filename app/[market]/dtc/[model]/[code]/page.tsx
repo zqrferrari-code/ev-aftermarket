@@ -8,8 +8,22 @@ import { RealWorldCases } from '@/components/RealWorldCases'
 import { JsonLd } from '@/components/JsonLd'
 import type { Severity, DataConfidence, Case, ActionStep } from '@/lib/types'
 import { BASE_URL } from '@/lib/config'
+import { getActiveMarketCodes, getAllDtcModelCodePairs } from '@/lib/db/static-params'
 
 export const revalidate = 7200
+
+export const dynamicParams = true
+
+export async function generateStaticParams() {
+  const [markets, pairs] = await Promise.all([getActiveMarketCodes(), getAllDtcModelCodePairs()])
+  return markets.flatMap((market) =>
+    pairs.map((p) => ({
+      market,
+      model: p.slug,
+      code: p.code.toLowerCase(),
+    }))
+  )
+}
 
 interface Props {
   params: Promise<{ market: string; model: string; code: string }>
