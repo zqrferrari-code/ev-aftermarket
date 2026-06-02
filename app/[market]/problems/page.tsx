@@ -5,8 +5,16 @@ import { getAllMarkets } from '@/lib/db/markets'
 import { getAllModelsWithBrand } from '@/lib/db/models'
 import { BASE_URL } from '@/lib/config'
 import { JsonLd } from '@/components/JsonLd'
+import { getActiveMarketCodes } from '@/lib/db/static-params'
 
 export const revalidate = 3600
+
+export const dynamicParams = true
+
+export async function generateStaticParams() {
+  const codes = await getActiveMarketCodes()
+  return codes.map((market) => ({ market }))
+}
 
 interface Props {
   params: Promise<{ market: string }>
