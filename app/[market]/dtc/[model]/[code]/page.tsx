@@ -15,6 +15,7 @@ export const revalidate = 7200
 export const dynamicParams = true
 
 export async function generateStaticParams() {
+  if (process.env.NODE_ENV === 'development') return []
   const [markets, pairs] = await Promise.all([getActiveMarketCodes(), getAllDtcModelCodePairs()])
   return markets.flatMap((market) =>
     pairs.map((p) => ({
