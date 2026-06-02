@@ -3,8 +3,16 @@ import { getAllModelsWithBrand } from '@/lib/db/models'
 import { getDTCNoteCount } from '@/lib/db/dtcs'
 import { getProblemCasesCount } from '@/lib/db/cases'
 import { BASE_URL } from '@/lib/config'
+import { getActiveMarketCodes } from '@/lib/db/static-params'
 
 export const revalidate = 1800
+
+export const dynamicParams = true
+
+export async function generateStaticParams() {
+  const codes = await getActiveMarketCodes()
+  return codes.map((market) => ({ market }))
+}
 
 interface Props {
   params: Promise<{ market: string }>
