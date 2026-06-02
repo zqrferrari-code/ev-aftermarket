@@ -2,6 +2,14 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getUpdatesByModel } from '@/lib/db/updates'
 import { getModelBySlug } from '@/lib/db/models'
+import { getActiveMarketCodes, getAllSlugs } from '@/lib/db/static-params'
+
+export const dynamicParams = true
+
+export async function generateStaticParams() {
+  const [markets, slugs] = await Promise.all([getActiveMarketCodes(), getAllSlugs()])
+  return markets.flatMap((market) => slugs.map((model) => ({ market, model })))
+}
 
 interface Props {
   params: Promise<{ market: string; model: string }>
