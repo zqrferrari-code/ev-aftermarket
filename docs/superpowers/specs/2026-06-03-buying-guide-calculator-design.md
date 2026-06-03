@@ -1,49 +1,49 @@
-# Buying Guide & Tax Calculator — Design Spec
+# 购车指南与税费计算器 — 设计文档
 
-**Date:** 2026-06-03
-**Status:** Awaiting implementation
-**Route:** `/au/buying-guide/` (AU first, extensible to other markets)
-
----
-
-## Overview
-
-A client-side purchase cost calculator targeting Australian buyers of Chinese EVs. Fills the "pre-purchase" gap in the current site (which focuses on post-purchase ownership). Two calculation modes:
-
-- **Mode A — Drive-away price:** Stamp duty + Rego + dealer delivery → total on-road cost
-- **Mode B — Novated Lease savings:** Given annual salary + vehicle cost → annual tax saving + monthly out-of-pocket
-
-All calculation logic runs in the browser. No database reads. Tax rates and MSRP data are hardcoded TS constants.
+**日期：** 2026-06-03
+**状态：** 待实现
+**路由：** `/au/buying-guide/`（澳大利亚优先，预留多市场扩展）
 
 ---
 
-## Page Route & SEO
+## 概述
 
-**URL:** `/au/buying-guide/`
+面向澳大利亚买家的客户端购车成本计算器，专注中国新能源车型。填补现有站点的"购车前"场景空白（现有功能均为购车后使用指南）。提供两种计算模式：
 
-This is a static page with a `"use client"` calculator component embedded. The page shell (title, description, structured data) is a Server Component for SEO.
+- **模式 A — 落地价计算：** 印花税 + 注册费（Rego）+ 经销商交付费 → 总到手价
+- **模式 B — Novated Lease 节税计算：** 输入年薪和车价 → 年度节税金额 + 每月实际支出
 
-**Metadata:**
-- Title: `EV Buying Guide Australia — Stamp Duty, Drive-Away Price & Novated Lease Calculator`
-- Description: `Calculate the true drive-away price for BYD, MG, GWM Ora and other Chinese EVs in Australia. Includes stamp duty by state, Rego estimate, and Novated Lease FBT tax saving calculator.`
-
-**No `generateStaticParams` needed** — this is a single non-dynamic route.
+所有计算逻辑在浏览器端运行，无数据库查询。税率和 MSRP 数据全部硬编码为 TypeScript 常量。
 
 ---
 
-## Data Files (new files to create)
+## 页面路由与 SEO
+
+**URL：** `/au/buying-guide/`
+
+页面结构：Server Component 承载 SEO 元数据和页面框架，`"use client"` 的计算器组件嵌入其中。
+
+**元数据：**
+- 标题：`EV Buying Guide Australia — Stamp Duty, Drive-Away Price & Novated Lease Calculator`
+- 描述：`Calculate the true drive-away price for BYD, MG, GWM Ora and other Chinese EVs in Australia. Includes stamp duty by state, Rego estimate, and Novated Lease FBT tax saving calculator.`
+
+**无需 `generateStaticParams`** — 固定路由，非动态路由。
+
+---
+
+## 数据文件（新建）
 
 ### `lib/buying-guide/vehicles.ts`
 
-Hardcoded MSRP database for AU market. Structure:
+澳大利亚市场车型 MSRP 数据库，硬编码为常量：
 
 ```ts
 export type Vehicle = {
   brand: string
   model: string
   variant: string
-  msrp: number          // AUD, GST-inclusive, excludes on-road costs
-  eligible_fbt: boolean // BEV = true, PHEV = false (from 1 Apr 2025)
+  msrp: number          // 澳元，含 GST，不含上路费用
+  eligible_fbt: boolean // 纯电 BEV = true，PHEV = false（2025年4月1日起）
 }
 
 export const AU_VEHICLES: Vehicle[] = [
@@ -70,7 +70,7 @@ export const AU_VEHICLES: Vehicle[] = [
 
 ### `lib/buying-guide/tax-rates.ts`
 
-AU stamp duty and Rego data by state:
+各州印花税规则和注册费估算：
 
 ```ts
 export type State = 'NSW' | 'VIC' | 'QLD' | 'SA' | 'WA' | 'ACT' | 'TAS' | 'NT'
@@ -78,8 +78,8 @@ export type State = 'NSW' | 'VIC' | 'QLD' | 'SA' | 'WA' | 'ACT' | 'TAS' | 'NT'
 export type StampDutyRule = {
   state: State
   ev_exempt: boolean
-  // If not exempt, tiered rates apply:
-  tiers?: Array<{ upTo: number | null; rate: number }> // rate = decimal e.g. 0.03
+  // 未豁免时适用分级税率：
+  tiers?: Array<{ upTo: number | null; rate: number }> // rate 为小数，如 0.03 表示 3%
   flat_rate?: number
 }
 
@@ -89,22 +89,22 @@ export type RegoEstimate = {
   annual_max: number
 }
 
-// Stamp duty: EV exemptions as of 2025
+// 印花税：2025年各州 EV 豁免状态
 export const STAMP_DUTY_RULES: StampDutyRule[] = [
-  { state: 'NSW', ev_exempt: true },
-  { state: 'ACT', ev_exempt: true },
-  { state: 'QLD', ev_exempt: true },  // under $100k
-  { state: 'SA',  ev_exempt: true },  // verify post-June 2025
-  { state: 'TAS', ev_exempt: true },
+  { state: 'NSW', ev_exempt: true },           // 豁免至 2027年7月1日
+  { state: 'ACT', ev_exempt: true },           // 无限期豁免
+  { state: 'QLD', ev_exempt: true },           // 10万以下豁免
+  { state: 'SA',  ev_exempt: true },           // 待确认 2025年6月后是否延续
+  { state: 'TAS', ev_exempt: true },           // 条件性豁免
   {
-    state: 'VIC', ev_exempt: false,
+    state: 'VIC', ev_exempt: false,            // 2024年7月1日起取消豁免
     tiers: [
       { upTo: 65094, rate: 0.042 },
       { upTo: null,  rate: 0.052 },
     ],
   },
   {
-    state: 'WA', ev_exempt: false,
+    state: 'WA', ev_exempt: false,             // 无豁免，有 $3,500 返现但非税费减免
     tiers: [
       { upTo: 25000, rate: 0.0275 },
       { upTo: 50000, rate: 0.0275 },
@@ -127,18 +127,18 @@ export const REGO_ESTIMATES: RegoEstimate[] = [
 
 export const DEALER_DELIVERY_ESTIMATE = { min: 500, max: 1500 }
 
-export const LCT_THRESHOLD_FUEL_EFFICIENT = 91387 // 2024-25
+export const LCT_THRESHOLD_FUEL_EFFICIENT = 91387 // 2024-25 财年，目前所有中国 EV 均低于此门槛
 ```
 
 ### `lib/buying-guide/calculations.ts`
 
-Pure calculation functions (no React, easily unit-testable):
+纯计算函数，无 React 依赖，便于单元测试：
 
 ```ts
-// Mode A
+// 模式 A：落地价计算
 export function calcDriveAway(msrp: number, state: State, ev_eligible: boolean): DriveAwayResult
 
-// Mode B
+// 模式 B：Novated Lease 节税计算
 export function calcNovatedLease(
   msrp: number,
   annualSalary: number,
@@ -147,11 +147,11 @@ export function calcNovatedLease(
 ): NovatedLeaseResult
 ```
 
-**Mode A — DriveAwayResult:**
+**模式 A — DriveAwayResult 数据结构：**
 ```ts
 {
   msrp: number
-  stamp_duty: number        // 0 if exempt
+  stamp_duty: number         // 豁免时为 0
   stamp_duty_exempt: boolean
   rego_min: number
   rego_max: number
@@ -162,122 +162,124 @@ export function calcNovatedLease(
 }
 ```
 
-**Mode B — NovatedLeaseResult:**
+**模式 B — NovatedLeaseResult 数据结构：**
 ```ts
 {
-  annual_lease_cost: number       // estimated: msrp / leaseTerm * 1.15 (running costs factor)
-  pre_tax_deduction: number       // = annual_lease_cost (100% pre-tax for eligible EVs)
-  marginal_rate: number           // AU progressive tax rate
+  annual_lease_cost: number       // 估算公式：msrp / leaseTerm * 1.15（含运营成本系数）
+  pre_tax_deduction: number       // 等于 annual_lease_cost（FBT 豁免车型 100% 税前扣款）
+  marginal_rate: number           // 澳大利亚累进税率
   annual_tax_saving: number       // pre_tax_deduction * marginal_rate
   monthly_out_of_pocket: number   // (annual_lease_cost - annual_tax_saving) / 12
-  rfba_warning: boolean           // always true — remind user about RFBA impact
+  rfba_warning: boolean           // 始终为 true，提醒用户 RFBA 的影响
   fbt_eligible: boolean
 }
 ```
 
-**AU marginal tax rates 2024-25:**
-| Income | Rate |
-|--------|------|
-| 0–$18,200 | 0% |
-| $18,201–$45,000 | 19% |
-| $45,001–$135,000 | 32.5% |
-| $135,001–$190,000 | 37% |
-| $190,001+ | 45% |
+**澳大利亚个人所得税累进税率（2024-25 财年）：**
+
+| 年收入区间 | 边际税率 |
+|-----------|---------|
+| $0 – $18,200 | 0% |
+| $18,201 – $45,000 | 19% |
+| $45,001 – $135,000 | 32.5% |
+| $135,001 – $190,000 | 37% |
+| $190,001 以上 | 45% |
 
 ---
 
-## UI Components
+## UI 组件
 
-### `app/au/buying-guide/page.tsx` (Server Component)
-- Exports metadata for SEO
-- Renders page shell: breadcrumb, h1, description
-- Embeds `<BuyingGuideCalculator />` client component
+### `app/au/buying-guide/page.tsx`（Server Component）
 
-### `components/BuyingGuideCalculator.tsx` (Client Component)
-Single file, self-contained. Sections:
+- 导出 SEO 元数据
+- 渲染页面框架：面包屑导航、H1 标题、描述文字
+- 嵌入 `<BuyingGuideCalculator />` 客户端组件
 
-**Step 1 — Vehicle Selection**
-- Grouped `<select>` by brand → variant
-- Shows MSRP on selection: `MSRP: A$44,990 (GST incl.)`
+### `components/BuyingGuideCalculator.tsx`（Client Component）
 
-**Step 2 — State Selection**
-- 8-state dropdown
-- Shows stamp duty status immediately on selection: `✓ Stamp duty exempt in NSW` or `Stamp duty applies (VIC): ~A$1,890`
+单文件，自包含。页面分三步：
 
-**Step 3 — Mode Tabs: "Drive-Away Price" | "Novated Lease"**
+**第一步 — 车型选择**
+- 按品牌分组的 `<select>` 下拉框，选择后显示具体型号
+- 选中后立即显示：`MSRP: A$44,990（含 GST）`
 
-**Mode A output — Drive-Away breakdown table:**
+**第二步 — 州/地区选择**
+- 8 个州/地区下拉框
+- 选中后立即显示印花税状态：`✓ 新南威尔士州免征印花税` 或 `维多利亚州需缴印花税：约 A$1,890`
+
+**第三步 — 计算模式选项卡：「落地价」| 「Novated Lease」**
+
+**模式 A 输出 — 落地价明细表：**
 ```
-MSRP                    A$44,990
-Stamp Duty              A$0 (exempt in NSW)
-Registration (est.)     A$700 – A$1,300
-Dealer Delivery (est.)  A$500 – A$1,500
+车辆 MSRP                A$44,990
+印花税                   A$0（新南威尔士州豁免）
+注册费（估算）           A$700 – A$1,300
+经销商交付费（估算）     A$500 – A$1,500
 ─────────────────────────────────────────
-Drive-Away Total        A$46,190 – A$47,790
+落地总价                 A$46,190 – A$47,790
 ```
 
-**Mode B inputs:**
-- Annual salary input (number, `$45,000–$300,000`)
-- Lease term: 3 years / 5 years (toggle)
+**模式 B 输入：**
+- 税前年收入（数字输入框，范围 $45,000 – $300,000）
+- 租赁期限：3 年 / 5 年（切换按钮）
 
-**Mode B output:**
+**模式 B 输出：**
 ```
-Annual lease cost (est.)     A$10,350/yr
-Pre-tax salary deduction     A$10,350/yr (100% — FBT exempt)
-Your marginal tax rate        32.5%
-Annual income tax saving      A$3,364/yr
-Monthly out-of-pocket         A$582/mo
+年度租赁成本（估算）       A$10,350/年
+税前工资扣款               A$10,350/年（100% 税前 — FBT 豁免）
+你的边际税率               32.5%
+年度节省个人所得税         A$3,364/年
+每月实际支出               A$582/月
 
-⚠️ Note: This benefit is reported as a Reportable Fringe
-Benefit Amount (RFBA) and may affect Medicare Levy
-Surcharge, HECS/HELP repayments, and government
-means-tested benefits.
+⚠️ 提示：此福利将作为应报告附加福利金额（RFBA）记录
+在你的收入报表中，可能影响 Medicare Levy Surcharge、
+HECS/HELP 还款额及政府福利资格核查。
 ```
 
-If vehicle is not FBT-eligible (PHEV):
+若车型不满足 FBT 豁免条件（PHEV）：
 ```
-⚠️ This vehicle (PHEV) lost FBT exemption from 1 April 2025.
-Novated lease savings are significantly reduced.
+⚠️ 该车型（PHEV）自 2025年4月1日起不再享有 FBT 豁免。
+Novated Lease 节税效果大幅降低。
 ```
 
 ---
 
-## Styling
+## 样式规范
 
-Follow existing site conventions exactly:
-- Inline styles using `oklch()` color functions
-- Section headers: `background: oklch(97.5% 0.003 60)`
-- Content padding: `18px 28px`
-- No new CSS classes, no Tailwind utilities not already in use
-- Monospace number display for calculated values
-
----
-
-## Disclaimers (mandatory, shown on page)
-
-Two disclaimer boxes (reuse existing `DisclaimerBox` component if it exists):
-
-1. **Tax rates disclaimer:** "Stamp duty rates and EV exemptions change regularly. Figures are estimates based on publicly available 2025 rates. Always verify with your state revenue office before purchasing."
-2. **Novated lease disclaimer:** "Novated lease calculations are indicative only. Actual savings depend on your employer's scheme, exact lease terms, and personal tax situation. Consult a financial adviser."
+严格遵循现有站点风格：
+- 全部使用内联样式 `oklch()` 色彩函数
+- 区块标题背景：`background: oklch(97.5% 0.003 60)`
+- 内容内边距：`18px 28px`
+- 不新增 CSS 类名，不引入当前未使用的 Tailwind 工具类
+- 计算结果数字使用等宽字体显示
 
 ---
 
-## What's Out of Scope
+## 免责声明（页面必须展示）
 
-- UK / UAE / Norway calculators (different tax systems — future work)
-- LCT calculation (no current Chinese EV exceeds $91,387 threshold)
-- Comparison across multiple vehicles simultaneously
-- Admin UI for updating MSRP data
-- Real-time price fetching from dealer websites
+两处免责声明框，复用现有 `DisclaimerBox` 组件（如存在）：
+
+1. **税率免责声明：** "印花税税率及新能源车豁免政策随时可能调整。本页数据基于 2025 年公开信息估算，购车前请向所在州税务局核实最新政策。"
+2. **Novated Lease 免责声明：** "Novated Lease 节税计算结果仅供参考，实际节税金额取决于雇主方案、具体租赁条款及个人税务情况，建议咨询持牌财务顾问。"
 
 ---
 
-## File Summary
+## 不在范围内
 
-| File | Type | Purpose |
-|------|------|---------|
-| `app/au/buying-guide/page.tsx` | Server Component | SEO shell + page layout |
-| `components/BuyingGuideCalculator.tsx` | Client Component | Interactive calculator UI |
-| `lib/buying-guide/vehicles.ts` | Data | AU vehicle MSRP database |
-| `lib/buying-guide/tax-rates.ts` | Data | Stamp duty rules + Rego estimates |
-| `lib/buying-guide/calculations.ts` | Logic | Pure calculation functions |
+- 英国 / 阿联酋 / 挪威计算器（税制不同，留待后续）
+- LCT（豪华车税）计算（目前所有中国 EV 均低于 $91,387 门槛）
+- 多车型同时横向对比
+- MSRP 数据管理后台
+- 实时从经销商网站抓取价格
+
+---
+
+## 文件清单
+
+| 文件 | 类型 | 用途 |
+|------|------|------|
+| `app/au/buying-guide/page.tsx` | Server Component | SEO 框架 + 页面布局 |
+| `components/BuyingGuideCalculator.tsx` | Client Component | 交互式计算器 UI |
+| `lib/buying-guide/vehicles.ts` | 数据 | 澳大利亚车型 MSRP 数据库 |
+| `lib/buying-guide/tax-rates.ts` | 数据 | 印花税规则 + 注册费估算 |
+| `lib/buying-guide/calculations.ts` | 逻辑 | 纯计算函数 |
