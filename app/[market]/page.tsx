@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { getAllModelsWithBrand } from '@/lib/db/models'
 import { getDTCNoteCount } from '@/lib/db/dtcs'
 import { getProblemCasesCount } from '@/lib/db/cases'
@@ -174,6 +175,23 @@ export default async function MarketHomePage({ params }: Props) {
                   </a>
                 ))
               ))}
+              <Link
+                href="/au/buying-guide"
+                style={{
+                  display: 'inline-block',
+                  padding: '7px 12px',
+                  border: '1px solid var(--border-soft)',
+                  borderRadius: '5px',
+                  fontSize: '12px',
+                  fontFamily: 'var(--font-cond)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
+                  color: 'oklch(36% 0.01 60)',
+                  textDecoration: 'none',
+                }}
+              >
+                Buying Guide & Tax Calculator
+              </Link>
             </>
           )}
         </div>
