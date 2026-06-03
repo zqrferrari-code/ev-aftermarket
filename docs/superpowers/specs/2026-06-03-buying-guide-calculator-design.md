@@ -78,9 +78,11 @@ export type State = 'NSW' | 'VIC' | 'QLD' | 'SA' | 'WA' | 'ACT' | 'TAS' | 'NT'
 export type StampDutyRule = {
   state: State
   ev_exempt: boolean
-  // 未豁免时适用分级税率：
+  // 未豁免时适用分级税率（百分比类型，如 VIC/WA/NT）：
   tiers?: Array<{ upTo: number | null; rate: number }> // rate 为小数，如 0.03 表示 3%
   flat_rate?: number
+  // SA 专用：固定金额阶梯（非百分比），用独立函数计算
+  sa_tiered?: true
 }
 
 export type RegoEstimate = {
@@ -94,8 +96,16 @@ export const STAMP_DUTY_RULES: StampDutyRule[] = [
   { state: 'NSW', ev_exempt: true },           // 豁免至 2027年7月1日
   { state: 'ACT', ev_exempt: true },           // 无限期豁免
   { state: 'QLD', ev_exempt: true },           // 10万以下豁免
-  { state: 'SA',  ev_exempt: true },           // 待确认 2025年6月后是否延续
   { state: 'TAS', ev_exempt: true },           // 条件性豁免
+  {
+    state: 'SA',  ev_exempt: false, sa_tiered: true,
+    // SA 官网确认豁免已到期，按标准税率：
+    // ≤$1,000: $1/$100（最低$5）
+    // $1,001–$2,000: $10 + $2/$100 超出$1,000
+    // $2,001–$3,000: $30 + $3/$100 超出$2,000
+    // >$3,000: $60 + $4/$100 超出$3,000（向上取整至$100）
+    // 示例：$44,990 → $60 + ceil(41990/100)*4 = $60 + 420*4 = $1,740
+  },
   {
     state: 'VIC', ev_exempt: false,            // 2024年7月1日起取消豁免
     tiers: [
