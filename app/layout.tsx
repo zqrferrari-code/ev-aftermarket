@@ -35,6 +35,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&family=JetBrains+Mono:wght@500;700&family=DM+Serif+Display:ital@0;1&family=Instrument+Serif:ital@0;1&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body>
         <JsonLd
           schema={{
@@ -48,16 +56,16 @@ export default function RootLayout({
           }}
         />
         {children}
-        <footer className="border-t mt-16 py-8 text-sm text-gray-500">
-          <div className="max-w-4xl mx-auto px-4 flex flex-wrap gap-4">
+        <footer className="site-footer">
+          <div className="site-footer-inner">
             <span>© {new Date().getFullYear()} EVAftermarket</span>
-            <Link href="/privacy" className="hover:text-gray-700">Privacy Policy</Link>
-            <Link href="/contact" className="hover:text-gray-700">Contact</Link>
+            <Link href="/privacy" className="footer-link">Privacy Policy</Link>
+            <Link href="/contact" className="footer-link">Contact</Link>
           </div>
         </footer>
         <Script
           defer
-          data-domain="evaftermarket.com"
+          data-domain="evaftermarket.io"
           src="https://plausible.io/js/script.js"
           strategy="afterInteractive"
         />
