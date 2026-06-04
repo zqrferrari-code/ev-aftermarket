@@ -43,7 +43,7 @@ export const models = mysqlTable('mf_nv_models', {
   battery_kwh: decimal('battery_kwh', { precision: 5, scale: 1 }),
   acceleration_0_100: decimal('acceleration_0_100', { precision: 4, scale: 1 }),
   charge_ac_kw: decimal('charge_ac_kw', { precision: 4, scale: 1 }),
-  charge_dc_kw: int('charge_dc_kw'),
+  charge_dc_kw: decimal('charge_dc_kw', { precision: 4, scale: 1 }),
   cargo_l: int('cargo_l'),
 })
 
