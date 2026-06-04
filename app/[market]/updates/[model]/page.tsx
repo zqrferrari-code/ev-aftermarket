@@ -119,7 +119,7 @@ export default async function UpdatesListPage({ params }: Props) {
 
         {updates.length > 0 ? (
           <ul style={{ listStyle: 'none' }}>
-            {[...updates].reverse().map((update) => (
+            {updates.map((update) => (
               <li key={update.update_id} className="model-update-row">
                 <a
                   href={`/${market}/updates/${model}/${update.version}`}

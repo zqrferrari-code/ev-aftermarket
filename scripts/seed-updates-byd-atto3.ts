@@ -1,7 +1,7 @@
 import 'dotenv/config'
 import { db } from '../lib/db/index'
 import { softwareUpdates, models } from '../lib/db/schema'
-import { eq } from 'drizzle-orm'
+import { eq, and } from 'drizzle-orm'
 
 async function main() {
   // Look up the model_id for byd-atto-3
@@ -24,7 +24,7 @@ async function main() {
   const existing = await db
     .select({ update_id: softwareUpdates.update_id })
     .from(softwareUpdates)
-    .where(eq(softwareUpdates.model_id, model_id))
+    .where(and(eq(softwareUpdates.model_id, model_id), eq(softwareUpdates.market_code, market_code)))
     .limit(1)
 
   if (existing.length > 0) {
