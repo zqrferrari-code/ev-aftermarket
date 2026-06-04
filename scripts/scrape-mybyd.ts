@@ -98,8 +98,11 @@ async function scrapeOtaArticle(url: string): Promise<void> {
 
   const releaseDate = parseReleaseDate(bodyText)
 
+  // Scope to article body to avoid nav/footer noise
+  const articleRoot = $('article, main, .entry-content, .post-content').first()
+  const scope = articleRoot.length ? articleRoot : $('body')
   const changelogParts: string[] = []
-  $('li').each((_, el) => {
+  scope.find('li').each((_, el) => {
     const text = $(el).text().trim()
     if (text.length > 10) changelogParts.push(text)
   })
@@ -146,8 +149,7 @@ async function scrapeModelSpec(modelId: string, url: string): Promise<void> {
   const acceleration_0_100 = parseNumber(bodyText, /(\d+(?:\.\d+)?)\s*s(?:econds?)?\s+0[-–](?:62|100)/i)
     ?? parseNumber(bodyText, /0[-–](?:62|100)[^.]*?(\d+(?:\.\d+)?)\s*s/i)
 
-  const charge_dc_kw_raw = parseNumber(bodyText, /(\d+(?:\.\d+)?)\s*kW\s+DC/i)
-  const charge_dc_kw = charge_dc_kw_raw
+  const charge_dc_kw = parseNumber(bodyText, /(\d+(?:\.\d+)?)\s*kW\s+DC/i)
 
   const charge_ac_kw = parseNumber(bodyText, /(\d+(?:\.\d+)?)\s*kW\s+AC/i)
     ?? parseNumber(bodyText, /(?:Type\s*2|AC)[^.]*?(\d+(?:\.\d+)?)\s*kW/i)
@@ -159,14 +161,24 @@ async function scrapeModelSpec(modelId: string, url: string): Promise<void> {
 
   console.log(`  range: ${range_km ? range_km + 'km' : 'null'}, battery: ${battery_kwh ? battery_kwh + 'kWh' : 'null'}, 0-100: ${acceleration_0_100 ? acceleration_0_100 + 's' : 'null'}, DC: ${charge_dc_kw ? charge_dc_kw + 'kW' : 'null'}, AC: ${charge_ac_kw ? charge_ac_kw + 'kW' : 'null'}, cargo: ${cargo_l ? cargo_l + 'L' : 'null'}`)
 
+  // Sanity bounds — reject implausible values
+  const validated = {
+    range_km: range_km && range_km >= 100 && range_km <= 2000 ? range_km : null,
+    battery_kwh: battery_kwh && battery_kwh >= 10 && battery_kwh <= 300 ? battery_kwh : null,
+    acceleration_0_100: acceleration_0_100 && acceleration_0_100 >= 1 && acceleration_0_100 <= 30 ? acceleration_0_100 : null,
+    charge_ac_kw: charge_ac_kw && charge_ac_kw >= 1 && charge_ac_kw <= 50 ? charge_ac_kw : null,
+    charge_dc_kw: charge_dc_kw && charge_dc_kw >= 10 && charge_dc_kw <= 500 ? charge_dc_kw : null,
+    cargo_l: cargo_l && cargo_l >= 100 && cargo_l <= 3000 ? cargo_l : null,
+  }
+
   // Only update non-null values — range_km and cargo_l are int; decimal fields use string representation
   const updateData: Record<string, unknown> = {}
-  if (range_km !== null) updateData.range_km = range_km
-  if (battery_kwh !== null) updateData.battery_kwh = battery_kwh.toString()
-  if (acceleration_0_100 !== null) updateData.acceleration_0_100 = acceleration_0_100.toString()
-  if (charge_ac_kw !== null) updateData.charge_ac_kw = charge_ac_kw.toString()
-  if (charge_dc_kw !== null) updateData.charge_dc_kw = charge_dc_kw.toString()
-  if (cargo_l !== null) updateData.cargo_l = cargo_l
+  if (validated.range_km !== null) updateData.range_km = validated.range_km
+  if (validated.battery_kwh !== null) updateData.battery_kwh = validated.battery_kwh.toString()
+  if (validated.acceleration_0_100 !== null) updateData.acceleration_0_100 = validated.acceleration_0_100.toString()
+  if (validated.charge_ac_kw !== null) updateData.charge_ac_kw = validated.charge_ac_kw.toString()
+  if (validated.charge_dc_kw !== null) updateData.charge_dc_kw = validated.charge_dc_kw.toString()
+  if (validated.cargo_l !== null) updateData.cargo_l = validated.cargo_l
 
   if (Object.keys(updateData).length > 0) {
     await db.update(models)
