@@ -152,7 +152,9 @@ async function scrapeModelSpec(modelId: string, url: string): Promise<void> {
   const charge_ac_kw = parseNumber(bodyText, /(\d+(?:\.\d+)?)\s*kW\s+AC/i)
     ?? parseNumber(bodyText, /(?:Type\s*2|AC)[^.]*?(\d+(?:\.\d+)?)\s*kW/i)
 
-  const cargo_l_raw = parseNumber(bodyText, /(\d+)\s*(?:litres?|L)\b/i)
+  // Cargo: look for 3+ digit numbers near boot/cargo/luggage/litre context
+  const cargo_l_raw = parseNumber(bodyText, /(\d{3,})\s*(?:litres?|L)\b/i)
+    ?? parseNumber(bodyText, /(?:boot|cargo|luggage|trunk)[^.]{0,60}?(\d{3,})/i)
   const cargo_l = cargo_l_raw ? Math.round(cargo_l_raw) : null
 
   console.log(`  range: ${range_km ? range_km + 'km' : 'null'}, battery: ${battery_kwh ? battery_kwh + 'kWh' : 'null'}, 0-100: ${acceleration_0_100 ? acceleration_0_100 + 's' : 'null'}, DC: ${charge_dc_kw ? charge_dc_kw + 'kW' : 'null'}, AC: ${charge_ac_kw ? charge_ac_kw + 'kW' : 'null'}, cargo: ${cargo_l ? cargo_l + 'L' : 'null'}`)
