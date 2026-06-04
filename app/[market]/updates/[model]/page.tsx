@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import Link from 'next/link'
 import { getUpdatesByModel } from '@/lib/db/updates'
 import { getModelBySlug } from '@/lib/db/models'
 import { getActiveMarketCodes, getAllSlugs } from '@/lib/db/static-params'
@@ -27,6 +28,23 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
+function methodBadgeStyle(method: string | null): React.CSSProperties {
+  if (method === 'OTA') {
+    return { background: 'var(--green-light)', color: 'var(--green-text)', border: '1px solid #bbf7d0' }
+  }
+  if (method === 'dealer_only') {
+    return { background: 'var(--amber-bg)', color: 'var(--amber-text)', border: '1px solid var(--amber-border)' }
+  }
+  return {} // usb — default .model-method-tag blue
+}
+
+function methodLabel(method: string | null): string {
+  if (method === 'OTA') return 'OTA'
+  if (method === 'dealer_only') return 'Dealer Only'
+  if (method === 'usb') return 'USB'
+  return 'Unknown'
+}
+
 export default async function UpdatesListPage({ params }: Props) {
   const { market, model } = await params
   const modelData = await getModelBySlug(model)
@@ -34,110 +52,135 @@ export default async function UpdatesListPage({ params }: Props) {
 
   const updates = await getUpdatesByModel(modelData.model_id, market)
 
+  const otaCount = updates.filter((u) => u.update_method === 'OTA').length
+  const latestYear = updates
+    .map((u) => u.release_date?.slice(0, 4))
+    .filter(Boolean)
+    .sort()
+    .at(-1) ?? null
+
   return (
-    <article className="max-w-3xl">
-      <h1 className="text-3xl font-bold text-gray-900 mb-4">
-        {modelData.model_name} Software Updates ({market.toUpperCase()})
-      </h1>
-      <p className="text-gray-600 mb-8">
-        Tracking all firmware and software updates. Subscribe below to get notified when a new version is released.
-      </p>
+    <main className="page-wrapper">
+      <div className="dtc-card">
 
-      <div className="bg-blue-50 border border-blue-200 rounded p-4 mb-8">
-        <h2 className="font-semibold mb-1">Get Update Alerts</h2>
-        <p className="text-sm text-gray-700 mb-3">
-          Be the first to know when a new software update is available for your {modelData.model_name}.
-        </p>
-        <div className="flex gap-2">
-          <input
-            type="email"
-            placeholder="your@email.com"
-            className="flex-1 border rounded px-3 py-1.5 text-sm"
-            disabled
-          />
-          <button className="bg-blue-600 text-white px-4 py-1.5 rounded text-sm opacity-50 cursor-not-allowed">
-            Notify Me (Coming Soon)
-          </button>
+        {/* Breadcrumb */}
+        <nav className="breadcrumb">
+          <Link href={`/${market}`}>{market.toUpperCase()}</Link>
+          <span className="sep">›</span>
+          <Link href={`/${market}/models/${model}`}>{modelData.model_name}</Link>
+          <span className="sep">›</span>
+          <span style={{ fontWeight: 600, color: 'var(--text-base)' }}>Software Updates</span>
+        </nav>
+
+        {/* Hero */}
+        <div style={{ padding: '32px 28px 24px', borderBottom: '1px solid var(--border)' }}>
+          <h1 style={{
+            fontFamily: 'var(--font-serif-body)',
+            fontSize: '32px',
+            fontWeight: 400,
+            color: 'var(--text-base)',
+            lineHeight: 1.2,
+            marginBottom: '10px',
+          }}>
+            Software Updates<br />
+            <em style={{ color: 'var(--text-muted)', fontSize: '26px' }}>
+              {modelData.model_name} · {market.toUpperCase()}
+            </em>
+          </h1>
+          <p style={{ fontSize: '13.5px', color: 'var(--text-muted)', maxWidth: '54ch', lineHeight: 1.65 }}>
+            Firmware and software version history. Data sourced from community reports and official release notes.
+          </p>
+
+          {/* Stats strip */}
+          {updates.length > 0 && (
+            <div className="list-stats">
+              <div className="stat">
+                <div className="stat-num">{updates.length}</div>
+                <div className="stat-label">Versions tracked</div>
+              </div>
+              {otaCount > 0 && (
+                <div className="stat">
+                  <div className="stat-num" style={{ color: 'var(--green)' }}>{otaCount}</div>
+                  <div className="stat-label">OTA capable</div>
+                </div>
+              )}
+              {latestYear && (
+                <div className="stat">
+                  <div className="stat-num">{latestYear}</div>
+                  <div className="stat-label">Latest release</div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
-      </div>
 
-      <section>
-        <h2 className="text-xl font-semibold mb-4">Update History</h2>
+        {/* Update list */}
+        <div className="model-section-head">Update History</div>
+
         {updates.length > 0 ? (
-          <div className="space-y-4">
-            {updates.map((update) => (
-              <a
-                key={update.update_id}
-                href={`/${market}/updates/${model}/${update.version}`}
-                className="block border rounded-lg p-4 hover:bg-gray-50"
-              >
-                <div className="flex items-start justify-between">
-                  <div>
-                    <code className="text-lg font-mono font-bold">{update.version}</code>
-                    {update.release_date && (
-                      <span className="ml-3 text-sm text-gray-500">{update.release_date}</span>
+          <ul style={{ listStyle: 'none' }}>
+            {[...updates].reverse().map((update) => (
+              <li key={update.update_id} className="model-update-row">
+                <a
+                  href={`/${market}/updates/${model}/${update.version}`}
+                  style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
+                >
+                  <div className="model-update-top">
+                    <div>
+                      <div className="model-update-version">{update.version}</div>
+                      {update.release_date && (
+                        <div style={{
+                          fontSize: '11px',
+                          color: 'var(--text-faint)',
+                          fontFamily: 'var(--font-cond)',
+                          letterSpacing: '0.06em',
+                          textTransform: 'uppercase',
+                          marginTop: '2px',
+                        }}>
+                          {update.release_date}
+                        </div>
+                      )}
+                    </div>
+                    {update.update_method && (
+                      <span
+                        className="model-method-tag"
+                        style={methodBadgeStyle(update.update_method)}
+                      >
+                        {methodLabel(update.update_method)}
+                      </span>
                     )}
                   </div>
-                  <span
-                    className={`text-xs px-2 py-0.5 rounded ${
-                      update.update_method === 'OTA'
-                        ? 'bg-green-100 text-green-800'
-                        : update.update_method === 'dealer_only'
-                        ? 'bg-yellow-100 text-yellow-800'
-                        : 'bg-gray-100 text-gray-700'
-                    }`}
-                  >
-                    {update.update_method ?? 'Unknown'}
-                  </span>
-                </div>
-                {update.changelog_en && (
-                  <p className="text-sm text-gray-700 mt-2 line-clamp-2">{update.changelog_en}</p>
-                )}
-              </a>
+                  {update.changelog_en && (
+                    <p className="model-update-log" style={{ marginTop: '6px' }}>
+                      {update.changelog_en}
+                    </p>
+                  )}
+                </a>
+              </li>
             ))}
-          </div>
+          </ul>
         ) : (
-          <div className="border rounded p-6 text-center text-gray-500">
+          <div className="disclaimer" style={{ justifyContent: 'center', flexDirection: 'column', alignItems: 'center', padding: '28px', gap: '6px' }}>
             <p>No software updates recorded yet for this market.</p>
-            <p className="text-sm mt-2">
+            <p>
               Know of a recent update?{' '}
-              <a href="/contact" className="text-blue-600 underline">
-                Let us know.
-              </a>
+              <Link href="/contact" style={{ color: 'var(--green)' }}>Let us know →</Link>
             </p>
           </div>
         )}
-      </section>
 
-      {/* MG4 专用社区版本（数据库为空时展示） */}
-      {model === 'mg-mg4' && updates.length === 0 && (
-        <section className="mt-8 border-t pt-8">
-          <h2 className="text-xl font-semibold mb-4">Known Versions (Community Reports)</h2>
-          <div className="space-y-4">
-            {[
-              { version: 'R67', date: '2024 Q4', method: 'dealer_only', notes: 'Bug fixes for infotainment freezing. Report from r/MG4 forum.' },
-              { version: 'R63', date: '2024 Q2', method: 'OTA', notes: 'Improved charging curve above 80%. CarPlay stability improvements.' },
-              { version: 'R59', date: '2023 Q4', method: 'OTA', notes: 'Range estimation accuracy improvement. Winter preconditioning update.' },
-            ].map((v) => (
-              <div key={v.version} className="border rounded-lg p-4">
-                <div className="flex items-center gap-3 mb-2">
-                  <code className="text-lg font-mono font-bold">{v.version}</code>
-                  <span className="text-sm text-gray-500">{v.date}</span>
-                  <span
-                    className={`text-xs px-2 py-0.5 rounded ${
-                      v.method === 'OTA' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                    }`}
-                  >
-                    {v.method === 'OTA' ? 'OTA' : 'Dealer Only'}
-                  </span>
-                </div>
-                <p className="text-sm text-gray-700">{v.notes}</p>
-                <span className="text-xs text-gray-400 mt-1 block">Community Verified — source: Reddit r/MG4</span>
-              </div>
-            ))}
+        {/* Confidence footer */}
+        {updates.length > 0 && (
+          <div className="disclaimer">
+            <span>⚠</span>
+            <span>
+              Data sourced from community reports and owner forums. Version numbers may not be exhaustive.{' '}
+              <Link href="/contact" style={{ color: 'var(--green)' }}>Submit a missing update →</Link>
+            </span>
           </div>
-        </section>
-      )}
-    </article>
+        )}
+
+      </div>
+    </main>
   )
 }
