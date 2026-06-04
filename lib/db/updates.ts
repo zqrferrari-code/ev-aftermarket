@@ -24,7 +24,7 @@ export async function getUpdatesForModel(modelId: string, marketCode?: string) {
 
 export async function getLatestUpdate(modelId: string, marketCode?: string) {
   const rows = await getUpdatesForModel(modelId, marketCode)
-  return rows[rows.length - 1] ?? null
+  return rows[0] ?? null
 }
 
 // 计划二别名
