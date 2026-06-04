@@ -179,13 +179,14 @@ export default async function DtcCodePage({ params }: Props) {
       <JsonLd schema={breadcrumbSchema} />
       <div className="page-wrapper">
         <article className="dtc-card">
+
           {/* Breadcrumb */}
           <nav className="breadcrumb">
             <a href={`/${market}`}>{market.toUpperCase()}</a>
             <span className="sep">›</span>
             <a href={`/${market}/dtc/${model}`}>{modelData.model_name} Fault Codes</a>
             <span className="sep">›</span>
-            <span style={{ fontWeight: 600, color: 'oklch(22% 0.01 60)' }}>{dtcCode}</span>
+            <span style={{ fontWeight: 600, color: 'var(--text-base)' }}>{dtcCode}</span>
           </nav>
 
           {/* Safety banner (Critical only) */}
@@ -206,45 +207,77 @@ export default async function DtcCodePage({ params }: Props) {
               {dtc.severity && <SeverityBadge severity={dtc.severity as Severity} />}
             </div>
             <h1 className="detail-h1">
-              {modelData.model_name} {dtcCode}: {dtc.description_en}
+              {dtc.description_en
+                ? `${dtc.description_en.split(/[.。]/)[0]} — ${modelData.model_name}`
+                : `${modelData.model_name} ${dtcCode}`}
             </h1>
             {dtc.related_system && (
-              <span className="detail-system">System: {dtc.related_system}</span>
+              <div className="detail-system">{dtc.related_system}</div>
+            )}
+            {dtc.description_en && (
+              <div className="detail-description">
+                {dtc.description_en.split(/(?<=\.)\s+(?=[A-Z])/).map((para, i) => (
+                  <p key={i}>{para}</p>
+                ))}
+              </div>
+            )}
+
+            {/* Meta stats */}
+            {(casesRaw.length > 0 || parsedCauses.length > 0) && (
+              <div className="detail-meta-row">
+                {casesRaw.length > 0 && (
+                  <>
+                    <div className="detail-meta-item">
+                      <div className="detail-meta-n">{casesRaw.length}</div>
+                      <div className="detail-meta-l">Cases Logged</div>
+                    </div>
+                    <div className="detail-meta-div" />
+                  </>
+                )}
+                {parsedCauses.length > 0 && (
+                  <div className="detail-meta-item">
+                    <div className="detail-meta-n">{parsedCauses.length}</div>
+                    <div className="detail-meta-l">Causes</div>
+                  </div>
+                )}
+              </div>
             )}
           </div>
 
-          {/* Drive box (Warning or Critical) */}
+          {/* Drive advisory (Warning or Critical) */}
           {(isCritical || isWarning) && (
-            <div className="drive-box">
-              <h2>Can I still drive?</h2>
-              {isCritical ? (
-                <p>
-                  The vehicle has a critical fault that may affect safety. You can physically
-                  move the car, but it is strongly recommended to avoid driving until this is
-                  repaired. Book a dealer appointment today.
-                </p>
-              ) : (
-                <p>
-                  In most cases, yes — but schedule a service appointment soon. Monitor the
-                  warning closely. If additional symptoms appear (loss of power, unusual noises),
-                  pull over safely and contact your dealer.
-                </p>
-              )}
+            <div className={`drive-box${isCritical ? ' critical' : ''}`} style={{ margin: '28px 28px 0' }}>
+              <div className="drive-box-accent" />
+              <div className="drive-box-inner">
+                <h2>Can I still drive?</h2>
+                {isCritical ? (
+                  <p>
+                    The vehicle has a critical fault that may affect safety. Avoid driving until this is
+                    repaired. Book a dealer appointment today.
+                  </p>
+                ) : (
+                  <p>
+                    In most cases, yes — but schedule a service appointment soon. Monitor the warning
+                    closely. If additional symptoms appear (loss of power, unusual noises), pull over safely
+                    and contact your dealer.
+                  </p>
+                )}
+              </div>
             </div>
           )}
 
           {/* Body sections */}
-          <div className="detail-body">
+          <div className="detail-body" style={{ paddingTop: '4px' }}>
 
             {/* Likely Causes */}
             {parsedCauses.length > 0 && (
               <div className="section">
-                <div className="section-label">Likely Causes ({modelData.model_name})</div>
+                <span className="section-label">Likely Causes — {modelData.model_name}</span>
                 <ul className="causes">
                   {parsedCauses.map((cause, i) => (
                     <li key={i} className="cause-item">
-                      <span className="cause-n">{String(i + 1).padStart(2, '0')}</span>
-                      {cause}
+                      <span className="cause-n">{i + 1}</span>
+                      <span className="cause-text">{cause}</span>
                     </li>
                   ))}
                 </ul>
@@ -254,11 +287,11 @@ export default async function DtcCodePage({ params }: Props) {
             {/* What To Do */}
             {parsedActions.length > 0 && (
               <div className="section">
-                <div className="section-label">What To Do</div>
+                <span className="section-label">What To Do</span>
                 <ul className="actions">
                   {parsedActions.map((action, i) => (
                     <li key={i} className="action-item">
-                      <span className="action-n">{i + 1}</span>
+                      <div className="action-n">{i + 1}</div>
                       <div className="action-content">
                         <span className="action-title">{action.title}</span>
                         {action.body && (
@@ -274,7 +307,7 @@ export default async function DtcCodePage({ params }: Props) {
             {/* Climate notes */}
             {note?.climate_notes && (
               <div className="section">
-                <div className="section-label">Climate &amp; Environment Notes</div>
+                <span className="section-label">Climate &amp; Environment Notes</span>
                 <p className="climate-note">{note.climate_notes}</p>
               </div>
             )}
@@ -289,7 +322,9 @@ export default async function DtcCodePage({ params }: Props) {
           {/* Related codes */}
           {relatedDtcs.length > 0 && (
             <div className="related-section">
-              <div className="section-label">Other {modelData.model_name} Fault Codes</div>
+              <span className="section-label" style={{ fontSize: '13px', fontFamily: 'var(--font-cond)', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-faint)' }}>
+                Other {modelData.model_name} Fault Codes
+              </span>
               <div className="related-grid">
                 {relatedDtcs.map((related) => (
                   <a
