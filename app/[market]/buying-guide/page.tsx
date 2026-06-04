@@ -36,7 +36,7 @@ export default async function BuyingGuidePage({ params }: { params: Promise<{ ma
         </nav>
 
         {/* Hero */}
-        <div style={{ padding: '36px 28px 28px', borderBottom: '1px solid var(--border-soft)' }}>
+        <div className="guide-hero" style={{ padding: '36px 28px 28px', borderBottom: '1px solid var(--border-soft)' }}>
           <h1 style={{
             fontFamily: 'var(--font-serif-body)',
             fontSize: '32px',

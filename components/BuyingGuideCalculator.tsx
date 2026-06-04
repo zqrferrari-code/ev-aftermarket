@@ -60,7 +60,8 @@ const inputStyle: React.CSSProperties = {
   color: 'var(--text-base)',
   background: 'var(--surface)',
   fontFamily: 'var(--font-mono)',
-  width: '148px',
+  width: '100%',
+  maxWidth: '148px',
 }
 
 export function BuyingGuideCalculator() {
@@ -105,7 +106,7 @@ export function BuyingGuideCalculator() {
             <select
               value={variantIdx}
               onChange={e => setVariantIdx(Number(e.target.value))}
-              style={{ ...selectStyle, minWidth: '220px' }}
+              style={{ ...selectStyle, minWidth: '180px', maxWidth: '100%' }}
             >
               {vehicles.map((v, i) => (
                 <option key={i} value={i}>{v.model} — {v.variant}</option>

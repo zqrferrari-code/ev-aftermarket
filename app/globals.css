@@ -881,6 +881,7 @@ body {
   .model-update-date { margin-left: 0; }
   .model-dtc-desc { max-width: none; }
   .model-update-log { max-width: none; }
+  .guide-hero { padding: 24px 16px 20px !important; }
 }
 
 @media (max-width: 390px) {
