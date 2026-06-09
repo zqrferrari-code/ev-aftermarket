@@ -78,3 +78,12 @@ export async function getWarningLightModelSlugs(
     .filter((r) => { if (seen.has(r.slug)) return false; seen.add(r.slug); return true })
     .map((r) => r.slug)
 }
+
+/** All warning light slugs for a given brand (for generateStaticParams) */
+export async function getWarningLightSlugs(brandId: string): Promise<string[]> {
+  const rows = await db
+    .select({ slug: warningLights.slug })
+    .from(warningLights)
+    .where(eq(warningLights.brand_id, brandId))
+  return rows.map((r) => r.slug).filter((s): s is string => s !== null)
+}

@@ -8,6 +8,7 @@ function toWarningLight(r: typeof warningLights.$inferSelect): WarningLight {
     id: r.id,
     brand_id: r.brand_id,
     model_id: r.model_id ?? null,
+    slug: r.slug ?? null,
     category: r.category,
     name_en: r.name_en,
     name_cn: r.name_cn ?? null,
@@ -90,4 +91,18 @@ export async function getModelSlugsWithWarningLights(brandId: string): Promise<s
   return rows
     .filter((r) => { if (seen.has(r.slug)) return false; seen.add(r.slug); return true })
     .map((r) => r.slug)
+}
+
+export async function getWarningLightBySlug(
+  brandId: string,
+  slug: string
+): Promise<WarningLightWithDtcs | null> {
+  const rows = await db
+    .select()
+    .from(warningLights)
+    .where(and(eq(warningLights.brand_id, brandId), eq(warningLights.slug, slug)))
+    .limit(1)
+  if (rows.length === 0) return null
+  const result = await attachDtcs(rows)
+  return result[0] ?? null
 }
