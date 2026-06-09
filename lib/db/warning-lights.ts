@@ -9,6 +9,7 @@ function toWarningLight(r: typeof warningLights.$inferSelect): WarningLight {
     brand_id: r.brand_id,
     model_id: r.model_id ?? null,
     slug: r.slug ?? null,
+    code: r.code ?? null,
     category: r.category,
     name_en: r.name_en,
     name_cn: r.name_cn ?? null,

@@ -141,6 +141,7 @@ export interface WarningLight {
   brand_id: string
   model_id: string | null
   slug: string | null
+  code: string | null
   category: string
   name_en: string
   name_cn: string | null

@@ -185,7 +185,7 @@ export default async function WarningLightDetailPage({ params }: Props) {
               </thead>
               <tbody>
                 {([
-                  ['Code', `${brand.toUpperCase()}_WL_${String(wl.id).padStart(3, '0')}`],
+                  ['Code', wl.code ?? `${brand.toUpperCase()}_WL_${String(wl.id).padStart(3, '0')}`],
                   ['System', wl.category],
                   ['Severity', wl.severity ?? '—'],
                   ['Can drive?', wl.can_drive ?? '—'],

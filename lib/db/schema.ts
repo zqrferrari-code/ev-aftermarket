@@ -213,6 +213,7 @@ export const warningLights = mysqlTable('mf_nv_warning_lights', {
   brand_id: varchar('brand_id', { length: 50 }).references(() => brands.brand_id).notNull(),
   model_id: varchar('model_id', { length: 100 }).references(() => models.model_id),
   slug: varchar('slug', { length: 100 }).unique(),   // e.g. "high-voltage-battery-overtemperature"
+  code: varchar('code', { length: 30 }),             // e.g. "BYD_WL_026", "BYD_FP_007"
   category: varchar('category', { length: 50 }).notNull(),
   name_en: varchar('name_en', { length: 200 }).notNull(),
   name_cn: varchar('name_cn', { length: 200 }),
