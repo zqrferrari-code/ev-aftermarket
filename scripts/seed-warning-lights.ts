@@ -458,7 +458,7 @@ const BYD_LIGHTS = [
 
   // ── Model-specific: BYD Atto 3（元PLUS）────────────────────────────────────
   {
-    brand_id: 'byd', model_id: null,
+    brand_id: 'byd', model_id: 'byd-atto3',
     category: 'Powertrain',
     name_en: 'Atto 3: High Voltage Interlock Fault', name_cn: '元PLUS：高压互锁故障',
     severity: 'CRITICAL',
@@ -470,7 +470,7 @@ const BYD_LIGHTS = [
 
   // ── Model-specific: BYD Dolphin（海豚）─────────────────────────────────────
   {
-    brand_id: 'byd', model_id: null,
+    brand_id: 'byd', model_id: 'byd-dolphin',
     category: 'Body Electronics',
     name_en: 'Dolphin: Gear Selector Fault', name_cn: '海豚：请检查挡位系统',
     severity: 'WARNING',
