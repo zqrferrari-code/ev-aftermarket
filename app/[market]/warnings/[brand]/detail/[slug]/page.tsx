@@ -170,6 +170,35 @@ export default async function WarningLightDetailPage({ params }: Props) {
             </div>
           )}
 
+          {/* Technical Information table */}
+          <div className="section">
+            <span className="section-label">Technical Information</span>
+            <table style={{
+              marginTop: '10px', width: '100%', borderCollapse: 'collapse',
+              fontSize: '13px',
+            }}>
+              <thead>
+                <tr>
+                  <th style={{ textAlign: 'left', padding: '8px 12px', fontWeight: 600, color: 'oklch(40% 0.01 60)', borderBottom: '1px solid var(--border)', width: '36%', fontFamily: 'var(--font-cond)', letterSpacing: '0.03em', fontSize: '11px', textTransform: 'uppercase' }}>Field</th>
+                  <th style={{ textAlign: 'left', padding: '8px 12px', fontWeight: 600, color: 'oklch(40% 0.01 60)', borderBottom: '1px solid var(--border)', fontFamily: 'var(--font-cond)', letterSpacing: '0.03em', fontSize: '11px', textTransform: 'uppercase' }}>Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                {([
+                  ['Code', `${brand.toUpperCase()}_WL_${String(wl.id).padStart(3, '0')}`],
+                  ['System', wl.category],
+                  ['Severity', wl.severity ?? '—'],
+                  ['Can drive?', wl.can_drive ?? '—'],
+                ] as [string, string][]).map(([field, value], i) => (
+                  <tr key={field} style={{ background: i % 2 === 0 ? 'oklch(98.5% 0 0)' : 'oklch(99.8% 0 0)' }}>
+                    <td style={{ padding: '9px 12px', color: 'oklch(44% 0.01 60)', borderBottom: '1px solid oklch(94% 0 0)', fontWeight: 500 }}>{field}</td>
+                    <td style={{ padding: '9px 12px', color: 'oklch(22% 0.01 60)', borderBottom: '1px solid oklch(94% 0 0)', fontFamily: value === wl.severity || value === wl.can_drive ? 'var(--font-cond)' : 'inherit', letterSpacing: value === wl.severity || value === wl.can_drive ? '0.04em' : 'normal' }}>{value}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
         </div>
 
         <DisclaimerBox confidence="community" sourceUrls={[]} />
