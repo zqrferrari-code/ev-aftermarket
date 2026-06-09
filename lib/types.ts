@@ -42,13 +42,18 @@ export interface DTC {
   safety_warning: string | null
 }
 
+export interface ActionStep {
+  title: string
+  body: string
+}
+
 export interface DTCModelNote {
   id: number
   dtc_id: number
   model_id: string
   market_code: string | null
   likely_causes: string[] | null
-  suggested_actions: string[] | null
+  suggested_actions: ActionStep[] | null
   climate_notes: string | null
   data_confidence: DataConfidence
   source_urls: string[] | null
@@ -127,4 +132,24 @@ export interface CaseMedia {
   caption: string | null
   source_attribution: string | null
   display_order: number
+}
+
+export type CanDrive = 'yes' | 'no' | 'caution'
+
+export interface WarningLight {
+  id: number
+  brand_id: string
+  model_id: string | null
+  category: string
+  name_en: string
+  name_cn: string | null
+  severity: Severity | null
+  description_en: string | null
+  causes: string[] | null
+  can_drive: CanDrive | null
+  action_en: string | null
+}
+
+export interface WarningLightWithDtcs extends WarningLight {
+  dtcs: { dtc_id: number; dtc_code: string; description_en: string }[]
 }
