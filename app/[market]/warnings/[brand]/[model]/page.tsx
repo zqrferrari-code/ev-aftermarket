@@ -139,11 +139,6 @@ export default async function WarningLightsModelPage({ params }: Props) {
                           </span>
                           {light.severity && <SeverityBadge severity={light.severity as Severity} />}
                         </div>
-                        {light.name_cn && (
-                          <div style={{ fontSize: '12px', color: 'var(--text-faint)', marginTop: '2px' }}>
-                            {light.name_cn}
-                          </div>
-                        )}
                       </div>
 
                       {/* Card body */}

@@ -139,7 +139,6 @@ export default async function WarningLightsBrandPage({ params }: Props) {
                       <span className="dtc-arrow">›</span>
                     </div>
                     <span className="dtc-desc-cell">
-                      {light.name_cn && <span style={{ color: 'var(--text-faint)', marginRight: '8px' }}>{light.name_cn}</span>}
                       {light.description_en?.split('.')[0]}
                     </span>
                   </a>

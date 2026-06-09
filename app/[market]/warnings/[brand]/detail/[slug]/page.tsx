@@ -44,7 +44,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!wl) return {}
   const brandLabel = BRAND_LABELS[brand] ?? brand.toUpperCase()
   const title = `${wl.name_en} Warning Light — ${brandLabel} | EVAftermarket`
-  const description = `${wl.name_cn ? wl.name_cn + ' — ' : ''}${wl.description_en?.slice(0, 140) ?? 'Warning light meaning, causes and what to do.'}`
+  const description = `${wl.description_en?.slice(0, 160) ?? 'Warning light meaning, causes and what to do.'}`
   const url = `${BASE_URL}/${market}/warnings/${brand}/detail/${slug}`
   return {
     title,
@@ -85,11 +85,6 @@ export default async function WarningLightDetailPage({ params }: Props) {
             </h1>
             {wl.severity && <SeverityBadge severity={wl.severity as Severity} />}
           </div>
-          {wl.name_cn && (
-            <div style={{ fontSize: '14px', color: 'var(--text-faint)', marginBottom: '8px' }}>
-              {wl.name_cn}
-            </div>
-          )}
           <div style={{ fontSize: '12px', color: 'var(--text-muted)', fontFamily: 'var(--font-cond)', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
             {brandLabel} · {wl.category}
           </div>
