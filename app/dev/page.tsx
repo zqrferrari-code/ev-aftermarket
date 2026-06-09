@@ -60,6 +60,15 @@ const GROUPS: RouteGroup[] = [
     hint: 'mg-mg4, byd-dolphin 等同理',
   },
   {
+    icon: '⚠️',
+    label: 'Warning Lights',
+    links: [
+      { href: '/au/warnings/byd', note: 'brand summary' },
+      { href: '/au/warnings/byd/byd-atto-3', note: 'model detail' },
+    ],
+    hint: 'byd-dolphin also works',
+  },
+  {
     icon: '🏪',
     label: 'Dealers',
     links: [{ href: '/au/dealers/byd/nsw' }],
