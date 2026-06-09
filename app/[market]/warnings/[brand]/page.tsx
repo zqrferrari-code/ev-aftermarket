@@ -127,18 +127,16 @@ export default async function WarningLightsBrandPage({ params }: Props) {
               {categoryLights.map((light) => (
                 <li key={light.id}>
                   <a
-                    href={light.model_id
-                      ? `/${market}/warnings/${brand}/${light.model_id}`
-                      : `#${light.id}`}
+                    href={`/${market}/warnings/${brand}/${light.slug}`}
                     className="dtc-row"
-                    style={{ cursor: light.model_id ? 'pointer' : 'default', textDecoration: 'none' }}
+                    style={{ textDecoration: 'none' }}
                   >
                     <div className="dtc-row-top">
                       <span className="dtc-code-cell" style={{ fontFamily: 'inherit', fontSize: '14px', fontWeight: 600 }}>
                         {light.name_en}
                       </span>
                       {light.severity && <SeverityBadge severity={light.severity as Severity} />}
-                      {light.model_id && <span className="dtc-arrow">›</span>}
+                      <span className="dtc-arrow">›</span>
                     </div>
                     <span className="dtc-desc-cell">
                       {light.name_cn && <span style={{ color: 'var(--text-faint)', marginRight: '8px' }}>{light.name_cn}</span>}
