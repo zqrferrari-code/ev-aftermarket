@@ -1,0 +1,1693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EVAftermarket — Design Directions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&family=JetBrains+Mono:wght@500;700&family=DM+Serif+Display:ital@0;1&family=Syne:wght@700;800&family=IBM+Plex+Mono:wght@400;600;700&family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #0a0a0a; font-family: 'Barlow', sans-serif; color: #fff; }
+
+/* NAV */
+.nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(10,10,10,0.97);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  padding: 0 16px;
+  display: flex; align-items: center; gap: 0;
+  height: 48px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.nav::-webkit-scrollbar { display: none; }
+.nav-title { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-right: 16px; white-space: nowrap; flex-shrink: 0; }
+.nav-tab {
+  padding: 0 14px; height: 48px; display: flex; align-items: center;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+  cursor: pointer; border: none; background: none; color: rgba(255,255,255,0.35);
+  border-bottom: 2px solid transparent; transition: all 0.15s;
+  white-space: nowrap; flex-shrink: 0;
+}
+.nav-tab:hover { color: rgba(255,255,255,0.7); }
+.nav-tab.active { color: #fff; border-bottom-color: #4ade80; }
+.page { display: none; }
+.page.active { display: block; }
+
+/* ══════════════════════════════════════════════
+   DIRECTION A: TECHNICAL SIGNAL
+   — Monochrome industrial, data-dense, terminal feel
+   — Like a Bloomberg terminal met an EV diagnostic tool
+══════════════════════════════════════════════ */
+#pageA {
+  background: #0c0c0e;
+  min-height: 100vh;
+  font-family: 'IBM Plex Mono', monospace;
+}
+.a-header {
+  background: #0c0c0e;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  padding: 0 0;
+  position: sticky; top: 52px; z-index: 10;
+}
+.a-header-inner {
+  max-width: 900px; margin: 0 auto;
+  padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 48px;
+}
+.a-breadcrumb { font-size: 11px; color: rgba(255,255,255,0.3); display: flex; align-items: center; gap: 8px; }
+.a-breadcrumb a { color: rgba(255,255,255,0.3); text-decoration: none; }
+.a-breadcrumb a:hover { color: #4ade80; }
+.a-breadcrumb .sep { color: rgba(255,255,255,0.15); }
+.a-market-tag {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.12em;
+  background: rgba(74,222,128,0.1); color: #4ade80;
+  padding: 3px 8px; border-radius: 2px; border: 1px solid rgba(74,222,128,0.2);
+}
+
+.a-body { max-width: 900px; margin: 0 auto; padding: 0 24px 80px; }
+
+/* A Hero */
+.a-hero {
+  padding: 36px 0 32px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 24px;
+  align-items: start;
+}
+.a-hero-left {}
+.a-code-row {
+  display: flex; align-items: center; gap: 14px; margin-bottom: 16px;
+}
+.a-big-code {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 52px; font-weight: 700; line-height: 1;
+  color: #fff; letter-spacing: -0.01em;
+}
+.a-severity {
+  display: flex; flex-direction: column; gap: 3px;
+}
+.a-sev-label {
+  font-size: 9px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+}
+.a-sev-pill {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 2px;
+}
+.a-sev-pill.warn {
+  background: rgba(251,191,36,0.12); color: #fbbf24; border: 1px solid rgba(251,191,36,0.25);
+}
+.a-sev-pill.crit {
+  background: rgba(239,68,68,0.12); color: #ef4444; border: 1px solid rgba(239,68,68,0.25);
+}
+.a-sev-pill.info {
+  background: rgba(96,165,250,0.1); color: #60a5fa; border: 1px solid rgba(96,165,250,0.2);
+}
+.a-h1 {
+  font-family: 'Barlow', sans-serif;
+  font-size: 15px; font-weight: 600; line-height: 1.5;
+  color: rgba(255,255,255,0.75); margin-bottom: 6px;
+  max-width: 56ch;
+}
+.a-system-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+}
+.a-system-tag::before {
+  content: '';
+  width: 6px; height: 6px; background: rgba(255,255,255,0.2); border-radius: 50%;
+}
+
+.a-stats {
+  display: flex; flex-direction: column; gap: 12px; align-items: flex-end;
+}
+.a-stat-block {
+  text-align: right;
+}
+.a-stat-n {
+  font-size: 28px; font-weight: 700; line-height: 1; color: #fff;
+  font-family: 'IBM Plex Mono', monospace;
+}
+.a-stat-l { font-size: 10px; color: rgba(255,255,255,0.3); letter-spacing: 0.08em; margin-top: 2px; }
+
+/* A Description */
+.a-desc {
+  padding: 24px 0; border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.a-desc p {
+  font-family: 'Barlow', sans-serif;
+  font-size: 13.5px; line-height: 1.7; color: rgba(255,255,255,0.55); max-width: 70ch;
+}
+
+/* A Drive box */
+.a-drive-box {
+  margin: 24px 0;
+  padding: 16px 18px;
+  background: rgba(251,191,36,0.06);
+  border-left: 3px solid #fbbf24;
+  border-radius: 0 3px 3px 0;
+}
+.a-drive-box h3 {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  color: #fbbf24; margin-bottom: 6px;
+}
+.a-drive-box p {
+  font-family: 'Barlow', sans-serif;
+  font-size: 13px; line-height: 1.6; color: rgba(251,191,36,0.7);
+}
+
+/* A Section */
+.a-section {
+  padding: 28px 0; border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.a-section:last-child { border-bottom: none; }
+.a-section-head {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 20px;
+}
+.a-section-num {
+  font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.2);
+  font-family: 'IBM Plex Mono', monospace;
+}
+.a-section-title {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+}
+.a-section-line {
+  flex: 1; height: 1px; background: rgba(255,255,255,0.06);
+}
+
+/* Causes in A */
+.a-causes { display: flex; flex-direction: column; gap: 8px; }
+.a-cause {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 12px 14px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 3px;
+  transition: border-color 0.15s;
+}
+.a-cause:hover { border-color: rgba(74,222,128,0.2); }
+.a-cause-n {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px; font-weight: 600; color: rgba(74,222,128,0.5);
+  min-width: 20px; padding-top: 1px;
+}
+.a-cause-text {
+  font-family: 'Barlow', sans-serif;
+  font-size: 13.5px; color: rgba(255,255,255,0.6); line-height: 1.5;
+}
+
+/* Actions in A */
+.a-actions { display: flex; flex-direction: column; gap: 0; }
+.a-action {
+  display: flex; align-items: flex-start; gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.a-action:last-child { border-bottom: none; }
+.a-action-n {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 22px; font-weight: 700; color: rgba(255,255,255,0.08);
+  min-width: 36px; line-height: 1;
+}
+.a-action-body { flex: 1; }
+.a-action-title {
+  font-family: 'Barlow', sans-serif;
+  font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.8); margin-bottom: 4px;
+}
+.a-action-desc {
+  font-family: 'Barlow', sans-serif;
+  font-size: 12.5px; color: rgba(255,255,255,0.4); line-height: 1.55;
+}
+
+/* Cases in A */
+.a-cases { display: flex; flex-direction: column; gap: 10px; }
+.a-case {
+  padding: 16px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 3px;
+}
+.a-case-meta {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+}
+.a-case-src {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+}
+.a-case-dot { color: rgba(255,255,255,0.1); font-size: 10px; }
+.a-case-loc { font-size: 10px; color: rgba(255,255,255,0.25); }
+.a-case-date { font-size: 10px; color: rgba(255,255,255,0.25); }
+.a-case-body {
+  font-family: 'Barlow', sans-serif;
+  font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.6; margin-bottom: 10px;
+}
+.a-case-resolution {
+  font-family: 'Barlow', sans-serif;
+  font-size: 12px; color: #4ade80; font-weight: 600;
+  display: flex; align-items: flex-start; gap: 8px;
+}
+.a-case-resolution::before {
+  content: '→'; font-size: 12px; margin-top: 0;
+}
+
+/* Related */
+.a-related { padding: 24px 0; }
+.a-related-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+.a-chip {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 3px; text-decoration: none;
+  transition: all 0.12s;
+  cursor: pointer;
+}
+.a-chip:hover { border-color: rgba(74,222,128,0.25); background: rgba(74,222,128,0.04); }
+.a-chip code {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.7);
+}
+.a-chip span { font-size: 11.5px; color: rgba(255,255,255,0.3); max-width: 160px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* A Disclaimer */
+.a-disclaimer {
+  padding: 16px 0;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  font-size: 11px; color: rgba(255,255,255,0.2); line-height: 1.6;
+  font-family: 'Barlow', sans-serif;
+}
+.a-conf-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  background: rgba(74,222,128,0.08); color: #4ade80;
+  padding: 2px 7px; border-radius: 2px; border: 1px solid rgba(74,222,128,0.15);
+}
+
+/* A Buying Guide */
+.a-bg { max-width: 900px; margin: 0 auto; padding: 32px 24px 80px; }
+
+.a-bg-hero {
+  margin-bottom: 32px; padding-top: 8px;
+}
+.a-bg-hero h1 {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 32px; font-weight: 700; color: #fff; margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+.a-bg-hero p {
+  font-family: 'Barlow', sans-serif;
+  font-size: 14px; color: rgba(255,255,255,0.4); max-width: 56ch; line-height: 1.6;
+}
+
+.a-calc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+@media (max-width: 640px) { .a-calc-grid { grid-template-columns: 1fr; } .a-hero { grid-template-columns: 1fr; } }
+
+.a-calc-panel {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.a-calc-panel-head {
+  padding: 12px 18px;
+  background: rgba(255,255,255,0.03);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+}
+.a-calc-panel-body { padding: 20px 18px; display: flex; flex-direction: column; gap: 16px; }
+
+.a-field { display: flex; flex-direction: column; gap: 6px; }
+.a-label {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+}
+.a-select {
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 3px; padding: 9px 12px;
+  font-family: 'Barlow', sans-serif; font-size: 14px; color: rgba(255,255,255,0.8);
+  width: 100%;
+}
+.a-input {
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 3px; padding: 9px 12px;
+  font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: rgba(255,255,255,0.8);
+  width: 100%;
+}
+.a-toggle { display: flex; gap: 0; }
+.a-toggle-btn {
+  flex: 1; padding: 8px 0;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: transparent; color: rgba(255,255,255,0.35);
+  font-family: 'Barlow', sans-serif; font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: all 0.12s;
+}
+.a-toggle-btn:first-child { border-radius: 3px 0 0 3px; }
+.a-toggle-btn:last-child { border-radius: 0 3px 3px 0; border-left: none; }
+.a-toggle-btn.active { background: rgba(74,222,128,0.12); color: #4ade80; border-color: rgba(74,222,128,0.25); }
+
+.a-result-panel {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 4px; overflow: hidden;
+  grid-column: 1 / -1;
+}
+.a-result-head {
+  padding: 12px 18px;
+  background: rgba(74,222,128,0.05);
+  border-bottom: 1px solid rgba(74,222,128,0.12);
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  color: #4ade80;
+}
+.a-result-table { width: 100%; border-collapse: collapse; }
+.a-result-table tr { border-bottom: 1px solid rgba(255,255,255,0.04); }
+.a-result-table tr:last-child { border-bottom: none; }
+.a-result-table td {
+  padding: 12px 18px;
+  font-family: 'Barlow', sans-serif; font-size: 13.5px;
+}
+.a-result-table td:last-child {
+  text-align: right; font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px; color: rgba(255,255,255,0.7);
+}
+.a-result-table td:first-child { color: rgba(255,255,255,0.4); }
+.a-result-total td {
+  padding: 16px 18px !important;
+  background: rgba(255,255,255,0.02);
+}
+.a-result-total td:first-child {
+  font-weight: 700 !important; color: rgba(255,255,255,0.7) !important; font-size: 14px;
+}
+.a-result-total td:last-child {
+  font-size: 20px !important; font-weight: 700 !important; color: #fff !important;
+}
+.a-exempt-tag {
+  font-size: 11px; font-weight: 600; color: #4ade80; margin-left: 8px;
+}
+
+/* ══════════════════════════════════════════════
+   DIRECTION B: EDITORIAL CLARITY
+   — Light, warm-toned, editorial feel
+   — Think automotive press meets medical reference
+   — Generous whitespace, refined serif headings
+══════════════════════════════════════════════ */
+#pageB {
+  background: #f7f5f0;
+  min-height: 100vh;
+  font-family: 'Barlow', sans-serif;
+}
+
+.b-header {
+  background: #f7f5f0;
+  border-bottom: 2px solid #1a1a1a;
+  position: sticky; top: 52px; z-index: 10;
+}
+.b-header-inner {
+  max-width: 860px; margin: 0 auto; padding: 0 28px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 44px;
+}
+.b-breadcrumb { font-size: 11.5px; color: #888; display: flex; align-items: center; gap: 7px; }
+.b-breadcrumb a { color: #555; text-decoration: none; }
+.b-breadcrumb a:hover { color: #1a1a1a; }
+.b-breadcrumb .sep { color: #ccc; }
+
+.b-body { max-width: 860px; margin: 0 auto; padding: 0 28px 80px; }
+
+/* B Hero */
+.b-hero {
+  padding: 52px 0 40px;
+  border-bottom: 1px solid #e0dcd6;
+}
+.b-code-row {
+  display: flex; align-items: baseline; gap: 16px; margin-bottom: 12px;
+}
+.b-big-code {
+  font-family: 'DM Serif Display', serif;
+  font-size: 68px; line-height: 1; color: #1a1a1a; letter-spacing: -0.01em;
+}
+.b-sev {
+  display: flex; align-items: center; gap: 8px; padding-bottom: 8px;
+}
+.b-sev-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.b-sev-dot.warn { background: #d97706; }
+.b-sev-dot.crit { background: #dc2626; }
+.b-sev-dot.info { background: #2563eb; }
+.b-sev-text {
+  font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+}
+.b-sev-text.warn { color: #d97706; }
+.b-sev-text.crit { color: #dc2626; }
+.b-sev-text.info { color: #2563eb; }
+
+.b-h1 {
+  font-family: 'Instrument Serif', serif;
+  font-size: 26px; line-height: 1.35; color: #1a1a1a; margin-bottom: 10px; max-width: 54ch;
+}
+.b-system {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  color: #999; display: flex; align-items: center; gap: 8px;
+}
+.b-system::before { content: ''; width: 20px; height: 1px; background: #ccc; }
+
+.b-meta-row {
+  display: flex; align-items: center; gap: 24px; margin-top: 24px;
+  padding-top: 24px; border-top: 1px solid #e8e4de;
+  flex-wrap: wrap;
+}
+.b-meta-item { display: flex; flex-direction: column; gap: 3px; }
+.b-meta-n { font-family: 'DM Serif Display', serif; font-size: 28px; color: #1a1a1a; line-height: 1; }
+.b-meta-l { font-size: 10.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #aaa; }
+.b-meta-div { width: 1px; height: 36px; background: #e0dcd6; }
+
+/* B Description */
+.b-desc {
+  padding: 28px 0; border-bottom: 1px solid #e0dcd6;
+}
+.b-desc p {
+  font-size: 14.5px; line-height: 1.75; color: #444; max-width: 68ch;
+}
+
+/* B Drive box */
+.b-drive-box {
+  margin: 28px 0;
+  display: grid; grid-template-columns: auto 1fr; gap: 0;
+  border: 1px solid #f0c060; border-radius: 4px; overflow: hidden;
+}
+.b-drive-accent {
+  width: 5px; background: #f0a020;
+}
+.b-drive-inner { padding: 16px 20px; }
+.b-drive-inner h3 {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  color: #b45309; margin-bottom: 6px;
+}
+.b-drive-inner p {
+  font-size: 13.5px; line-height: 1.6; color: #78350f;
+}
+
+/* B Section */
+.b-section { padding: 36px 0; border-bottom: 1px solid #e0dcd6; }
+.b-section:last-child { border-bottom: none; }
+.b-section-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 19px; color: #1a1a1a; margin-bottom: 22px;
+}
+
+/* B Causes */
+.b-causes { display: flex; flex-direction: column; gap: 0; }
+.b-cause {
+  display: grid; grid-template-columns: 48px 1fr; gap: 0;
+  padding: 14px 0; border-bottom: 1px solid #ede9e3;
+}
+.b-cause:last-child { border-bottom: none; }
+.b-cause-n {
+  font-family: 'DM Serif Display', serif;
+  font-size: 22px; color: #d4c9b8; line-height: 1.2;
+}
+.b-cause-text {
+  font-size: 14px; line-height: 1.6; color: #333; padding-top: 3px;
+}
+
+/* B Actions */
+.b-actions { display: flex; flex-direction: column; gap: 16px; }
+.b-action {
+  display: grid; grid-template-columns: 36px 1fr; gap: 0;
+  align-items: start;
+}
+.b-action-circle {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: #1a1a1a; color: #fff;
+  font-size: 12px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  margin-top: 1px; flex-shrink: 0;
+}
+.b-action-title { font-size: 14px; font-weight: 600; color: #1a1a1a; margin-bottom: 3px; }
+.b-action-body { font-size: 13px; color: #666; line-height: 1.55; }
+
+/* B Cases */
+.b-cases { display: flex; flex-direction: column; gap: 16px; }
+.b-case {
+  padding: 20px;
+  background: #fff;
+  border: 1px solid #e8e4de;
+  border-radius: 4px;
+}
+.b-case-meta {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.b-case-src {
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: #888;
+}
+.b-case-sep { color: #ddd; font-size: 10px; }
+.b-case-body { font-size: 13.5px; color: #444; line-height: 1.65; margin-bottom: 12px; }
+.b-case-fix {
+  font-size: 13px; color: #166534; font-weight: 600;
+  display: flex; align-items: flex-start; gap: 8px;
+  padding-top: 10px; border-top: 1px solid #e8e4de;
+}
+.b-case-fix-icon {
+  width: 18px; height: 18px; background: #166534; color: #fff; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; margin-top: 1px;
+}
+
+/* B Related */
+.b-related { padding: 28px 0; }
+.b-related-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.b-chip {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 14px; background: #fff; border: 1px solid #e0dcd6;
+  border-radius: 3px; text-decoration: none; transition: all 0.12s; cursor: pointer;
+}
+.b-chip:hover { border-color: #1a1a1a; }
+.b-chip code {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11.5px; font-weight: 700; color: #1a1a1a;
+}
+.b-chip span { font-size: 12px; color: #888; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* B Disclaimer */
+.b-disclaimer {
+  padding: 18px 0; border-top: 1px solid #e0dcd6;
+  font-size: 12px; color: #aaa; line-height: 1.65;
+}
+.b-conf-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 10.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+  background: #edfdf5; color: #166534; padding: 2px 7px; border-radius: 2px;
+  border: 1px solid #bbf7d0;
+}
+
+/* B Buying Guide */
+.b-bg { max-width: 860px; margin: 0 auto; padding: 48px 28px 80px; }
+.b-bg-hero { margin-bottom: 40px; }
+.b-bg-hero h1 {
+  font-family: 'Instrument Serif', serif;
+  font-size: 40px; color: #1a1a1a; line-height: 1.15; margin-bottom: 12px;
+}
+.b-bg-hero p { font-size: 15px; color: #666; max-width: 54ch; line-height: 1.7; }
+
+.b-calc-steps { display: flex; flex-direction: column; gap: 0; }
+.b-step {
+  display: grid; grid-template-columns: 60px 1fr;
+  border-top: 1px solid #e0dcd6; padding: 28px 0;
+}
+.b-step:last-child { border-bottom: 1px solid #e0dcd6; }
+.b-step-n {
+  font-family: 'DM Serif Display', serif;
+  font-size: 38px; color: #e0dcd6; line-height: 1;
+}
+.b-step-content { padding-top: 4px; }
+.b-step-title {
+  font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+  color: #1a1a1a; margin-bottom: 14px;
+}
+.b-form-row { display: flex; gap: 16px; flex-wrap: wrap; }
+.b-form-group { display: flex; flex-direction: column; gap: 6px; }
+.b-form-label { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #999; }
+.b-form-select {
+  padding: 9px 12px; border: 1px solid #e0dcd6; border-radius: 3px;
+  font-family: 'Barlow', sans-serif; font-size: 14px; color: #1a1a1a; background: #fff;
+  min-width: 160px;
+}
+.b-form-input {
+  padding: 9px 12px; border: 1px solid #e0dcd6; border-radius: 3px;
+  font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: #1a1a1a;
+  width: 140px; background: #fff;
+}
+
+.b-result-box {
+  margin-top: 32px; background: #fff; border: 1px solid #e0dcd6; border-radius: 4px; overflow: hidden;
+}
+.b-result-head {
+  padding: 14px 20px; border-bottom: 1px solid #e0dcd6;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.b-result-head-title {
+  font-family: 'DM Serif Display', serif; font-size: 17px; color: #1a1a1a;
+}
+.b-tab-row { display: flex; gap: 0; }
+.b-tab {
+  padding: 6px 16px; border: 1px solid #e0dcd6; background: none;
+  font-family: 'Barlow', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer;
+  color: #888; transition: all 0.12s;
+}
+.b-tab:first-child { border-radius: 3px 0 0 3px; }
+.b-tab:last-child { border-radius: 0 3px 3px 0; border-left: none; }
+.b-tab.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+
+.b-result-table { width: 100%; border-collapse: collapse; }
+.b-result-table tr { border-bottom: 1px solid #f0ede8; }
+.b-result-table tr:last-child { border-bottom: none; }
+.b-result-table td { padding: 13px 20px; font-size: 13.5px; }
+.b-result-table td:first-child { color: #666; }
+.b-result-table td:last-child { text-align: right; font-family: 'IBM Plex Mono', monospace; color: #1a1a1a; }
+.b-result-total { background: #f7f5f0 !important; }
+.b-result-total td { padding: 18px 20px !important; }
+.b-result-total td:first-child { font-weight: 700 !important; color: #1a1a1a !important; font-size: 14.5px; }
+.b-result-total td:last-child { font-size: 22px !important; font-weight: 700 !important; }
+.b-exempt-green { color: #166534; font-size: 11px; font-weight: 600; margin-left: 6px; }
+
+/* ══════════════════════════════════════════════
+   DIRECTION C: BOLD DIAGNOSTIC
+   — High-contrast with strong color accents
+   — Decisive, tool-like — like a scan tool UI
+   — White surface, vivid accent stripes, clear hierarchy
+══════════════════════════════════════════════ */
+#pageC {
+  background: #f0f0f0;
+  min-height: 100vh;
+  font-family: 'Barlow', sans-serif;
+}
+
+.c-header {
+  background: #fff;
+  border-bottom: 1px solid #e4e4e4;
+  position: sticky; top: 52px; z-index: 10;
+}
+.c-header-inner {
+  max-width: 880px; margin: 0 auto; padding: 0 24px;
+  display: flex; align-items: center; gap: 0;
+  height: 42px;
+}
+.c-breadcrumb { font-size: 11px; color: #999; display: flex; align-items: center; gap: 6px; }
+.c-breadcrumb a { color: #666; text-decoration: none; }
+.c-breadcrumb a:hover { color: #000; }
+.c-breadcrumb .sep { color: #ddd; }
+
+.c-body { max-width: 880px; margin: 0 auto; padding: 0 24px 80px; }
+
+/* C Hero */
+.c-hero {
+  background: #fff; border-radius: 0 0 0 0;
+  margin-bottom: 3px;
+  position: relative; overflow: hidden;
+}
+.c-hero-stripe {
+  height: 6px;
+}
+.c-hero-stripe.warn { background: linear-gradient(90deg, #f59e0b 0%, #fcd34d 100%); }
+.c-hero-stripe.crit { background: linear-gradient(90deg, #ef4444 0%, #fca5a5 100%); }
+.c-hero-stripe.info { background: linear-gradient(90deg, #3b82f6 0%, #93c5fd 100%); }
+
+.c-hero-inner { padding: 28px 28px 24px; }
+.c-hero-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; }
+.c-hero-left {}
+
+.c-big-code {
+  font-family: 'Syne', sans-serif;
+  font-size: 56px; font-weight: 800; line-height: 1; color: #0a0a0a; letter-spacing: -0.02em;
+  margin-bottom: 10px;
+}
+.c-h1 {
+  font-size: 16px; font-weight: 600; color: #333; line-height: 1.45; max-width: 52ch;
+  margin-bottom: 8px;
+}
+.c-system {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase;
+  color: #aaa;
+}
+
+.c-sev-block {
+  display: flex; flex-direction: column; align-items: flex-end; gap: 4px;
+  padding-top: 8px;
+}
+.c-sev-pill {
+  font-family: 'Syne', sans-serif;
+  font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 6px 14px; border-radius: 2px;
+}
+.c-sev-pill.warn { background: #fef3c7; color: #92400e; }
+.c-sev-pill.crit { background: #fee2e2; color: #991b1b; }
+.c-sev-pill.info { background: #dbeafe; color: #1e40af; }
+.c-sev-sub { font-size: 10px; color: #aaa; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 600; }
+
+.c-stats-row {
+  display: flex; gap: 0;
+  border-top: 1px solid #f0f0f0; margin-top: 4px;
+}
+.c-stat {
+  flex: 1; padding: 14px 16px;
+  border-right: 1px solid #f0f0f0;
+}
+.c-stat:last-child { border-right: none; }
+.c-stat-n {
+  font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 700; color: #0a0a0a; line-height: 1;
+}
+.c-stat-l { font-size: 10px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: #bbb; margin-top: 3px; }
+
+/* C Description */
+.c-desc-card {
+  background: #fff; margin-bottom: 3px; padding: 22px 28px;
+}
+.c-desc-card p { font-size: 14px; line-height: 1.7; color: #444; max-width: 70ch; }
+
+/* C Drive box */
+.c-drive-card {
+  background: #fffbeb; border-left: 4px solid #f59e0b;
+  padding: 16px 20px; margin-bottom: 3px;
+}
+.c-drive-card.crit { background: #fff5f5; border-left-color: #ef4444; }
+.c-drive-card h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
+  color: #92400e; margin-bottom: 6px;
+}
+.c-drive-card.crit h3 { color: #991b1b; }
+.c-drive-card p { font-size: 13.5px; line-height: 1.6; color: #78350f; }
+.c-drive-card.crit p { color: #7f1d1d; }
+
+/* C Sections */
+.c-section {
+  background: #fff; margin-bottom: 3px; padding: 24px 28px;
+}
+.c-section-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 12px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;
+  color: #0a0a0a; margin-bottom: 20px;
+  display: flex; align-items: center; gap: 10px;
+}
+.c-section-title::after {
+  content: ''; flex: 1; height: 1px; background: #f0f0f0;
+}
+
+/* C Causes */
+.c-causes { display: flex; flex-direction: column; gap: 8px; }
+.c-cause {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 13px 15px;
+  background: #fafafa; border-radius: 3px;
+  border: 1px solid #efefef;
+  transition: border-color 0.12s;
+}
+.c-cause:hover { border-color: #22c55e; }
+.c-cause-n {
+  font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 800;
+  background: #0a0a0a; color: #fff;
+  min-width: 22px; height: 22px; border-radius: 2px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.c-cause-text { font-size: 13.5px; color: #333; line-height: 1.5; padding-top: 2px; }
+
+/* C Actions */
+.c-actions { display: flex; flex-direction: column; gap: 10px; }
+.c-action {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid #f5f5f5;
+}
+.c-action:last-child { border-bottom: none; }
+.c-action-n {
+  font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800;
+  color: #0a0a0a; min-width: 28px; line-height: 1.4;
+}
+.c-action-title { font-size: 14px; font-weight: 700; color: #0a0a0a; margin-bottom: 3px; }
+.c-action-body { font-size: 12.5px; color: #777; line-height: 1.55; }
+
+/* C Cases */
+.c-cases { display: flex; flex-direction: column; gap: 10px; }
+.c-case {
+  padding: 16px 18px;
+  background: #fafafa; border-radius: 3px; border: 1px solid #efefef;
+}
+.c-case-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+.c-case-src {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  color: #aaa;
+}
+.c-case-body { font-size: 13px; color: #555; line-height: 1.6; margin-bottom: 10px; }
+.c-case-fix {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 10px 12px; background: #f0fdf4; border-radius: 3px; border: 1px solid #bbf7d0;
+}
+.c-case-fix-icon { color: #16a34a; font-weight: 800; font-size: 13px; flex-shrink: 0; }
+.c-case-fix-text { font-size: 12.5px; color: #166534; font-weight: 600; line-height: 1.5; }
+
+/* C Related */
+.c-related { background: #fff; margin-bottom: 3px; padding: 22px 28px; }
+.c-related-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+.c-chip {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px; background: #fafafa; border: 1px solid #efefef;
+  border-radius: 3px; text-decoration: none; transition: all 0.12s; cursor: pointer;
+}
+.c-chip:hover { border-color: #0a0a0a; background: #fff; }
+.c-chip code {
+  font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 700; color: #0a0a0a;
+}
+.c-chip span { font-size: 11.5px; color: #aaa; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* C Disclaimer */
+.c-disclaimer {
+  background: #fff; padding: 16px 28px;
+  font-size: 11.5px; color: #aaa; line-height: 1.6;
+}
+.c-conf-pill {
+  display: inline-flex; align-items: center;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  background: #f0fdf4; color: #166534; padding: 2px 8px; border-radius: 2px;
+  border: 1px solid #bbf7d0;
+}
+
+/* C Buying Guide */
+.c-bg { max-width: 880px; margin: 0 auto; padding: 0 24px 80px; }
+.c-bg-hero {
+  background: #0a0a0a; color: #fff; padding: 40px 28px;
+  margin-bottom: 3px;
+}
+.c-bg-hero h1 {
+  font-family: 'Syne', sans-serif; font-size: 36px; font-weight: 800; line-height: 1.1;
+  letter-spacing: -0.02em; margin-bottom: 10px;
+}
+.c-bg-hero p { font-size: 14px; color: rgba(255,255,255,0.5); max-width: 52ch; line-height: 1.6; }
+
+.c-calc-card {
+  background: #fff; padding: 24px 28px; margin-bottom: 3px;
+}
+.c-calc-title {
+  font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
+  color: #0a0a0a; margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid #f0f0f0;
+}
+.c-form-row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+.c-form-group { display: flex; flex-direction: column; gap: 6px; }
+.c-form-label { font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: #aaa; }
+.c-form-select {
+  padding: 9px 12px; border: 1.5px solid #e8e8e8; border-radius: 3px;
+  font-family: 'Barlow', sans-serif; font-size: 14px; color: #0a0a0a; background: #fff;
+  min-width: 160px;
+}
+.c-form-select:focus { outline: none; border-color: #0a0a0a; }
+.c-form-input {
+  padding: 9px 12px; border: 1.5px solid #e8e8e8; border-radius: 3px;
+  font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: #0a0a0a;
+  width: 140px;
+}
+.c-form-input:focus { outline: none; border-color: #0a0a0a; }
+.c-toggle-row { display: flex; gap: 0; margin-bottom: 20px; }
+.c-toggle-btn {
+  flex: 1; padding: 9px 0; max-width: 160px;
+  border: 1.5px solid #e8e8e8; background: none;
+  font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
+  cursor: pointer; transition: all 0.12s; color: #aaa;
+}
+.c-toggle-btn:first-child { border-radius: 3px 0 0 3px; }
+.c-toggle-btn:last-child { border-radius: 0 3px 3px 0; border-left: none; }
+.c-toggle-btn.active { background: #0a0a0a; color: #fff; border-color: #0a0a0a; }
+
+.c-result-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+.c-result-table tr { border-bottom: 1px solid #f5f5f5; }
+.c-result-table td { padding: 12px 0; font-size: 13.5px; }
+.c-result-table td:first-child { color: #777; }
+.c-result-table td:last-child { text-align: right; font-family: 'IBM Plex Mono', monospace; color: #0a0a0a; font-size: 13px; }
+.c-result-total { }
+.c-result-total td { padding: 16px 0 8px !important; }
+.c-result-total td:first-child { font-weight: 700 !important; color: #0a0a0a !important; font-size: 15px !important; }
+.c-result-total td:last-child { font-size: 22px !important; font-weight: 700 !important; color: #0a0a0a !important; }
+
+.c-label-tag {
+  display: inline-flex; align-items: center;
+  font-size: 9.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  background: #0a0a0a; color: #fff; padding: 2px 6px; border-radius: 1px; margin-left: 6px;
+}
+.c-label-tag.green { background: #16a34a; }
+
+/* ══════════════════════════════════════════════
+   MOBILE RESPONSIVE — all directions
+══════════════════════════════════════════════ */
+@media (max-width: 600px) {
+
+  /* ── A mobile ── */
+  .a-header { top: 48px; }
+  .a-header-inner { padding: 0 16px; }
+  .a-body { padding: 0 16px 64px; }
+
+  .a-hero {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 24px 0 20px;
+  }
+  .a-stats { flex-direction: row; align-items: flex-start; gap: 24px; }
+  .a-stat-block { text-align: left; }
+  .a-big-code { font-size: 38px; }
+
+  .a-section-head { gap: 8px; }
+  .a-section-line { display: none; }
+
+  .a-bg-hero h1 { font-size: 24px; }
+  .a-bg-hero p { font-size: 13px; }
+
+  .a-calc-grid { grid-template-columns: 1fr; gap: 12px; }
+  .a-result-panel { grid-column: 1; }
+  .a-select { width: 100%; }
+  .a-result-table td { font-size: 12px; padding: 10px 14px; }
+  .a-result-total td:last-child { font-size: 15px !important; }
+
+  /* ── B mobile ── */
+  .b-header { top: 48px; }
+  .b-header-inner { padding: 0 16px; }
+  .b-body { padding: 0 16px 64px; }
+
+  .b-hero { padding: 28px 0 24px; }
+  .b-big-code { font-size: 44px; }
+  .b-h1 { font-size: 19px; }
+  .b-meta-row { gap: 16px; flex-wrap: wrap; }
+  .b-meta-n { font-size: 22px; }
+
+  .b-step { grid-template-columns: 36px 1fr; }
+  .b-step-n { font-size: 26px; }
+  .b-form-row { flex-direction: column; gap: 12px; }
+  .b-form-select, .b-form-input { width: 100%; min-width: 0; }
+
+  .b-bg-hero h1 { font-size: 28px; }
+  .b-bg-hero h1 em { font-size: 24px; }
+  .b-bg-hero p { font-size: 13.5px; }
+
+  .b-result-table td { font-size: 12.5px; padding: 11px 14px; }
+  .b-result-total td:first-child { font-size: 13px; }
+  .b-result-total td:last-child { font-size: 17px !important; }
+
+  /* ── C mobile ── */
+  .c-header { top: 48px; }
+  .c-header-inner { padding: 0 16px; }
+  .c-body { padding: 0 0 64px; }
+
+  .c-hero-inner { padding: 20px 16px 0; }
+  .c-hero-top { flex-direction: column; gap: 10px; align-items: flex-start; }
+  .c-sev-block { align-items: flex-start; flex-direction: row; gap: 8px; align-items: center; }
+  .c-big-code { font-size: 40px; }
+  .c-h1 { font-size: 14px; }
+
+  .c-stats-row { display: grid; grid-template-columns: 1fr 1fr; }
+  .c-stat { border-right: none !important; border-bottom: 1px solid #f0f0f0; padding: 12px 16px; }
+  .c-stat:nth-child(odd) { border-right: 1px solid #f0f0f0 !important; }
+  .c-stat:nth-last-child(-n+2) { border-bottom: none; }
+  .c-stat-n { font-size: 22px; }
+
+  .c-desc-card, .c-drive-card, .c-section, .c-related, .c-disclaimer { padding-left: 16px; padding-right: 16px; }
+  .c-bg-hero { padding: 28px 16px; }
+  .c-bg-hero h1 { font-size: 26px; }
+  .c-calc-card { padding: 20px 16px; }
+
+  .c-form-row { flex-direction: column; }
+  .c-form-select, .c-form-input { width: 100%; min-width: 0; }
+  .c-toggle-btn { max-width: none; }
+
+  .c-result-table td { font-size: 12.5px; padding: 10px 0; }
+  .c-result-total td:first-child { font-size: 13px !important; }
+  .c-result-total td:last-child { font-size: 18px !important; }
+
+  /* chips full-width on mobile for all directions */
+  .a-related-grid, .b-related-grid, .c-related-grid { gap: 5px; }
+  .a-chip, .b-chip, .c-chip { flex: 1 1 calc(50% - 4px); min-width: 0; }
+  .a-chip span, .b-chip span, .c-chip span { max-width: none; overflow: hidden; text-overflow: ellipsis; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <span class="nav-title">EVAftermarket — Design Directions</span>
+  <button class="nav-tab active" onclick="show('A')">A · Technical Signal</button>
+  <button class="nav-tab" onclick="show('B')">B · Editorial Clarity</button>
+  <button class="nav-tab" onclick="show('C')">C · Bold Diagnostic</button>
+</nav>
+
+<!-- ═══════════════ PAGE A ═══════════════ -->
+<div id="pageA" class="page active">
+  <!-- DTC Page -->
+  <div class="a-header">
+    <div class="a-header-inner">
+      <nav class="a-breadcrumb">
+        <a href="#">AU</a>
+        <span class="sep">›</span>
+        <a href="#">BYD Atto 3 Fault Codes</a>
+        <span class="sep">›</span>
+        <span style="color:rgba(255,255,255,0.65)">B110A</span>
+      </nav>
+      <span class="a-market-tag">AU</span>
+    </div>
+  </div>
+
+  <div class="a-body">
+    <div class="a-hero">
+      <div class="a-hero-left">
+        <div class="a-code-row">
+          <span class="a-big-code">B110A</span>
+          <div class="a-severity">
+            <span class="a-sev-label">Severity</span>
+            <span class="a-sev-pill warn">Warning</span>
+          </div>
+        </div>
+        <h1 class="a-h1">BYD Atto 3 — B110A High Voltage Battery Coolant Pump Fault</h1>
+        <span class="a-system-tag">System: High Voltage Battery Thermal</span>
+      </div>
+      <div class="a-stats">
+        <div class="a-stat-block">
+          <div class="a-stat-n">12</div>
+          <div class="a-stat-l">Cases logged</div>
+        </div>
+        <div class="a-stat-block">
+          <div class="a-stat-n" style="color: #fbbf24;">3</div>
+          <div class="a-stat-l">Causes identified</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="a-desc">
+      <p>The high voltage battery cooling pump has reported an abnormal condition. This fault indicates the battery thermal management system may not be operating at full capacity. In warm ambient conditions, battery performance and range may be reduced until the pump issue is resolved.</p>
+    </div>
+
+    <div class="a-drive-box">
+      <h3>Drive advisory</h3>
+      <p>In most cases, yes — but schedule a service appointment soon. Monitor the warning closely. If additional symptoms appear (loss of power, unusual noises), pull over safely and contact your dealer.</p>
+    </div>
+
+    <div class="a-section">
+      <div class="a-section-head">
+        <span class="a-section-num">01</span>
+        <span class="a-section-title">Likely Causes · BYD Atto 3</span>
+        <div class="a-section-line"></div>
+      </div>
+      <ul class="a-causes">
+        <li class="a-cause"><span class="a-cause-n">01</span><span class="a-cause-text">Coolant pump motor winding failure due to prolonged operation in high ambient temperature (common in QLD/NT)</span></li>
+        <li class="a-cause"><span class="a-cause-n">02</span><span class="a-cause-text">Coolant pump connector corrosion or loose harness pin — intermittent contact loss triggers the fault</span></li>
+        <li class="a-cause"><span class="a-cause-n">03</span><span class="a-cause-text">Low coolant level causing pump cavitation and current spike, misidentified as pump fault by BMS</span></li>
+      </ul>
+    </div>
+
+    <div class="a-section">
+      <div class="a-section-head">
+        <span class="a-section-num">02</span>
+        <span class="a-section-title">What To Do</span>
+        <div class="a-section-line"></div>
+      </div>
+      <ul class="a-actions">
+        <li class="a-action">
+          <span class="a-action-n">01</span>
+          <div class="a-action-body">
+            <div class="a-action-title">Clear the fault and monitor</div>
+            <div class="a-action-desc">Use a BYD-compatible OBD tool to clear the code. If it returns within 50km, escalate to a dealer immediately.</div>
+          </div>
+        </li>
+        <li class="a-action">
+          <span class="a-action-n">02</span>
+          <div class="a-action-body">
+            <div class="a-action-title">Check coolant level and condition</div>
+            <div class="a-action-desc">Locate the coolant reservoir under the bonnet. Low level or discolouration indicates a leak or degraded fluid — both require dealer attention.</div>
+          </div>
+        </li>
+        <li class="a-action">
+          <span class="a-action-n">03</span>
+          <div class="a-action-body">
+            <div class="a-action-title">Book a BYD dealer inspection</div>
+            <div class="a-action-desc">Request a coolant pump functional test. Pump replacement runs approximately A$450–750 parts + labour under non-warranty conditions.</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="a-section">
+      <div class="a-section-head">
+        <span class="a-section-num">03</span>
+        <span class="a-section-title">Real-World Cases</span>
+        <div class="a-section-line"></div>
+      </div>
+      <div class="a-cases">
+        <div class="a-case">
+          <div class="a-case-meta">
+            <span class="a-case-src">Reddit r/BYDAtto3</span>
+            <span class="a-case-dot">·</span>
+            <span class="a-case-loc">Brisbane, QLD</span>
+            <span class="a-case-dot">·</span>
+            <span class="a-case-date">Feb 2025</span>
+          </div>
+          <p class="a-case-body">B110A appeared after a long summer drive. Car showed reduced charging speed. Dealer found coolant pump drawing abnormal current. Replaced under warranty.</p>
+          <div class="a-case-resolution">Coolant pump replaced under warranty. No recurrence in 3 months.</div>
+        </div>
+        <div class="a-case">
+          <div class="a-case-meta">
+            <span class="a-case-src">AusEV Forums</span>
+            <span class="a-case-dot">·</span>
+            <span class="a-case-loc">Sydney, NSW</span>
+            <span class="a-case-dot">·</span>
+            <span class="a-case-date">Dec 2024</span>
+          </div>
+          <p class="a-case-body">Fault appeared twice in one week, cleared itself both times. Found connector on pump harness was loose — reseated and secured with electrical tape. No further faults.</p>
+          <div class="a-case-resolution">Harness connector re-seated. Fixed without parts replacement. Cost: nil.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="a-related">
+      <div class="a-section-head">
+        <span class="a-section-num">—</span>
+        <span class="a-section-title">Other BYD Atto 3 Fault Codes</span>
+        <div class="a-section-line"></div>
+      </div>
+      <div class="a-related-grid">
+        <div class="a-chip"><code>B1001</code><span>High Voltage Battery Contactor Fault</span></div>
+        <div class="a-chip"><code>B1200</code><span>BMS Cell Voltage Imbalance</span></div>
+        <div class="a-chip"><code>U0415</code><span>Invalid Data Received From VCU</span></div>
+        <div class="a-chip"><code>P0AA6</code><span>Hybrid Battery Voltage System Isolation Fault</span></div>
+      </div>
+    </div>
+
+    <div class="a-disclaimer">
+      Data confidence: <span class="a-conf-pill">Community</span>
+      &nbsp; This information is for reference only. Always consult a qualified technician for diagnosis and repair. Do not attempt high-voltage system repairs yourself.
+    </div>
+
+    <!-- Buying Guide Section -->
+    <div style="height:1px; background: rgba(255,255,255,0.04); margin: 40px 0 32px;"></div>
+    <div class="a-bg-hero">
+      <h1>EV Buying Guide<br><span style="font-family:'Barlow',sans-serif;font-weight:400;font-size:16px;color:rgba(255,255,255,0.35);">Australia — Drive-Away & Novated Lease Calculator</span></h1>
+      <p>Calculate the true cost of ownership for Chinese EVs in Australia. Stamp duty by state, registration estimates, and novated lease FBT savings.</p>
+    </div>
+
+    <div class="a-calc-grid">
+      <div class="a-calc-panel">
+        <div class="a-calc-panel-head">01 — Select Vehicle</div>
+        <div class="a-calc-panel-body">
+          <div class="a-field">
+            <label class="a-label">Brand</label>
+            <select class="a-select">
+              <option>BYD</option><option>MG</option><option>GWM Ora</option><option>Xpeng</option>
+            </select>
+          </div>
+          <div class="a-field">
+            <label class="a-label">Model / Variant</label>
+            <select class="a-select">
+              <option>Atto 3 — Standard Range</option>
+              <option>Atto 3 — Extended Range</option>
+              <option>Seal — RWD</option>
+            </select>
+          </div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.3);">
+            MSRP: <span style="font-family:'IBM Plex Mono',monospace;color:rgba(255,255,255,0.7);font-weight:600;">A$44,990</span>
+            <span style="margin-left:6px;font-size:11px;">(incl. GST, excl. on-road)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="a-calc-panel">
+        <div class="a-calc-panel-head">02 — State & Mode</div>
+        <div class="a-calc-panel-body">
+          <div class="a-field">
+            <label class="a-label">State / Territory</label>
+            <select class="a-select">
+              <option>NSW — New South Wales</option>
+              <option>VIC — Victoria</option>
+              <option>QLD — Queensland</option>
+              <option>SA — South Australia</option>
+            </select>
+          </div>
+          <div style="font-size:12px;color:rgba(74,222,128,0.8);">✓ ACT / SA — stamp duty exempt for BEVs</div>
+          <div class="a-field">
+            <label class="a-label">Calculation Mode</label>
+            <div class="a-toggle">
+              <button class="a-toggle-btn active">Drive-Away</button>
+              <button class="a-toggle-btn">Novated Lease</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="a-result-panel">
+        <div class="a-result-head">Calculated Drive-Away Price · NSW</div>
+        <table class="a-result-table">
+          <tbody>
+            <tr><td>Vehicle MSRP</td><td>A$44,990</td></tr>
+            <tr><td>Stamp Duty (NSW 3%)</td><td>A$1,350</td></tr>
+            <tr><td>Registration (est.)</td><td>A$380 – A$450</td></tr>
+            <tr><td>Dealer Delivery (est.)</td><td>A$600 – A$1,200</td></tr>
+          </tbody>
+          <tfoot>
+            <tr class="a-result-total">
+              <td>Drive-Away Total</td>
+              <td>A$47,320 – A$47,990</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ PAGE B ═══════════════ -->
+<div id="pageB" class="page">
+  <div class="b-header">
+    <div class="b-header-inner">
+      <nav class="b-breadcrumb">
+        <a href="#">Australia</a>
+        <span class="sep">›</span>
+        <a href="#">BYD Atto 3 Fault Codes</a>
+        <span class="sep">›</span>
+        <span style="color:#1a1a1a;font-weight:600;">B110A</span>
+      </nav>
+    </div>
+  </div>
+
+  <div class="b-body">
+    <!-- DTC Hero -->
+    <div class="b-hero">
+      <div class="b-code-row">
+        <span class="b-big-code">B110A</span>
+        <div class="b-sev">
+          <span class="b-sev-dot warn"></span>
+          <span class="b-sev-text warn">Warning</span>
+        </div>
+      </div>
+      <h1 class="b-h1">High Voltage Battery Coolant Pump Fault — BYD Atto 3</h1>
+      <div class="b-system">System: High Voltage Battery Thermal</div>
+      <div class="b-meta-row">
+        <div class="b-meta-item">
+          <div class="b-meta-n">12</div>
+          <div class="b-meta-l">Cases logged</div>
+        </div>
+        <div class="b-meta-div"></div>
+        <div class="b-meta-item">
+          <div class="b-meta-n">3</div>
+          <div class="b-meta-l">Causes</div>
+        </div>
+        <div class="b-meta-div"></div>
+        <div class="b-meta-item">
+          <div class="b-meta-n" style="font-size:20px;">A$450–750</div>
+          <div class="b-meta-l">Typical repair cost</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="b-desc">
+      <p>The high voltage battery cooling pump has reported an abnormal condition. This fault indicates the battery thermal management system may not be operating at full capacity. In warm ambient conditions, battery performance and range may be reduced until the pump issue is resolved.</p>
+    </div>
+
+    <div class="b-drive-box">
+      <div class="b-drive-accent"></div>
+      <div class="b-drive-inner">
+        <h3>Can I still drive?</h3>
+        <p>In most cases, yes — but schedule a service appointment soon. Monitor the warning closely. If additional symptoms appear (loss of power, unusual noises), pull over safely and contact your dealer.</p>
+      </div>
+    </div>
+
+    <div class="b-section">
+      <div class="b-section-title">Likely Causes</div>
+      <ul class="b-causes">
+        <li class="b-cause">
+          <span class="b-cause-n">1</span>
+          <span class="b-cause-text">Coolant pump motor winding failure due to prolonged operation in high ambient temperature (common in QLD/NT)</span>
+        </li>
+        <li class="b-cause">
+          <span class="b-cause-n">2</span>
+          <span class="b-cause-text">Coolant pump connector corrosion or loose harness pin — intermittent contact loss triggers the fault</span>
+        </li>
+        <li class="b-cause">
+          <span class="b-cause-n">3</span>
+          <span class="b-cause-text">Low coolant level causing pump cavitation and current spike, misidentified as pump fault by BMS</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="b-section">
+      <div class="b-section-title">What To Do</div>
+      <ul class="b-actions">
+        <li class="b-action">
+          <div class="b-action-circle">1</div>
+          <div>
+            <div class="b-action-title">Clear the fault and monitor</div>
+            <div class="b-action-body">Use a BYD-compatible OBD tool to clear the code. If it returns within 50km, escalate to a dealer immediately.</div>
+          </div>
+        </li>
+        <li class="b-action">
+          <div class="b-action-circle">2</div>
+          <div>
+            <div class="b-action-title">Check coolant level and condition</div>
+            <div class="b-action-body">Locate the coolant reservoir under the bonnet. Low level or discolouration indicates a leak or degraded fluid — both require dealer attention.</div>
+          </div>
+        </li>
+        <li class="b-action">
+          <div class="b-action-circle">3</div>
+          <div>
+            <div class="b-action-title">Book a BYD dealer inspection</div>
+            <div class="b-action-body">Request a coolant pump functional test. Pump replacement runs approximately A$450–750 parts + labour under non-warranty conditions.</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="b-section">
+      <div class="b-section-title">Real-World Cases</div>
+      <div class="b-cases">
+        <div class="b-case">
+          <div class="b-case-meta">
+            <span class="b-case-src">Reddit r/BYDAtto3</span>
+            <span class="b-case-sep">·</span>
+            <span class="b-case-src" style="font-weight:400;">Brisbane, QLD</span>
+            <span class="b-case-sep">·</span>
+            <span class="b-case-src" style="font-weight:400;color:#bbb;">Feb 2025</span>
+          </div>
+          <p class="b-case-body">B110A appeared after a long summer drive. Car showed reduced charging speed. Dealer found coolant pump drawing abnormal current. Replaced under warranty.</p>
+          <div class="b-case-fix">
+            <div class="b-case-fix-icon">✓</div>
+            Coolant pump replaced under warranty. No recurrence in 3 months.
+          </div>
+        </div>
+        <div class="b-case">
+          <div class="b-case-meta">
+            <span class="b-case-src">AusEV Forums</span>
+            <span class="b-case-sep">·</span>
+            <span class="b-case-src" style="font-weight:400;">Sydney, NSW</span>
+          </div>
+          <p class="b-case-body">Fault appeared twice in one week, cleared itself both times. Found connector on pump harness was loose — reseated and secured. No further faults.</p>
+          <div class="b-case-fix">
+            <div class="b-case-fix-icon">✓</div>
+            Harness connector re-seated. Fixed without parts replacement. Cost: nil.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="b-related">
+      <div class="b-section-title">Other BYD Atto 3 Fault Codes</div>
+      <div class="b-related-grid">
+        <div class="b-chip"><code>B1001</code><span>HV Battery Contactor Fault</span></div>
+        <div class="b-chip"><code>B1200</code><span>BMS Cell Voltage Imbalance</span></div>
+        <div class="b-chip"><code>U0415</code><span>Invalid Data From VCU</span></div>
+        <div class="b-chip"><code>P0AA6</code><span>Battery Isolation Fault</span></div>
+      </div>
+    </div>
+
+    <div class="b-disclaimer">
+      Data confidence: <span class="b-conf-pill">Community</span>&nbsp;&nbsp;
+      This information is for reference only. Always consult a qualified technician for diagnosis and repair.
+    </div>
+
+    <!-- Buying Guide -->
+    <div style="height:1px;background:#e0dcd6;margin:48px 0 0;"></div>
+
+    <div class="b-bg-hero" style="padding-top:48px;">
+      <h1>EV Buying Guide<br><em style="font-style:italic;color:#666;font-size:32px;">Australia</em></h1>
+      <p>Calculate the true drive-away price for Chinese EVs in Australia, including stamp duty by state and Novated Lease tax savings.</p>
+    </div>
+
+    <div class="b-calc-steps">
+      <div class="b-step">
+        <div class="b-step-n">1</div>
+        <div class="b-step-content">
+          <div class="b-step-title">Select Vehicle</div>
+          <div class="b-form-row">
+            <div class="b-form-group">
+              <label class="b-form-label">Brand</label>
+              <select class="b-form-select"><option>BYD</option><option>MG</option><option>GWM Ora</option></select>
+            </div>
+            <div class="b-form-group">
+              <label class="b-form-label">Model / Variant</label>
+              <select class="b-form-select"><option>Atto 3 — Standard Range</option><option>Atto 3 — Extended Range</option><option>Seal — RWD</option></select>
+            </div>
+          </div>
+          <div style="font-size:13px;color:#888;">MSRP: <strong style="color:#1a1a1a;font-family:'IBM Plex Mono',monospace;">A$44,990</strong> <span style="font-size:12px;">(incl. GST, excl. on-road)</span></div>
+        </div>
+      </div>
+
+      <div class="b-step">
+        <div class="b-step-n">2</div>
+        <div class="b-step-content">
+          <div class="b-step-title">State / Territory</div>
+          <div class="b-form-row">
+            <div class="b-form-group">
+              <label class="b-form-label">State</label>
+              <select class="b-form-select"><option>NSW — New South Wales</option><option>VIC — Victoria</option><option>QLD — Queensland</option><option>SA — South Australia</option></select>
+            </div>
+          </div>
+          <div style="font-size:13px;color:#888;">Stamp duty: <strong style="color:#1a1a1a;font-family:'IBM Plex Mono',monospace;">A$1,350</strong> <span style="color:#999;font-size:12px;">(NSW, 3%)</span></div>
+        </div>
+      </div>
+
+      <div class="b-step">
+        <div class="b-step-n">3</div>
+        <div class="b-step-content">
+          <div class="b-step-title">Calculation Mode</div>
+          <div class="b-tab-row" style="margin-bottom:20px;">
+            <button class="b-tab active">Drive-Away Price</button>
+            <button class="b-tab">Novated Lease</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="b-result-box">
+      <div class="b-result-head">
+        <span class="b-result-head-title">Drive-Away Price — NSW</span>
+      </div>
+      <table class="b-result-table">
+        <tbody>
+          <tr><td>Vehicle MSRP</td><td>A$44,990</td></tr>
+          <tr><td>Stamp Duty (NSW 3%)</td><td>A$1,350</td></tr>
+          <tr><td>Registration (est.)</td><td>A$380 – A$450</td></tr>
+          <tr><td>Dealer Delivery (est.)</td><td>A$600 – A$1,200</td></tr>
+        </tbody>
+        <tfoot>
+          <tr class="b-result-total">
+            <td>Drive-Away Total</td>
+            <td>A$47,320 – A$47,990</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <div class="b-disclaimer" style="margin-top:16px;">
+      ⚠ Stamp duty rates and EV exemption policies may change. Data based on 2025 public information — verify with your state's revenue office before purchasing.
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ PAGE C ═══════════════ -->
+<div id="pageC" class="page">
+  <!-- DTC Page -->
+  <div class="c-header">
+    <div class="c-header-inner">
+      <nav class="c-breadcrumb">
+        <a href="#">AU</a>
+        <span class="sep">›</span>
+        <a href="#">BYD Atto 3 Fault Codes</a>
+        <span class="sep">›</span>
+        <span style="color:#0a0a0a;font-weight:700;">B110A</span>
+      </nav>
+    </div>
+  </div>
+
+  <div class="c-body">
+    <div class="c-hero">
+      <div class="c-hero-stripe warn"></div>
+      <div class="c-hero-inner">
+        <div class="c-hero-top">
+          <div class="c-hero-left">
+            <div class="c-big-code">B110A</div>
+            <h1 class="c-h1">High Voltage Battery Coolant Pump Fault — BYD Atto 3</h1>
+            <div class="c-system">System: HV Battery Thermal Management</div>
+          </div>
+          <div class="c-sev-block">
+            <span class="c-sev-pill warn">Warning</span>
+            <span class="c-sev-sub">Severity</span>
+          </div>
+        </div>
+        <div class="c-stats-row">
+          <div class="c-stat">
+            <div class="c-stat-n">12</div>
+            <div class="c-stat-l">Cases Logged</div>
+          </div>
+          <div class="c-stat">
+            <div class="c-stat-n">3</div>
+            <div class="c-stat-l">Causes</div>
+          </div>
+          <div class="c-stat">
+            <div class="c-stat-n" style="font-size:20px;">A$450–750</div>
+            <div class="c-stat-l">Typical Repair</div>
+          </div>
+          <div class="c-stat">
+            <div class="c-stat-n" style="font-size:16px;color:#22c55e;">Community</div>
+            <div class="c-stat-l">Data Confidence</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="c-desc-card">
+      <p>The high voltage battery cooling pump has reported an abnormal condition. This fault indicates the battery thermal management system may not be operating at full capacity. In warm ambient conditions, battery performance and range may be reduced until the pump issue is resolved.</p>
+    </div>
+
+    <div class="c-drive-card">
+      <h3>Can I still drive?</h3>
+      <p>In most cases, yes — but schedule a service appointment soon. Monitor the warning closely. If additional symptoms appear (loss of power, unusual noises), pull over safely and contact your dealer.</p>
+    </div>
+
+    <div class="c-section">
+      <div class="c-section-title">Likely Causes · BYD Atto 3</div>
+      <ul class="c-causes">
+        <li class="c-cause">
+          <span class="c-cause-n">1</span>
+          <span class="c-cause-text">Coolant pump motor winding failure due to prolonged operation in high ambient temperature (common in QLD/NT)</span>
+        </li>
+        <li class="c-cause">
+          <span class="c-cause-n">2</span>
+          <span class="c-cause-text">Coolant pump connector corrosion or loose harness pin — intermittent contact loss triggers the fault</span>
+        </li>
+        <li class="c-cause">
+          <span class="c-cause-n">3</span>
+          <span class="c-cause-text">Low coolant level causing pump cavitation and current spike, misidentified as pump fault by BMS</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="c-section">
+      <div class="c-section-title">What To Do</div>
+      <ul class="c-actions">
+        <li class="c-action">
+          <span class="c-action-n">01</span>
+          <div>
+            <div class="c-action-title">Clear the fault and monitor</div>
+            <div class="c-action-body">Use a BYD-compatible OBD tool to clear the code. If it returns within 50km, escalate to a dealer immediately.</div>
+          </div>
+        </li>
+        <li class="c-action">
+          <span class="c-action-n">02</span>
+          <div>
+            <div class="c-action-title">Check coolant level and condition</div>
+            <div class="c-action-body">Locate the coolant reservoir under the bonnet. Low level or discolouration indicates a leak or degraded fluid.</div>
+          </div>
+        </li>
+        <li class="c-action">
+          <span class="c-action-n">03</span>
+          <div>
+            <div class="c-action-title">Book a BYD dealer inspection</div>
+            <div class="c-action-body">Request a coolant pump functional test. Typical cost A$450–750 parts + labour outside warranty.</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="c-section">
+      <div class="c-section-title">Real-World Cases</div>
+      <div class="c-cases">
+        <div class="c-case">
+          <div class="c-case-meta">
+            <span class="c-case-src">Reddit · r/BYDAtto3</span>
+            <span style="color:#ddd;font-size:10px;">·</span>
+            <span class="c-case-src">Brisbane QLD</span>
+            <span style="color:#ddd;font-size:10px;">·</span>
+            <span class="c-case-src">Feb 2025</span>
+          </div>
+          <p class="c-case-body">B110A appeared after a long summer drive. Car showed reduced charging speed. Dealer found coolant pump drawing abnormal current.</p>
+          <div class="c-case-fix">
+            <span class="c-case-fix-icon">✓</span>
+            <span class="c-case-fix-text">Replaced under warranty. No recurrence in 3 months.</span>
+          </div>
+        </div>
+        <div class="c-case">
+          <div class="c-case-meta">
+            <span class="c-case-src">AusEV Forums</span>
+            <span style="color:#ddd;font-size:10px;">·</span>
+            <span class="c-case-src">Sydney NSW</span>
+          </div>
+          <p class="c-case-body">Fault appeared twice in one week, cleared itself both times. Found connector on pump harness was loose — re-seated and secured.</p>
+          <div class="c-case-fix">
+            <span class="c-case-fix-icon">✓</span>
+            <span class="c-case-fix-text">Harness connector re-seated. No parts needed. Cost: nil.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="c-related">
+      <div class="c-section-title">Other BYD Atto 3 Fault Codes</div>
+      <div class="c-related-grid">
+        <div class="c-chip"><code>B1001</code><span>HV Battery Contactor Fault</span></div>
+        <div class="c-chip"><code>B1200</code><span>BMS Cell Voltage Imbalance</span></div>
+        <div class="c-chip"><code>U0415</code><span>Invalid Data From VCU</span></div>
+        <div class="c-chip"><code>P0AA6</code><span>Battery Isolation Fault</span></div>
+      </div>
+    </div>
+
+    <div class="c-disclaimer">
+      Data confidence: <span class="c-conf-pill">Community</span>&nbsp;&nbsp;
+      This information is for reference only. Always consult a qualified technician for diagnosis and repair. Do not attempt high-voltage system repairs yourself.
+    </div>
+
+    <!-- Buying Guide -->
+    <div style="height:24px;"></div>
+    <div class="c-bg-hero">
+      <h1>EV Buying Guide<br><span style="font-family:'Barlow',sans-serif;font-weight:400;font-size:18px;color:rgba(255,255,255,0.4);">Australia — Drive-Away &amp; Novated Lease Calculator</span></h1>
+      <p>Calculate the true cost of ownership. Stamp duty by state, registration estimates, novated lease FBT savings.</p>
+    </div>
+
+    <div class="c-calc-card">
+      <div class="c-calc-title">01 — Select Vehicle</div>
+      <div class="c-form-row">
+        <div class="c-form-group">
+          <label class="c-form-label">Brand</label>
+          <select class="c-form-select"><option>BYD</option><option>MG</option><option>GWM Ora</option></select>
+        </div>
+        <div class="c-form-group">
+          <label class="c-form-label">Model / Variant</label>
+          <select class="c-form-select" style="min-width:220px"><option>Atto 3 — Standard Range</option><option>Atto 3 — Extended Range</option></select>
+        </div>
+      </div>
+      <div style="font-size:13px;color:#888;">MSRP: <strong style="font-family:'IBM Plex Mono',monospace;color:#0a0a0a;">A$44,990</strong> <span style="font-size:12px;">(incl. GST, excl. on-road)</span></div>
+    </div>
+
+    <div class="c-calc-card">
+      <div class="c-calc-title">02 — State &amp; Mode</div>
+      <div class="c-form-row" style="align-items:flex-end;">
+        <div class="c-form-group">
+          <label class="c-form-label">State / Territory</label>
+          <select class="c-form-select"><option>NSW — New South Wales</option><option>VIC — Victoria</option><option>QLD</option><option>SA — Stamp Duty Exempt</option></select>
+        </div>
+        <div style="font-size:12.5px;color:#888;padding-bottom:10px;">Stamp duty: <strong style="font-family:'IBM Plex Mono',monospace;color:#0a0a0a;">A$1,350</strong></div>
+      </div>
+      <div class="c-toggle-row">
+        <button class="c-toggle-btn active">Drive-Away</button>
+        <button class="c-toggle-btn">Novated Lease</button>
+      </div>
+      <table class="c-result-table">
+        <tbody>
+          <tr><td>Vehicle MSRP</td><td>A$44,990</td></tr>
+          <tr><td>Stamp Duty (NSW 3%)</td><td>A$1,350</td></tr>
+          <tr><td>Registration (est.)</td><td>A$380 – A$450</td></tr>
+          <tr><td>Dealer Delivery (est.)</td><td>A$600 – A$1,200</td></tr>
+        </tbody>
+        <tfoot>
+          <tr class="c-result-total">
+            <td>Drive-Away Total</td>
+            <td>A$47,320 – A$47,990</td>
+          </tr>
+        </tfoot>
+      </table>
+      <p style="margin-top:12px;font-size:11.5px;color:#bbb;line-height:1.5;">⚠ Stamp duty rates and EV exemption policies may change. Verify with your state's revenue office before purchasing.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page' + id).classList.add('active');
+  event.target.classList.add('active');
+  window.scrollTo(0, 0);
+}
+</script>
+</body>
+</html>

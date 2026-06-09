@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Updates Page Redesign</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #e8e4df; font-family: 'Barlow', sans-serif; padding: 20px; }
+
+  .label { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #999; margin-bottom: 16px; }
+
+  /* ── Mock page ── */
+  .page { max-width: 860px; margin: 0 auto; background: #f7f5f0; }
+
+  .mock-header {
+    background: #ffffff;
+    border-bottom: 2px solid #1a1a1a;
+    padding: 0 32px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .mock-logo { font-weight: 700; font-size: 15px; letter-spacing: 0.04em; }
+  .mock-logo span { color: #166534; }
+
+  .page-inner { max-width: 860px; margin: 0 auto; padding: 32px 28px 80px; }
+
+  .dtc-card {
+    background: #ffffff;
+    border: 1px solid #e0dcd6;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  /* Breadcrumb */
+  .breadcrumb {
+    padding: 13px 28px;
+    font-size: 11.5px;
+    color: #999;
+    border-bottom: 1px solid #ede9e3;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .breadcrumb a { color: #666; text-decoration: none; }
+  .breadcrumb .sep { color: #ccc; }
+
+  /* Hero */
+  .updates-hero {
+    padding: 32px 28px 24px;
+    border-bottom: 1px solid #e0dcd6;
+  }
+  .updates-hero h1 {
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-size: 32px;
+    font-weight: 400;
+    color: #1a1a1a;
+    line-height: 1.15;
+    margin-bottom: 10px;
+  }
+  .updates-hero h1 em {
+    font-style: italic;
+    color: #666;
+    font-size: 26px;
+  }
+  .updates-hero p {
+    font-size: 13.5px;
+    color: #666;
+    max-width: 54ch;
+    line-height: 1.65;
+  }
+
+  /* Stats strip */
+  .stats-strip {
+    display: flex;
+    gap: 28px;
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid #ede9e3;
+  }
+  .stat { display: flex; flex-direction: column; gap: 2px; }
+  .stat-n {
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-size: 28px;
+    color: #1a1a1a;
+    line-height: 1;
+  }
+  .stat-l {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #999;
+  }
+
+  /* Section label */
+  .section-head {
+    padding: 10px 28px;
+    background: #f7f5f0;
+    border-bottom: 1px solid #ede9e3;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #999;
+    font-family: 'Barlow Condensed', sans-serif;
+  }
+
+  /* Update rows */
+  .update-row {
+    display: grid;
+    grid-template-columns: 120px 1fr auto;
+    align-items: start;
+    padding: 18px 28px;
+    border-bottom: 1px solid #ede9e3;
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.12s;
+    gap: 16px;
+  }
+  .update-row:hover { background: #f7f5f0; }
+  .update-row:last-child { border-bottom: none; }
+
+  .update-version {
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-size: 15px;
+    font-weight: 700;
+    color: #1a1a1a;
+    letter-spacing: 0.02em;
+    padding-top: 1px;
+  }
+  .update-date {
+    font-size: 11px;
+    color: #999;
+    margin-top: 3px;
+    font-family: 'Barlow Condensed', sans-serif;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .update-body {}
+  .update-title {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 4px;
+  }
+  .update-desc {
+    font-size: 12.5px;
+    color: #666;
+    line-height: 1.55;
+  }
+
+  .method-badge {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 2px;
+    white-space: nowrap;
+    font-family: 'Barlow Condensed', sans-serif;
+    margin-top: 2px;
+  }
+  .method-ota { background: #edfdf5; color: #166534; border: 1px solid #bbf7d0; }
+  .method-dealer { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+  .method-usb { background: #eff6ff; color: #1e40af; border: 1px solid #93c5fd; }
+
+  /* Confidence note */
+  .conf-note {
+    padding: 12px 28px;
+    border-top: 1px solid #ede9e3;
+    font-size: 11.5px;
+    color: #999;
+    display: flex;
+    gap: 6px;
+    align-items: flex-start;
+    background: #f7f5f0;
+  }
+
+  /* Selection UI */
+  .pick-label {
+    text-align: center;
+    font-size: 12px;
+    color: #888;
+    margin: 24px 0 8px;
+    font-style: italic;
+  }
+  .pick-row {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 32px;
+  }
+  .pick-btn {
+    padding: 8px 20px;
+    border: 1.5px solid #ccc;
+    border-radius: 4px;
+    background: white;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+    transition: all 0.15s;
+  }
+  .pick-btn:hover { border-color: #166534; color: #166534; }
+  .pick-btn.selected { background: #166534; color: white; border-color: #166534; }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div style="max-width:900px;margin:0 auto">
+
+  <p class="label" style="text-align:center;padding:16px 0">Updates Page — 重新设计方案（含真实数据预览）</p>
+
+  <div class="page">
+    <div class="mock-header">
+      <span class="mock-logo">EV<span>Aftermarket</span></span>
+      <span style="font-size:11px;color:#999;font-family:monospace">AU</span>
+    </div>
+
+    <div class="page-inner">
+      <div class="dtc-card">
+
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb">
+          <a href="#">Australia</a>
+          <span class="sep">›</span>
+          <a href="#">BYD Atto 3</a>
+          <span class="sep">›</span>
+          <span style="font-weight:600;color:#1a1a1a">Software Updates</span>
+        </nav>
+
+        <!-- Hero -->
+        <div class="updates-hero">
+          <h1>Software Updates<br><em>BYD Atto 3 · AU</em></h1>
+          <p>Firmware and software version history for the BYD Atto 3 in Australia. Data sourced from community reports and official BYD release notes.</p>
+          <div class="stats-strip">
+            <div class="stat">
+              <div class="stat-n">4</div>
+              <div class="stat-l">Versions tracked</div>
+            </div>
+            <div class="stat">
+              <div class="stat-n" style="color:#166534">3</div>
+              <div class="stat-l">OTA capable</div>
+            </div>
+            <div class="stat">
+              <div class="stat-n">2024</div>
+              <div class="stat-l">Latest release</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Update list -->
+        <div class="section-head">Update History</div>
+
+        <a class="update-row" href="#">
+          <div>
+            <div class="update-version">3.0.1.156</div>
+            <div class="update-date">Nov 2024</div>
+          </div>
+          <div class="update-body">
+            <div class="update-title">Infotainment &amp; charging optimisation</div>
+            <div class="update-desc">Fixes CarPlay disconnection under cellular load. Improves AC charging curve in hot climates. TPMS sensitivity adjustment.</div>
+          </div>
+          <div>
+            <div class="method-badge method-ota">OTA</div>
+          </div>
+        </a>
+
+        <a class="update-row" href="#">
+          <div>
+            <div class="update-version">3.0.1.140</div>
+            <div class="update-date">Jul 2024</div>
+          </div>
+          <div class="update-body">
+            <div class="update-title">Range &amp; BMS update</div>
+            <div class="update-desc">Battery management recalibration. Improved range estimation accuracy at low SoC. Regenerative braking torque smoothing.</div>
+          </div>
+          <div>
+            <div class="method-badge method-ota">OTA</div>
+          </div>
+        </a>
+
+        <a class="update-row" href="#">
+          <div>
+            <div class="update-version">3.0.0.128</div>
+            <div class="update-date">Jan 2024</div>
+          </div>
+          <div class="update-body">
+            <div class="update-title">Dealer service update</div>
+            <div class="update-desc">ADAS calibration update. Steering torque feedback correction. Applied during scheduled servicing at BYD dealers.</div>
+          </div>
+          <div>
+            <div class="method-badge method-dealer">Dealer Only</div>
+          </div>
+        </a>
+
+        <a class="update-row" href="#">
+          <div>
+            <div class="update-version">2.0.0.104</div>
+            <div class="update-date">May 2023</div>
+          </div>
+          <div class="update-body">
+            <div class="update-title">Launch firmware</div>
+            <div class="update-desc">Initial production firmware for AU-spec Atto 3. Sets base for all subsequent OTA updates.</div>
+          </div>
+          <div>
+            <div class="method-badge method-usb">USB</div>
+          </div>
+        </a>
+
+        <!-- Confidence footer -->
+        <div class="conf-note">
+          ⚠ Data sourced from community reports and owner forums. Version numbers may not be exhaustive.
+          <a href="/contact" style="color:#166534;margin-left:4px">Submit a missing update →</a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <p class="pick-label">这个设计方向可以吗？</p>
+  <div class="pick-row">
+    <button class="pick-btn" onclick="this.classList.toggle('selected')">✓ 可以，继续</button>
+    <button class="pick-btn" onclick="this.classList.toggle('selected')">调整字体/排版</button>
+    <button class="pick-btn" onclick="this.classList.toggle('selected')">调整数据内容</button>
+  </div>
+
+</div>
+
+<script>
+// Send selection to state
+document.querySelectorAll('.pick-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (window.parent && window.parent.postMessage) {
+      window.parent.postMessage({ type: 'selection', text: btn.textContent }, '*');
+    }
+  });
+});
+</script>
+</body>
+</html>

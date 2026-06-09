@@ -1,4 +1,4 @@
-import { eq, and, ne } from 'drizzle-orm'
+import { eq, and, ne, count } from 'drizzle-orm'
 import { db } from './index'
 import { dtcs, dtcModelNotes, cases, caseDtcLinks, models } from './schema'
 
@@ -91,6 +91,14 @@ export async function getAllDTCCodesForSitemap() {
     .innerJoin(models, eq(dtcModelNotes.model_id, models.model_id))
 }
 
+export async function getCasesCountForDTC(dtcId: number): Promise<number> {
+  const rows = await db
+    .select({ case_id: caseDtcLinks.case_id })
+    .from(caseDtcLinks)
+    .where(eq(caseDtcLinks.dtc_id, dtcId))
+  return rows.length
+}
+
 export async function getRelatedDTCs(modelId: string, excludeDtcId: number, limit = 5) {
   return db
     .select({
@@ -108,4 +116,9 @@ export async function getRelatedDTCs(modelId: string, excludeDtcId: number, limi
       )
     )
     .limit(limit)
+}
+
+export async function getDTCNoteCount(): Promise<number> {
+  const [row] = await db.select({ value: count() }).from(dtcModelNotes)
+  return row?.value ?? 0
 }

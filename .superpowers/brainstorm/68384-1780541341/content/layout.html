@@ -1,0 +1,90 @@
+<h2>Home 页面布局方案</h2>
+<p class="subtitle">这个页面会列出所有功能入口，方便开发时快速导航。选一个你喜欢的布局方向。</p>
+
+<div class="cards">
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:16px;background:#f7f5f0;font-family:monospace;font-size:11px;border-bottom:1px solid #e0dcd6">
+      <div style="background:#1a1a1a;color:white;padding:6px 10px;font-size:10px;font-weight:700;margin-bottom:10px;letter-spacing:0.08em">⚡ EVAFTERMARKET DEV PORTAL</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+        <div style="background:white;border:1px solid #e0dcd6;border-radius:3px;padding:8px">
+          <div style="font-size:9px;font-weight:700;color:#999;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:5px">🔧 DTC Codes</div>
+          <div style="font-size:10px;color:#166534">au/dtc/byd-atto-3</div>
+          <div style="font-size:10px;color:#166534">au/dtc/mg-mg4</div>
+          <div style="font-size:10px;color:#999;margin-top:2px">+6 more models</div>
+        </div>
+        <div style="background:white;border:1px solid #e0dcd6;border-radius:3px;padding:8px">
+          <div style="font-size:9px;font-weight:700;color:#999;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:5px">📋 Models</div>
+          <div style="font-size:10px;color:#166534">au/models/byd-atto-3</div>
+          <div style="font-size:10px;color:#166534">au/models/mg-mg4</div>
+          <div style="font-size:10px;color:#999;margin-top:2px">+6 more models</div>
+        </div>
+        <div style="background:white;border:1px solid #e0dcd6;border-radius:3px;padding:8px">
+          <div style="font-size:9px;font-weight:700;color:#999;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:5px">⚡ Charging</div>
+          <div style="font-size:10px;color:#166534">au/charging/byd-atto-3</div>
+          <div style="font-size:10px;color:#166534">au/charging/mg-mg4</div>
+        </div>
+        <div style="background:white;border:1px solid #e0dcd6;border-radius:3px;padding:8px">
+          <div style="font-size:9px;font-weight:700;color:#999;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:5px">🛒 Buying Guide</div>
+          <div style="font-size:10px;color:#166534">au/buying-guide</div>
+          <div style="font-size:10px;color:#999;margin-top:2px">Stamp duty calculator</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A · 分组卡片</h3>
+      <p>按功能分组（DTC / Models / Charging / Buying Guide），每组列出具体链接。视觉清晰，层级明确。</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:16px;background:#f7f5f0;font-family:monospace;font-size:11px;border-bottom:1px solid #e0dcd6">
+      <div style="background:#1a1a1a;color:white;padding:6px 10px;font-size:10px;font-weight:700;margin-bottom:10px;letter-spacing:0.08em">⚡ EVAFTERMARKET DEV PORTAL</div>
+      <table style="width:100%;border-collapse:collapse;font-size:10px">
+        <tr style="background:#f0f0f0">
+          <td style="padding:4px 6px;font-weight:700;width:100px">Route</td>
+          <td style="padding:4px 6px;font-weight:700">Description</td>
+          <td style="padding:4px 6px;font-weight:700;width:60px">Status</td>
+        </tr>
+        <tr style="border-bottom:1px solid #e0dcd6"><td style="padding:4px 6px;color:#166534">au/dtc/byd-atto-3</td><td style="padding:4px 6px;color:#666">DTC fault codes — BYD Atto 3</td><td style="padding:4px 6px;color:#166534">✓ live</td></tr>
+        <tr style="border-bottom:1px solid #e0dcd6;background:#fffbf7"><td style="padding:4px 6px;color:#166534">au/buying-guide</td><td style="padding:4px 6px;color:#666">Stamp duty + novated lease</td><td style="padding:4px 6px;color:#166534">✓ live</td></tr>
+        <tr style="border-bottom:1px solid #e0dcd6"><td style="padding:4px 6px;color:#166534">au/charging/mg-mg4</td><td style="padding:4px 6px;color:#666">Charging guide — MG MG4</td><td style="padding:4px 6px;color:#166534">✓ live</td></tr>
+        <tr style="border-bottom:1px solid #e0dcd6;background:#fffbf7"><td style="padding:4px 6px;color:#1e40af">au/service/byd-atto-3</td><td style="padding:4px 6px;color:#666">Service cost guide</td><td style="padding:4px 6px;color:#1e40af">β beta</td></tr>
+        <tr><td style="padding:4px 6px;color:#999">contact</td><td style="padding:4px 6px;color:#999">Contact page</td><td style="padding:4px 6px;color:#999">–</td></tr>
+      </table>
+    </div>
+    <div class="card-body">
+      <h3>B · 扁平表格</h3>
+      <p>所有路由一张表，带状态标注（live / beta）。适合快速扫描，偏开发工具风格。</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:16px;background:#f7f5f0;font-family:monospace;font-size:11px;border-bottom:1px solid #e0dcd6">
+      <div style="background:#1a1a1a;color:white;padding:6px 10px;font-size:10px;font-weight:700;margin-bottom:10px;letter-spacing:0.08em">⚡ EVAFTERMARKET DEV PORTAL</div>
+      <div style="display:flex;gap:8px">
+        <div style="width:100px;flex-shrink:0">
+          <div style="font-size:9px;font-weight:700;color:#999;margin-bottom:5px;text-transform:uppercase">Models</div>
+          <div style="display:flex;flex-direction:column;gap:2px">
+            <div style="background:white;border:1px solid #e0dcd6;padding:4px 6px;border-radius:2px;font-size:9px;color:#166534">byd-atto-3</div>
+            <div style="background:white;border:1px solid #e0dcd6;padding:4px 6px;border-radius:2px;font-size:9px;color:#166534">byd-dolphin</div>
+            <div style="background:white;border:1px solid #e0dcd6;padding:4px 6px;border-radius:2px;font-size:9px;color:#166534">mg-mg4</div>
+            <div style="background:#f0f0f0;border:1px solid #e0dcd6;padding:4px 6px;border-radius:2px;font-size:9px;color:#999">+5 more</div>
+          </div>
+        </div>
+        <div style="flex:1">
+          <div style="font-size:9px;font-weight:700;color:#999;margin-bottom:5px;text-transform:uppercase">Selected: byd-atto-3</div>
+          <div style="display:flex;flex-direction:column;gap:3px">
+            <div style="background:white;border:1px solid #e0dcd6;padding:5px 8px;border-radius:2px;font-size:9px"><span style="color:#999">DTC →</span> <span style="color:#166534">au/dtc/byd-atto-3</span></div>
+            <div style="background:white;border:1px solid #e0dcd6;padding:5px 8px;border-radius:2px;font-size:9px"><span style="color:#999">Model →</span> <span style="color:#166534">au/models/byd-atto-3</span></div>
+            <div style="background:white;border:1px solid #e0dcd6;padding:5px 8px;border-radius:2px;font-size:9px"><span style="color:#999">Charging →</span> <span style="color:#166534">au/charging/byd-atto-3</span></div>
+            <div style="background:white;border:1px solid #e0dcd6;padding:5px 8px;border-radius:2px;font-size:9px"><span style="color:#999">Service →</span> <span style="color:#166534">au/service/byd-atto-3</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C · 按车型导航</h3>
+      <p>左侧选车型，右侧列出该车型所有功能链接。适合按模型维度调试，但交互稍复杂。</p>
+    </div>
+  </div>
+</div>

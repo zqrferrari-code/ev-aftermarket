@@ -127,7 +127,7 @@ export default async function WarningLightsBrandPage({ params }: Props) {
               {categoryLights.map((light) => (
                 <li key={light.id}>
                   <a
-                    href={`/${market}/warnings/${brand}/${light.slug}`}
+                    href={`/${market}/warnings/${brand}/detail/${light.slug}`}
                     className="dtc-row"
                     style={{ textDecoration: 'none' }}
                   >

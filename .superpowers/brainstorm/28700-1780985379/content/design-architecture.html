@@ -1,0 +1,63 @@
+<h2>设计方案 — 架构与路由</h2>
+<p class="subtitle">Section 1 of 3 — 路由结构 · 数据模型 · 页面层级</p>
+
+<div class="section">
+  <h3>路由结构</h3>
+  <div class="mockup">
+    <div class="mockup-header">新增路由（与现有模式一致）</div>
+    <div class="mockup-body" style="font-family:monospace;font-size:13px;line-height:2">
+      <div style="color:#888">现有</div>
+      <div>/:market/problems              → 所有车型问题汇总</div>
+      <div>/:market/problems/[model]      → 车型问题详情</div>
+      <div style="height:12px"></div>
+      <div style="color:#2d7d46;font-weight:600">新增</div>
+      <div style="color:#2d7d46">/:market/warnings/[brand]       → 品牌警告灯汇总（BYD 58条）</div>
+      <div style="color:#2d7d46">/:market/warnings/[brand]/[model] → 车型警告灯详情</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>数据库表设计</h3>
+  <div class="mockup">
+    <div class="mockup-header">mf_nv_warning_lights</div>
+    <div class="mockup-body" style="font-family:monospace;font-size:12px;line-height:1.8">
+      <div><span style="color:#888">id</span>            serial PK</div>
+      <div><span style="color:#888">brand_id</span>      varchar(50) → brands.brand_id</div>
+      <div><span style="color:#888">model_id</span>      varchar(100) nullable → models.model_id</div>
+      <div><span style="color:#888">category</span>      varchar(50)  <span style="color:#888">// 电池与充电 | 制动系统 | 驾驶辅助…</span></div>
+      <div><span style="color:#888">name_en</span>       varchar(200) <span style="color:#888">// "Battery Fault Warning"</span></div>
+      <div><span style="color:#888">name_cn</span>       varchar(200) <span style="color:#888">// "动力电池故障警告灯"</span></div>
+      <div><span style="color:#888">severity</span>      varchar(10)  <span style="color:#888">// INFO | WARNING | CRITICAL</span></div>
+      <div><span style="color:#888">description_en</span> text        <span style="color:#888">// 含义说明</span></div>
+      <div><span style="color:#888">causes</span>        json         <span style="color:#888">// string[]</span></div>
+      <div><span style="color:#888">can_drive</span>     varchar(20)  <span style="color:#888">// yes | no | caution</span></div>
+      <div><span style="color:#888">action_en</span>     text         <span style="color:#888">// 建议操作</span></div>
+      <div><span style="color:#888">is_model_specific</span> boolean  <span style="color:#888">// 车型专属 vs 品牌通用</span></div>
+    </div>
+  </div>
+  <div class="mockup" style="margin-top:10px">
+    <div class="mockup-header">mf_nv_warning_light_dtc_links（关联表）</div>
+    <div class="mockup-body" style="font-family:monospace;font-size:12px;line-height:1.8">
+      <div><span style="color:#888">warning_light_id</span>  int → warning_lights.id</div>
+      <div><span style="color:#888">dtc_id</span>            int → dtcs.dtc_id</div>
+      <div><span style="color:#888">PRIMARY KEY</span> (warning_light_id, dtc_id)</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>页面层级关系</h3>
+  <div class="mockup">
+    <div class="mockup-header">用户路径</div>
+    <div class="mockup-body" style="font-size:13px;line-height:2">
+      <div>Model 页 <code>/au/models/byd-atto-3</code></div>
+      <div style="padding-left:20px;color:#888">↓ More Resources → Warning Lights 入口链接</div>
+      <div style="padding-left:20px">车型警告灯页 <code>/au/warnings/byd/byd-atto-3</code></div>
+      <div style="padding-left:40px;color:#888">↓ 每条警告灯 → 关联 DTC 故障码链接</div>
+      <div style="padding-left:40px">DTC 详情页 <code>/au/dtc/byd-atto-3/b1234</code></div>
+    </div>
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top:24px">这个架构和数据模型看起来对吗？有需要调整的地方吗？</p>

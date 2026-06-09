@@ -1,0 +1,40 @@
+<h2>警告灯功能 — 3 个实现方案</h2>
+<p class="subtitle">选择你倾向的整体架构方向</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>警告灯独立模块</h3>
+      <p>新建独立路由 <code>/[market]/warnings/[brand]</code> 和 <code>/[market]/warnings/[brand]/[model]</code>，与 DTC、charging、service 并列，作为完全独立的功能模块。</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>优点</h4><ul><li>结构清晰，易于 SEO 独立优化</li><li>不影响现有页面</li><li>可独立扩展到其他品牌</li></ul></div>
+        <div class="cons"><h4>缺点</h4><ul><li>用户需要多一层导航才能发现</li><li>与 DTC 的关联靠链接维持，不够紧密</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>嵌入 Model 页面</h3>
+      <p>在现有 <code>/[market]/models/[slug]</code> 页面里增加"Warning Lights"section，不新建路由，警告灯作为 model 详情的一部分展示。</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>优点</h4><ul><li>用户在 model 页就能看到所有信息</li><li>无需额外路由</li></ul></div>
+        <div class="cons"><h4>缺点</h4><ul><li>model 页会更长更重</li><li>无法做品牌级汇总页</li><li>SEO 价值分散</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>独立模块 + Model 页摘要（推荐）</h3>
+      <p>新建独立的 warnings 路由（品牌 + 车型两层），同时在 model 页的 "More Resources" 区域加入警告灯入口链接。结构与现有 problems/charging/service 完全一致。</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>优点</h4><ul><li>与现有架构模式完全一致</li><li>独立 SEO 价值（"BYD Atto 3 warning lights"）</li><li>品牌汇总页可做内链枢纽</li><li>model 页保持轻量，通过链接引流</li></ul></div>
+        <div class="cons"><h4>缺点</h4><ul><li>新建文件较多（brand page + model page）</li></ul></div>
+      </div>
+    </div>
+  </div>
+</div>

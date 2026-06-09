@@ -1,0 +1,3 @@
+{"type":"server-started","port":53691,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:53691","screen_dir":"/Users/zqr/trunk/ev-aftermarket/.superpowers/brainstorm/31695-1780988037/content","state_dir":"/Users/zqr/trunk/ev-aftermarket/.superpowers/brainstorm/31695-1780988037/state"}
+{"type":"screen-added","file":"/Users/zqr/trunk/ev-aftermarket/.superpowers/brainstorm/31695-1780988037/content/design-architecture.html"}
+{"type":"server-stopped","reason":"idle timeout"}

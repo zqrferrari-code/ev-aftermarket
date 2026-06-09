@@ -13,12 +13,12 @@ export const dynamicParams = true
 export async function generateStaticParams() {
   const markets = await getActiveMarketCodes()
   const brands = await getWarningLightBrands()
-  const params: { market: string; brand: string; light: string }[] = []
+  const params: { market: string; brand: string; slug: string }[] = []
   for (const brand of brands) {
     const slugs = await getWarningLightSlugs(brand)
     for (const market of markets) {
-      for (const light of slugs) {
-        params.push({ market, brand, light })
+      for (const slug of slugs) {
+        params.push({ market, brand, slug })
       }
     }
   }
@@ -26,7 +26,7 @@ export async function generateStaticParams() {
 }
 
 interface Props {
-  params: Promise<{ market: string; brand: string; light: string }>
+  params: Promise<{ market: string; brand: string; slug: string }>
 }
 
 const BRAND_LABELS: Record<string, string> = { byd: 'BYD', mg: 'MG' }
@@ -39,13 +39,13 @@ const CAN_DRIVE_CONFIG = {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { market, brand, light } = await params
-  const wl = await getWarningLightBySlug(brand, light)
+  const { market, brand, slug } = await params
+  const wl = await getWarningLightBySlug(brand, slug)
   if (!wl) return {}
   const brandLabel = BRAND_LABELS[brand] ?? brand.toUpperCase()
   const title = `${wl.name_en} Warning Light — ${brandLabel} | EVAftermarket`
   const description = `${wl.name_cn ? wl.name_cn + ' — ' : ''}${wl.description_en?.slice(0, 140) ?? 'Warning light meaning, causes and what to do.'}`
-  const url = `${BASE_URL}/${market}/warnings/${brand}/${light}`
+  const url = `${BASE_URL}/${market}/warnings/${brand}/detail/${slug}`
   return {
     title,
     description,
@@ -56,8 +56,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function WarningLightDetailPage({ params }: Props) {
-  const { market, brand, light } = await params
-  const wl = await getWarningLightBySlug(brand, light)
+  const { market, brand, slug } = await params
+  const wl = await getWarningLightBySlug(brand, slug)
   if (!wl) notFound()
 
   const brandLabel = BRAND_LABELS[brand] ?? brand.toUpperCase()
