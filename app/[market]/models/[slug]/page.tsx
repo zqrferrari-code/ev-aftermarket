@@ -395,6 +395,30 @@ export default async function ModelPage({
             <span style={{ color: 'var(--green)', fontSize: '18px' }}>›</span>
           </a>
 
+          <a
+            href={`/${market}/warnings/${model.brand_id}/${slug}`}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '12px 16px',
+              border: '1px solid var(--border-soft)',
+              borderRadius: '6px',
+              textDecoration: 'none',
+              background: 'oklch(99% 0 0)',
+            }}
+          >
+            <div>
+              <div style={{ fontWeight: 600, fontSize: '14px', color: 'oklch(22% 0.01 60)', marginBottom: '2px' }}>
+                Warning Lights
+              </div>
+              <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                Dashboard warning light meanings and what to do
+              </div>
+            </div>
+            <span style={{ color: 'var(--green)', fontSize: '18px' }}>›</span>
+          </a>
+
           {market === 'au' && (
             <a
               href={`/${market}/dealers/${model.brand_id}/nsw`}
