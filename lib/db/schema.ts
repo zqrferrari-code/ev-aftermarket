@@ -206,3 +206,29 @@ export const pendingServiceCosts = mysqlTable('mf_nv_pending_service_costs', {
   status: varchar('status', { length: 20 }).default('pending'),
   created_at: timestamp('created_at').defaultNow(),
 })
+
+// ─── 警告灯表 ──────────────────────────────────────────────────────────────────
+export const warningLights = mysqlTable('mf_nv_warning_lights', {
+  id: serial('id').primaryKey(),
+  brand_id: varchar('brand_id', { length: 50 }).references(() => brands.brand_id).notNull(),
+  model_id: varchar('model_id', { length: 100 }).references(() => models.model_id),
+  category: varchar('category', { length: 50 }).notNull(),
+  name_en: varchar('name_en', { length: 200 }).notNull(),
+  name_cn: varchar('name_cn', { length: 200 }),
+  severity: varchar('severity', { length: 10 }),   // INFO | WARNING | CRITICAL
+  description_en: text('description_en'),
+  causes: json('causes'),                            // string[]
+  can_drive: varchar('can_drive', { length: 20 }),   // yes | no | caution
+  action_en: text('action_en'),
+}, (t) => [
+  index('idx_mf_nv_wl_brand_id').on(t.brand_id),
+  index('idx_mf_nv_wl_model_id').on(t.model_id),
+])
+
+// ─── 警告灯-故障码关联表 ──────────────────────────────────────────────────────
+export const warningLightDtcLinks = mysqlTable('mf_nv_warning_light_dtc_links', {
+  warning_light_id: int('warning_light_id').references(() => warningLights.id).notNull(),
+  dtc_id: int('dtc_id').references(() => dtcs.dtc_id).notNull(),
+}, (t) => [
+  primaryKey({ columns: [t.warning_light_id, t.dtc_id] }),
+])
