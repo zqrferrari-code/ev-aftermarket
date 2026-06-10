@@ -1,28 +1,32 @@
 /**
  * Scrape BYD warning light data from dianchema.com
  * Extracts: code (BYD_WL_xxx), name_en, description_cn, action_cn
- * Translates CN→EN via Claude API
+ * Translates CN→EN via LiteLLM
  * Matches to DB records by name_en and updates code + description_en + action_en
  *
  * Usage:
- *   ANTHROPIC_API_KEY=xxx dotenv -e .env.local -- tsx scripts/scrape-dianchema-wl.ts
+ *   npx tsx --env-file=.env.local scripts/scrape-dianchema-wl.ts
  *   Or dry run (no DB writes):
- *   ANTHROPIC_API_KEY=xxx dotenv -e .env.local -- tsx scripts/scrape-dianchema-wl.ts --dry-run
+ *   npx tsx --env-file=.env.local scripts/scrape-dianchema-wl.ts --dry-run
  */
 import 'dotenv/config'
-import Anthropic from '@anthropic-ai/sdk'
+import OpenAI from 'openai'
 import { db } from '../lib/db/index'
 import { warningLights } from '../lib/db/schema'
 import { eq } from 'drizzle-orm'
-import { writeFileSync } from 'fs'
+import { writeFileSync, readFileSync } from 'fs'
+import { join } from 'path'
 
 const BASE_URL = 'https://dianchema.com'
 const BRAND = 'byd'
 const DRY_RUN = process.argv.includes('--dry-run')
+const TRANSLATE_MODEL = 'pub-kimi-k2.5'
 
 const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+// Load LiteLLM config from ev-pipeline
+const llmConfig = JSON.parse(readFileSync(join(process.env.HOME!, 'trunk/ev-pipeline/llm-config.json'), 'utf8'))
+const llm = new OpenAI({ apiKey: llmConfig.llm_api_key, baseURL: llmConfig.llm_base_url })
 
 async function fetchHtml(url: string): Promise<string> {
   const res = await fetch(url, { headers: { 'User-Agent': UA } })
@@ -90,19 +94,21 @@ async function scrapeLightPage(url: string): Promise<ScrapedLight | null> {
   }
 }
 
-async function getCategoryUrls(categoryPath: string): Promise<string[]> {
-  const html = await fetchHtml(`${BASE_URL}${categoryPath}`)
+async function getAllLightUrls(): Promise<string[]> {
+  const html = await fetchHtml(`${BASE_URL}/${BRAND}/`)
   const matches = [...html.matchAll(/href="(\/byd\/[^"/]+\/byd-(?:wl|fp)-\d+\/)"/g)]
   return [...new Set(matches.map((m) => BASE_URL + m[1]))]
 }
 
 async function translateToEnglish(texts: { description_cn: string; action_cn: string }): Promise<{ description_en: string; action_en: string }> {
-  const response = await anthropic.messages.create({
-    model: 'claude-haiku-4-5-20251001',
-    max_tokens: 800,
-    messages: [{
-      role: 'user',
-      content: `Translate the following Chinese automotive warning light texts to natural English for Australian EV owners. Return JSON only with "description_en" and "action_en" keys.
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      const response = await llm.chat.completions.create({
+        model: TRANSLATE_MODEL,
+        max_tokens: 800,
+        messages: [{
+          role: 'user',
+          content: `Translate the following Chinese automotive warning light texts to natural English for Australian EV owners. Return JSON only with "description_en" and "action_en" keys.
 
 Description (what the light means):
 ${texts.description_cn}
@@ -111,16 +117,26 @@ Action (what to do):
 ${texts.action_cn}
 
 Return only valid JSON, no markdown fences.`,
-    }],
-  })
-
-  const text = response.content[0].type === 'text' ? response.content[0].text : ''
-  try {
-    return JSON.parse(text)
-  } catch {
-    console.error('  Translation parse error:', text.slice(0, 100))
-    return { description_en: '', action_en: '' }
+        }],
+      })
+      const text = response.choices[0]?.message?.content ?? ''
+      try {
+        return JSON.parse(text)
+      } catch {
+        console.error('  Translation parse error:', text.slice(0, 100))
+        return { description_en: '', action_en: '' }
+      }
+    } catch (e: any) {
+      if (attempt < 3) {
+        console.error(`  Translate attempt ${attempt} failed, retrying in 3s...`)
+        await new Promise((r) => setTimeout(r, 3000))
+      } else {
+        console.error('  Translation failed after 3 attempts:', e?.message ?? e)
+        return { description_en: '', action_en: '' }
+      }
+    }
   }
+  return { description_en: '', action_en: '' }
 }
 
 async function findDbRecord(nameEn: string, nameCn: string): Promise<number | null> {
@@ -154,16 +170,9 @@ async function findDbRecord(nameEn: string, nameCn: string): Promise<number | nu
 }
 
 async function main() {
-  const categories = ['/byd/adas/', '/byd/battery/', '/byd/brake/', '/byd/chassis/', '/byd/engine/', '/byd/lighting/', '/byd/powertrain/', '/byd/safety/', '/byd/thermal/', '/byd/vehicle/']
-
   console.log('Collecting warning light URLs...')
-  const allUrls: string[] = []
-  for (const cat of categories) {
-    const urls = await getCategoryUrls(cat)
-    console.log(`  ${cat}: ${urls.length} lights`)
-    allUrls.push(...urls)
-  }
-  console.log(`Total: ${allUrls.length} URLs\n`)
+  const allUrls = await getAllLightUrls()
+  console.log(`Total: ${allUrls.length} unique URLs\n`)
 
   const results: Array<ScrapedLight & { description_en: string; action_en: string; matched_id: number | null }> = []
 
