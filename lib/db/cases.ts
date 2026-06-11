@@ -1,29 +1,11 @@
-import { eq, and, count } from 'drizzle-orm'
-import { db } from './index'
-import { cases } from './schema'
+import { sb } from './index'
 
-const CASE_FIELDS = {
-  case_id: cases.case_id,
-  model_id: cases.model_id,
-  market_code: cases.market_code,
-  content_type: cases.content_type,
-  source_type: cases.source_type,
-  source_name: cases.source_name,
-  source_url: cases.source_url,
-  source_language: cases.source_language,
-  location: cases.location,
-  report_date: cases.report_date,
-  vehicle_desc: cases.vehicle_desc,
-  symptom_summary: cases.symptom_summary,
-  resolution: cases.resolution,
-  cost_info: cases.cost_info,
-  confidence: cases.confidence,
-  translated_by: cases.translated_by,
-}
+const CASE_SELECT =
+  'case_id, model_id, market_code, content_type, source_type, source_name, source_url, source_language, location, report_date, vehicle_desc, symptom_summary, resolution, cost_info, confidence, translated_by'
 
 function dedup<T extends { symptom_summary: string }>(rows: T[]): T[] {
   const seen = new Set<string>()
-  return rows.filter(r => {
+  return rows.filter((r) => {
     const key = r.symptom_summary.slice(0, 100)
     if (seen.has(key)) return false
     seen.add(key)
@@ -32,51 +14,43 @@ function dedup<T extends { symptom_summary: string }>(rows: T[]): T[] {
 }
 
 export async function getProblemCasesForModel(modelId: string, market: string) {
-  const rows = await db
-    .select(CASE_FIELDS)
-    .from(cases)
-    .where(
-      and(
-        eq(cases.model_id, modelId),
-        eq(cases.market_code, market),
-        eq(cases.content_type, 'problem')
-      )
-    )
-  return dedup(rows)
+  const { data, error } = await sb
+    .from('mf_nv_cases')
+    .select(CASE_SELECT)
+    .eq('model_id', modelId)
+    .eq('market_code', market)
+    .eq('content_type', 'problem')
+  if (error) throw error
+  return dedup(data ?? [])
 }
 
 export async function getChargingCasesForModel(modelId: string, market: string) {
-  const rows = await db
-    .select(CASE_FIELDS)
-    .from(cases)
-    .where(
-      and(
-        eq(cases.model_id, modelId),
-        eq(cases.market_code, market),
-        eq(cases.content_type, 'charging')
-      )
-    )
-  return dedup(rows)
+  const { data, error } = await sb
+    .from('mf_nv_cases')
+    .select(CASE_SELECT)
+    .eq('model_id', modelId)
+    .eq('market_code', market)
+    .eq('content_type', 'charging')
+  if (error) throw error
+  return dedup(data ?? [])
 }
 
 export async function getServiceCasesForModel(modelId: string, market: string) {
-  const rows = await db
-    .select(CASE_FIELDS)
-    .from(cases)
-    .where(
-      and(
-        eq(cases.model_id, modelId),
-        eq(cases.market_code, market),
-        eq(cases.content_type, 'service')
-      )
-    )
-  return dedup(rows)
+  const { data, error } = await sb
+    .from('mf_nv_cases')
+    .select(CASE_SELECT)
+    .eq('model_id', modelId)
+    .eq('market_code', market)
+    .eq('content_type', 'service')
+  if (error) throw error
+  return dedup(data ?? [])
 }
 
 export async function getProblemCasesCount(): Promise<number> {
-  const [row] = await db
-    .select({ value: count() })
-    .from(cases)
-    .where(eq(cases.content_type, 'problem'))
-  return row?.value ?? 0
+  const { count, error } = await sb
+    .from('mf_nv_cases')
+    .select('*', { count: 'exact', head: true })
+    .eq('content_type', 'problem')
+  if (error) throw error
+  return count ?? 0
 }

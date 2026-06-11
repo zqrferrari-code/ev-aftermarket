@@ -214,7 +214,7 @@ export default async function DtcCodePage({ params }: Props) {
             )}
             {dtc.description_en && (
               <div className="detail-description">
-                {dtc.description_en.split(/(?<=\.)\s+(?=[A-Z])/).map((para, i) => (
+                {dtc.description_en.split(/(?<=\.)\s+(?=[A-Z])/).map((para: string, i: number) => (
                   <p key={i}>{para}</p>
                 ))}
               </div>

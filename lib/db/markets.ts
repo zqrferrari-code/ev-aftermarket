@@ -1,16 +1,18 @@
-import { eq } from 'drizzle-orm'
-import { db } from './index'
-import { markets } from './schema'
+import { sb } from './index'
 
 export async function getAllMarkets() {
-  return db.select().from(markets).where(eq(markets.active, true))
+  const { data, error } = await sb.from('mf_nv_markets').select('*').eq('active', true)
+  if (error) throw error
+  return data ?? []
 }
 
 export async function getMarket(marketCode: string) {
-  const rows = await db
-    .select()
-    .from(markets)
-    .where(eq(markets.market_code, marketCode))
+  const { data, error } = await sb
+    .from('mf_nv_markets')
+    .select('*')
+    .eq('market_code', marketCode)
     .limit(1)
-  return rows[0] ?? null
+    .single()
+  if (error) return null
+  return data
 }

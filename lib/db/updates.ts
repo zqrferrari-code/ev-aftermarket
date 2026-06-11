@@ -1,25 +1,19 @@
-import { eq, and, desc, isNotNull } from 'drizzle-orm'
-import { db } from './index'
-import { softwareUpdates, models } from './schema'
+import { sb } from './index'
 
 export async function getUpdatesForModel(modelId: string, marketCode?: string) {
+  let query = sb
+    .from('mf_nv_software_updates')
+    .select('*')
+    .eq('model_id', modelId)
+    .order('release_date', { ascending: false })
+
   if (marketCode) {
-    return db
-      .select()
-      .from(softwareUpdates)
-      .where(
-        and(
-          eq(softwareUpdates.model_id, modelId),
-          eq(softwareUpdates.market_code, marketCode)
-        )
-      )
-      .orderBy(desc(softwareUpdates.release_date))
+    query = query.eq('market_code', marketCode)
   }
-  return db
-    .select()
-    .from(softwareUpdates)
-    .where(eq(softwareUpdates.model_id, modelId))
-    .orderBy(desc(softwareUpdates.release_date))
+
+  const { data, error } = await query
+  if (error) throw error
+  return data ?? []
 }
 
 export async function getLatestUpdate(modelId: string, marketCode?: string) {
@@ -27,28 +21,48 @@ export async function getLatestUpdate(modelId: string, marketCode?: string) {
   return rows[0] ?? null
 }
 
-// 计划二别名
 export const getUpdatesByModel = getUpdatesForModel
 
 export async function getAllUpdateModelVersionPairs(): Promise<{ model_id: string; model_slug: string; version: string; market_code: string | null }[]> {
-  const rows = await db
-    .select({
-      model_id: softwareUpdates.model_id,
-      model_slug: models.slug,
-      version: softwareUpdates.version,
-      market_code: softwareUpdates.market_code,
-    })
-    .from(softwareUpdates)
-    .innerJoin(models, eq(softwareUpdates.model_id, models.model_id))
-    .where(isNotNull(softwareUpdates.model_id))
-  return rows as { model_id: string; model_slug: string; version: string; market_code: string | null }[]
+  // Fetch software_updates, then join with models in JS
+  const { data: updates, error: updatesError } = await sb
+    .from('mf_nv_software_updates')
+    .select('model_id, version, market_code')
+    .not('model_id', 'is', null)
+  if (updatesError) throw updatesError
+
+  const modelIds = [...new Set((updates ?? []).map((u) => u.model_id).filter(Boolean))]
+  if (modelIds.length === 0) return []
+
+  const { data: modelsData, error: modelsError } = await sb
+    .from('mf_nv_models')
+    .select('model_id, slug')
+    .in('model_id', modelIds)
+  if (modelsError) throw modelsError
+
+  const slugMap = new Map<string, string>()
+  for (const m of modelsData ?? []) {
+    slugMap.set(m.model_id, m.slug)
+  }
+
+  return (updates ?? [])
+    .filter((u) => u.model_id && slugMap.has(u.model_id))
+    .map((u) => ({
+      model_id: u.model_id as string,
+      model_slug: slugMap.get(u.model_id!)!,
+      version: u.version,
+      market_code: u.market_code,
+    }))
 }
 
 export async function getUpdateByVersion(modelId: string, version: string) {
-  const rows = await db
-    .select()
-    .from(softwareUpdates)
-    .where(and(eq(softwareUpdates.model_id, modelId), eq(softwareUpdates.version, version)))
+  const { data, error } = await sb
+    .from('mf_nv_software_updates')
+    .select('*')
+    .eq('model_id', modelId)
+    .eq('version', version)
     .limit(1)
-  return rows[0] ?? null
+    .single()
+  if (error) return null
+  return data
 }
