@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getWarningLightsForBrand } from '@/lib/db/warning-lights'
-import { getWarningLightBrands, getActiveMarketCodes } from '@/lib/db/static-params'
+import { getWarningLightBrands } from '@/lib/db/static-params'
 import { getAllModelsWithBrand } from '@/lib/db/models'
 import { SeverityBadge } from '@/components/SeverityBadge'
 import { BASE_URL } from '@/lib/config'
@@ -11,10 +11,8 @@ export const revalidate = 1800
 export const dynamicParams = true
 
 export async function generateStaticParams() {
-  const [markets, brands] = await Promise.all([
-    getActiveMarketCodes(),
-    getWarningLightBrands(),
-  ])
+  const markets = ['au']
+  const brands = await getWarningLightBrands()
   return markets.flatMap((market) => brands.map((brand) => ({ market, brand })))
 }
 

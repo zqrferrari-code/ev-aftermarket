@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getWarningLightsForModel } from '@/lib/db/warning-lights'
 import { getModelBySlug } from '@/lib/db/models'
-import { getWarningLightBrands, getWarningLightModelSlugs, getActiveMarketCodes } from '@/lib/db/static-params'
+import { getWarningLightBrands, getWarningLightModelSlugs } from '@/lib/db/static-params'
 import { SeverityBadge } from '@/components/SeverityBadge'
 import { DisclaimerBox } from '@/components/DisclaimerBox'
 import { BASE_URL } from '@/lib/config'
@@ -12,7 +12,7 @@ export const revalidate = 1800
 export const dynamicParams = true
 
 export async function generateStaticParams() {
-  const markets = await getActiveMarketCodes()
+  const markets = ['au']
   const brands = await getWarningLightBrands()
   const pairs: { market: string; brand: string; model: string }[] = []
   for (const brand of brands) {

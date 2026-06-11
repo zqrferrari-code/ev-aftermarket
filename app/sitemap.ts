@@ -123,11 +123,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })
   }
 
-  // Warning lights — brand pages
-  for (const market of markets) {
-    for (const brand of wlBrands) {
+  // Warning lights — AU only (brand pages)
+  for (const brand of wlBrands) {
+    pages.push({
+      url: `${BASE_URL}/au/warnings/${brand}`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.8,
+    })
+  }
+
+  // Warning lights — AU only (model pages)
+  for (const brand of wlBrands) {
+    const modelSlugsForBrand = await getWarningLightModelSlugs(brand)
+    for (const slug of modelSlugsForBrand) {
       pages.push({
-        url: `${BASE_URL}/${market.market_code}/warnings/${brand}`,
+        url: `${BASE_URL}/au/warnings/${brand}/${slug}`,
         lastModified: new Date(),
         changeFrequency: 'monthly' as const,
         priority: 0.8,
@@ -135,33 +146,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  // Warning lights — model pages
-  for (const market of markets) {
-    for (const brand of wlBrands) {
-      const modelSlugsForBrand = await getWarningLightModelSlugs(brand)
-      for (const slug of modelSlugsForBrand) {
-        pages.push({
-          url: `${BASE_URL}/${market.market_code}/warnings/${brand}/${slug}`,
-          lastModified: new Date(),
-          changeFrequency: 'monthly' as const,
-          priority: 0.8,
-        })
-      }
-    }
-  }
-
-  // Warning lights — detail pages
-  for (const market of markets) {
-    for (const brand of wlBrands) {
-      const slugs = await getWarningLightSlugs(brand)
-      for (const slug of slugs) {
-        pages.push({
-          url: `${BASE_URL}/${market.market_code}/warnings/${brand}/detail/${slug}`,
-          lastModified: new Date(),
-          changeFrequency: 'monthly' as const,
-          priority: 0.8,
-        })
-      }
+  // Warning lights — AU only (detail pages)
+  for (const brand of wlBrands) {
+    const slugs = await getWarningLightSlugs(brand)
+    for (const slug of slugs) {
+      pages.push({
+        url: `${BASE_URL}/au/warnings/${brand}/detail/${slug}`,
+        lastModified: new Date(),
+        changeFrequency: 'monthly' as const,
+        priority: 0.8,
+      })
     }
   }
 
