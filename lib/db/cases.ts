@@ -59,6 +59,20 @@ export async function getChargingCasesForModel(modelId: string, market: string) 
   return dedup(rows)
 }
 
+export async function getServiceCasesForModel(modelId: string, market: string) {
+  const rows = await db
+    .select(CASE_FIELDS)
+    .from(cases)
+    .where(
+      and(
+        eq(cases.model_id, modelId),
+        eq(cases.market_code, market),
+        eq(cases.content_type, 'service')
+      )
+    )
+  return dedup(rows)
+}
+
 export async function getProblemCasesCount(): Promise<number> {
   const [row] = await db
     .select({ value: count() })

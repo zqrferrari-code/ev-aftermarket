@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getModelBySlug } from '@/lib/db/models'
+import { getServiceCasesForModel } from '@/lib/db/cases'
 import { VEHICLE_SPECS } from '@/lib/vehicle-specs'
 import { BASE_URL } from '@/lib/config'
 import { JsonLd } from '@/components/JsonLd'
@@ -61,6 +62,8 @@ export default async function ServicePage({ params }: Props) {
   const vehicleModel = await getModelBySlug(model)
   if (!vehicleModel) notFound()
 
+  const serviceCases = await getServiceCasesForModel(vehicleModel.model_id, market)
+
   const { serviceCost, serviceInterval, warrantyBattery } = getServiceValues(market, vehicleModel.model_id)
 
   return (
@@ -100,12 +103,25 @@ export default async function ServicePage({ params }: Props) {
           },
         ],
       }} />
-      <ServiceContent market={market} vehicleModel={vehicleModel} />
+      <ServiceContent market={market} vehicleModel={vehicleModel} serviceCases={serviceCases} />
     </>
   )
 }
 
-function ServiceContent({ market, vehicleModel }: { market: string; vehicleModel: { model_name: string; slug: string; model_id: string } }) {
+function ServiceContent({ market, vehicleModel, serviceCases }: {
+  market: string
+  vehicleModel: { model_name: string; slug: string; model_id: string }
+  serviceCases: Array<{
+    case_id: number
+    symptom_summary: string
+    resolution: string | null
+    cost_info: string | null
+    location: string | null
+    report_date: string | null
+    source_name: string | null
+    source_url: string | null
+  }>
+}) {
   const { specs, serviceCost, serviceInterval, warrantyBattery } = getServiceValues(market, vehicleModel.model_id)
   const currency = market === 'au' ? 'AUD' : market === 'uk' ? 'GBP' : market === 'uae' ? 'AED' : 'NOK'
   const brakeFluidCost = market === 'au' ? '$80–$120' : market === 'uk' ? '£60–£90' : 'Check dealer'
@@ -258,6 +274,49 @@ function ServiceContent({ market, vehicleModel }: { market: string; vehicleModel
             </p>
           </div>
         </div>
+
+        {/* Owner Service Reports */}
+        {serviceCases.length > 0 && (
+          <>
+            <div style={{ padding: '10px 28px', background: 'oklch(97.5% 0.003 60)', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border-soft)' }}>
+              <span className="section-label">Owner Service Reports ({serviceCases.length})</span>
+            </div>
+            <ul style={{ listStyle: 'none' }}>
+              {serviceCases.map((c, idx) => (
+                <li key={c.case_id} style={{ padding: '18px 28px', borderBottom: idx < serviceCases.length - 1 ? '1px solid oklch(93.5% 0.003 60)' : 'none' }}>
+                  <p style={{ fontSize: '14px', color: 'oklch(22% 0.01 60)', lineHeight: 1.6, marginBottom: c.resolution || c.cost_info || c.location ? '10px' : 0 }}>
+                    {c.symptom_summary}
+                  </p>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
+                    {c.resolution && (
+                      <div style={{ display: 'flex', gap: '6px', alignItems: 'flex-start' }}>
+                        <span style={{ fontFamily: 'var(--font-cond)', fontSize: '10.5px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'oklch(56% 0.02 60)', whiteSpace: 'nowrap', paddingTop: '1px' }}>Resolution</span>
+                        <span style={{ fontSize: '12.5px', color: 'oklch(36% 0.01 60)' }}>{c.resolution}</span>
+                      </div>
+                    )}
+                    {c.cost_info && (
+                      <div style={{ display: 'flex', gap: '6px', alignItems: 'flex-start' }}>
+                        <span style={{ fontFamily: 'var(--font-cond)', fontSize: '10.5px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'oklch(56% 0.02 60)', whiteSpace: 'nowrap', paddingTop: '1px' }}>Cost</span>
+                        <span style={{ fontSize: '12.5px', color: 'oklch(36% 0.01 60)' }}>{c.cost_info}</span>
+                      </div>
+                    )}
+                    {c.location && (
+                      <div style={{ display: 'flex', gap: '6px', alignItems: 'flex-start' }}>
+                        <span style={{ fontFamily: 'var(--font-cond)', fontSize: '10.5px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'oklch(56% 0.02 60)', whiteSpace: 'nowrap', paddingTop: '1px' }}>Location</span>
+                        <span style={{ fontSize: '12.5px', color: 'oklch(36% 0.01 60)' }}>{c.location}</span>
+                      </div>
+                    )}
+                  </div>
+                  <div style={{ marginTop: '8px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                    {c.source_name && <span style={{ fontSize: '11px', color: 'var(--text-faint)' }}>via {c.source_name}</span>}
+                    {c.report_date && <span style={{ fontSize: '11px', color: 'var(--text-faint)' }}>{c.report_date}</span>}
+                    {c.source_url && <a href={c.source_url} target="_blank" rel="noopener noreferrer" style={{ fontSize: '11px', color: 'var(--green)', textDecoration: 'none' }}>Source →</a>}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
 
         {/* Service FAQ */}
         <div style={{ padding: '10px 28px', background: 'oklch(97.5% 0.003 60)', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border-soft)' }}>
