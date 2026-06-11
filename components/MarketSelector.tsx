@@ -5,9 +5,6 @@ import { usePathname } from 'next/navigation'
 
 const MARKETS = [
   { code: 'au', label: 'AU' },
-  { code: 'uk', label: 'UK' },
-  { code: 'uae', label: 'UAE' },
-  { code: 'no', label: 'NO' },
 ]
 
 export function MarketSelector({ currentMarket }: { currentMarket: string }) {
