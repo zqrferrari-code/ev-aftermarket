@@ -2,15 +2,17 @@ import type { MetadataRoute } from 'next'
 import { getAllMarkets } from '@/lib/db/markets'
 import { getAllModelSlugs } from '@/lib/db/models'
 import { getAllDTCCodesForSitemap } from '@/lib/db/dtcs'
+import { getWarningLightBrands, getWarningLightSlugs, getWarningLightModelSlugs } from '@/lib/db/static-params'
 import { BASE_URL } from '@/lib/config'
 
 export const revalidate = 3600
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [markets, modelSlugs, dtcRows] = await Promise.all([
+  const [markets, modelSlugs, dtcRows, wlBrands] = await Promise.all([
     getAllMarkets(),
     getAllModelSlugs(),
     getAllDTCCodesForSitemap(),
+    getWarningLightBrands(),
   ])
 
   const pages: MetadataRoute.Sitemap = []
@@ -82,6 +84,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
+  // Software updates pages
+  for (const market of markets) {
+    for (const model of modelSlugs) {
+      pages.push({
+        url: `${BASE_URL}/${market.market_code}/updates/${model.slug}`,
+        lastModified: new Date(),
+        changeFrequency: 'weekly' as const,
+        priority: 0.7,
+      })
+    }
+  }
+
   // DTC list pages — one per market × model combination present in dtcModelNotes
   const modelMarketPairs = new Set(
     dtcRows
@@ -107,6 +121,48 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'monthly' as const,
       priority: 0.7,
     })
+  }
+
+  // Warning lights — brand pages
+  for (const market of markets) {
+    for (const brand of wlBrands) {
+      pages.push({
+        url: `${BASE_URL}/${market.market_code}/warnings/${brand}`,
+        lastModified: new Date(),
+        changeFrequency: 'monthly' as const,
+        priority: 0.8,
+      })
+    }
+  }
+
+  // Warning lights — model pages
+  for (const market of markets) {
+    for (const brand of wlBrands) {
+      const modelSlugsForBrand = await getWarningLightModelSlugs(brand)
+      for (const slug of modelSlugsForBrand) {
+        pages.push({
+          url: `${BASE_URL}/${market.market_code}/warnings/${brand}/${slug}`,
+          lastModified: new Date(),
+          changeFrequency: 'monthly' as const,
+          priority: 0.8,
+        })
+      }
+    }
+  }
+
+  // Warning lights — detail pages
+  for (const market of markets) {
+    for (const brand of wlBrands) {
+      const slugs = await getWarningLightSlugs(brand)
+      for (const slug of slugs) {
+        pages.push({
+          url: `${BASE_URL}/${market.market_code}/warnings/${brand}/detail/${slug}`,
+          lastModified: new Date(),
+          changeFrequency: 'monthly' as const,
+          priority: 0.8,
+        })
+      }
+    }
   }
 
   // Dealers pages — AU only for now, BYD + MG × 5 states

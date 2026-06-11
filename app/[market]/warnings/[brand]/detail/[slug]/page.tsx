@@ -4,6 +4,7 @@ import { getWarningLightBySlug } from '@/lib/db/warning-lights'
 import { getWarningLightBrands, getWarningLightSlugs, getActiveMarketCodes } from '@/lib/db/static-params'
 import { SeverityBadge } from '@/components/SeverityBadge'
 import { DisclaimerBox } from '@/components/DisclaimerBox'
+import { JsonLd } from '@/components/JsonLd'
 import { BASE_URL } from '@/lib/config'
 import type { Severity } from '@/lib/types'
 
@@ -63,8 +64,49 @@ export default async function WarningLightDetailPage({ params }: Props) {
   const brandLabel = BRAND_LABELS[brand] ?? brand.toUpperCase()
   const canDriveCfg = wl.can_drive ? CAN_DRIVE_CONFIG[wl.can_drive] : null
   const causes = wl.causes ?? []
+  const pageUrl = `${BASE_URL}/${market}/warnings/${brand}/detail/${slug}`
+
+  const canDriveAnswer =
+    wl.can_drive === 'no' ? 'No — stop driving immediately and contact a dealer.'
+    : wl.can_drive === 'caution' ? 'Drive with caution. Reduce speed, avoid heavy loads, and visit a dealer soon.'
+    : 'Yes — safe to continue driving, but monitor and schedule a check-up.'
+
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      ...(wl.description_en ? [{
+        '@type': 'Question',
+        name: `What does the ${wl.name_en} mean on a ${brandLabel}?`,
+        acceptedAnswer: { '@type': 'Answer', text: wl.description_en },
+      }] : []),
+      {
+        '@type': 'Question',
+        name: `Can I drive with the ${wl.name_en} on?`,
+        acceptedAnswer: { '@type': 'Answer', text: canDriveAnswer },
+      },
+      ...(wl.action_en ? [{
+        '@type': 'Question',
+        name: `What should I do when the ${wl.name_en} comes on?`,
+        acceptedAnswer: { '@type': 'Answer', text: wl.action_en },
+      }] : []),
+    ],
+  }
+
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: MARKET_LABELS[market] ?? market.toUpperCase(), item: `${BASE_URL}/${market}` },
+      { '@type': 'ListItem', position: 2, name: `${brandLabel} Warning Lights`, item: `${BASE_URL}/${market}/warnings/${brand}` },
+      { '@type': 'ListItem', position: 3, name: wl.name_en, item: pageUrl },
+    ],
+  }
 
   return (
+    <>
+      <JsonLd schema={faqSchema} />
+      <JsonLd schema={breadcrumbSchema} />
     <div className="page-wrapper">
       <article className="dtc-card">
 
@@ -204,5 +246,6 @@ export default async function WarningLightDetailPage({ params }: Props) {
         <DisclaimerBox confidence="community" sourceUrls={[]} />
       </article>
     </div>
+    </>
   )
 }
