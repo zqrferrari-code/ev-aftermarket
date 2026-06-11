@@ -8,8 +8,6 @@ import { JsonLd } from '@/components/JsonLd'
 import { BASE_URL } from '@/lib/config'
 import type { Severity } from '@/lib/types'
 
-export const revalidate = 1800
-export const dynamicParams = true
 
 export async function generateStaticParams() {
   const markets = ['au']

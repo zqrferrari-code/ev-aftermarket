@@ -8,8 +8,6 @@ import { DisclaimerBox } from '@/components/DisclaimerBox'
 import { BASE_URL } from '@/lib/config'
 import type { Severity, WarningLightWithDtcs } from '@/lib/types'
 
-export const revalidate = 1800
-export const dynamicParams = true
 
 export async function generateStaticParams() {
   const markets = ['au']

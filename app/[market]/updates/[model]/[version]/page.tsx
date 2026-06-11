@@ -1,8 +1,21 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { getUpdateByVersion } from '@/lib/db/updates'
+import { getUpdateByVersion, getAllUpdateModelVersionPairs } from '@/lib/db/updates'
 import { getModelBySlug } from '@/lib/db/models'
+import { getActiveMarketCodes } from '@/lib/db/static-params'
+
+export async function generateStaticParams() {
+  const [pairs, markets] = await Promise.all([getAllUpdateModelVersionPairs(), getActiveMarketCodes()])
+  const params: { market: string; model: string; version: string }[] = []
+  for (const pair of pairs) {
+    const targetMarkets = pair.market_code ? [pair.market_code] : markets
+    for (const market of targetMarkets) {
+      params.push({ market, model: pair.model_slug, version: pair.version })
+    }
+  }
+  return params
+}
 
 interface Props {
   params: Promise<{ market: string; model: string; version: string }>

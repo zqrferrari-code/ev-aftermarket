@@ -5,9 +5,10 @@ import { getAllDTCCodesForSitemap } from '@/lib/db/dtcs'
 import { getWarningLightBrands, getWarningLightSlugs, getWarningLightModelSlugs } from '@/lib/db/static-params'
 import { BASE_URL } from '@/lib/config'
 
+export const dynamic = 'force-static'
+
 const DTC_EXCLUDED_MODELS = ['byd-dolphin', 'mg-mg4', 'mg-zs-ev']
 
-export const revalidate = 3600
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [markets, modelSlugs, dtcRows, wlBrands] = await Promise.all([

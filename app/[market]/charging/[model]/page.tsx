@@ -8,7 +8,6 @@ import { BASE_URL } from '@/lib/config'
 import { JsonLd } from '@/components/JsonLd'
 import { getActiveMarketCodes, getAllSlugs } from '@/lib/db/static-params'
 
-export const dynamicParams = true
 
 export async function generateStaticParams() {
   const [markets, slugs] = await Promise.all([getActiveMarketCodes(), getAllSlugs()])
@@ -19,7 +18,6 @@ interface Props {
   params: Promise<{ market: string; model: string }>
 }
 
-export const revalidate = 3600
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { market, model } = await params

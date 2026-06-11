@@ -4,6 +4,10 @@ import { BASE_URL } from '@/lib/config'
 import { JsonLd } from '@/components/JsonLd'
 import { BuyingGuideCalculator } from '@/components/BuyingGuideCalculator'
 
+export function generateStaticParams() {
+  return [{ market: 'au' }]
+}
+
 export const metadata: Metadata = {
   title: 'EV Buying Guide Australia — Stamp Duty, Drive-Away Price & Novated Lease Calculator',
   description:

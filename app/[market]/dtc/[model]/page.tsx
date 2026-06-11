@@ -8,9 +8,7 @@ import type { Severity } from '@/lib/types'
 import { BASE_URL } from '@/lib/config'
 import { getActiveMarketCodes, getAllSlugs } from '@/lib/db/static-params'
 
-export const revalidate = 3600
 
-export const dynamicParams = true
 
 export async function generateStaticParams() {
   const [markets, slugs] = await Promise.all([getActiveMarketCodes(), getAllSlugs()])

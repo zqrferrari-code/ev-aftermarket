@@ -6,9 +6,7 @@ import { getProblemCasesCount } from '@/lib/db/cases'
 import { BASE_URL } from '@/lib/config'
 import { getActiveMarketCodes } from '@/lib/db/static-params'
 
-export const revalidate = 1800
 
-export const dynamicParams = true
 
 export async function generateStaticParams() {
   const codes = await getActiveMarketCodes()

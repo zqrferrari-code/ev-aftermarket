@@ -3,20 +3,19 @@ import { notFound } from 'next/navigation'
 import { BRAND_INFO, DEALERS, STATE_LABELS } from '@/lib/dealers-data'
 import { BASE_URL } from '@/lib/config'
 import { JsonLd } from '@/components/JsonLd'
-import { getDealerStaticParams } from '@/lib/db/static-params'
 
-export const dynamicParams = true
 
-export async function generateStaticParams() {
-  const params = await getDealerStaticParams()
-  return params.map((p) => ({ market: p.market, brand: p.brand, state: p.state }))
+export function generateStaticParams() {
+  const AU_STATES = ['nsw', 'vic', 'qld', 'wa', 'sa']
+  return ['byd', 'mg'].flatMap((brand) =>
+    AU_STATES.map((state) => ({ market: 'au', brand, state }))
+  )
 }
 
 interface Props {
   params: Promise<{ market: string; brand: string; state: string }>
 }
 
-export const revalidate = 86400
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { market, brand, state } = await params
