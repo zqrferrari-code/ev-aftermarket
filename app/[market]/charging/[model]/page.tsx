@@ -492,34 +492,28 @@ function ChargingContent({ market, vehicleModel, chargingCases }: {
         )}
 
         {/* ── Recommended Home Chargers (Affiliate) ── */}
-        <section className="mt-12 border-t pt-8">
-          <h2 className="text-xl font-semibold mb-4">Recommended Home Chargers</h2>
-          <p className="text-sm text-gray-500 mb-4">
-            * Affiliate disclosure: we may earn a small commission if you purchase via these links, at no extra cost to you.
+        <SectionHeader label="Recommended Home Chargers" />
+        <div style={{ padding: '18px 28px', borderBottom: '1px solid var(--border-soft)' }}>
+          <p style={{ fontSize: '11px', color: 'var(--text-faint)', marginBottom: '14px', fontStyle: 'italic' }}>
+            Affiliate disclosure: we may earn a small commission if you purchase via these links, at no extra cost to you.
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <a
-              href="https://evnex.com/products/e2"
-              rel="sponsored noopener noreferrer"
-              target="_blank"
-              className="border rounded-lg p-4 hover:border-blue-400 transition"
-            >
-              <div className="font-semibold">EVNEX E2 — 7.2kW</div>
-              <div className="text-sm text-gray-500 mt-1">Popular in AU/NZ. Smart scheduling, app control.</div>
-              <div className="text-blue-600 text-sm mt-2">View on EVNEX →</div>
-            </a>
-            <a
-              href="https://wallbox.com/en_au/catalogue/chargers"
-              rel="sponsored noopener noreferrer"
-              target="_blank"
-              className="border rounded-lg p-4 hover:border-blue-400 transition"
-            >
-              <div className="font-semibold">Wallbox Pulsar Plus — 7.4kW</div>
-              <div className="text-sm text-gray-500 mt-1">Compact design, Bluetooth + WiFi, myWallbox app.</div>
-              <div className="text-blue-600 text-sm mt-2">View on Wallbox →</div>
-            </a>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px' }}>
+            {[
+              { name: 'EVNEX E2 — 7.2kW', note: 'Popular in AU/NZ. Smart scheduling, app control.', href: 'https://evnex.com/products/e2', cta: 'View on EVNEX →' },
+              { name: 'Wallbox Pulsar Plus — 7.4kW', note: 'Compact design, Bluetooth + WiFi, myWallbox app.', href: 'https://wallbox.com/en_au/catalogue/chargers', cta: 'View on Wallbox →' },
+            ].map((item) => (
+              <a key={item.name} href={item.href} rel="sponsored noopener noreferrer" target="_blank" style={{
+                display: 'block', padding: '14px 16px',
+                border: '1px solid var(--border-soft)', borderRadius: '6px',
+                textDecoration: 'none', background: 'oklch(99% 0.002 60)',
+              }}>
+                <div style={{ fontWeight: 700, fontSize: '13.5px', color: 'oklch(22% 0.01 60)', marginBottom: '4px' }}>{item.name}</div>
+                <div style={{ fontSize: '12.5px', color: 'oklch(46% 0.01 60)', marginBottom: '8px', lineHeight: 1.5 }}>{item.note}</div>
+                <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--green)' }}>{item.cta}</div>
+              </a>
+            ))}
           </div>
-        </section>
+        </div>
 
         {/* ── Back link ── */}
         <div style={{
