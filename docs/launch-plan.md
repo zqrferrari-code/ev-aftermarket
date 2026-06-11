@@ -12,8 +12,8 @@
 | Model overview | 32 | 4 市场 × 8 车型 |
 | Problems index | 4 | 每市场一页 |
 | Problems detail | 32 | 4 市场 × 8 车型 |
-| Charging pages | 32 | 4 市场 × 8 车型（数据待核实） |
-| Service pages | 32 | 4 市场 × 8 车型（数据待核实） |
+| Charging pages | 32 | 4 市场 × 8 车型，所有车型规格已完整 |
+| Service pages | 32 | 4 市场 × 8 车型，含 FAQ + JSON-LD + 车主报告 |
 | Updates pages | 32 | 4 市场 × 8 车型（数据稀薄，暂缓） |
 | DTC list pages | 5 | 仅 AU，5 个有完整数据的 BYD 车型 |
 | DTC detail pages | ~4,572 | 仅 AU + 5 BYD 车型 |
@@ -75,7 +75,11 @@
 
 **前提：** 第二批有明显收录信号（Search Console 展示量开始增长）
 
-**注意：** 发布前需人工抽查每个车型的 charging / service 页面内容是否足够丰富，避免 thin content
+**内容状态（已就绪）：**
+- 所有 8 个车型的充电规格已补全（含 byd-atto-8、byd-qin-plus、byd-seal-6-ev）
+- Service 页面已加入 FAQPage JSON-LD（4 条问答）+ 可见 FAQ 区域
+- Service 页面已加入 Owner Service Reports（来自 cases 表，content_type='service'）
+- Charging 页面已有公共充电网络列表、家用充电桩推荐、电池 tips、车主报告
 
 | 页面 | 数量 | sitemap priority |
 |---|---|---|
@@ -83,8 +87,8 @@
 | Service pages（4 市场 × 8 车型）| 32 | 0.8 |
 
 **操作：**
-1. 本地访问 `localhost:3000/au/charging/byd-atto-3` 等页面，确认每页有实质内容
-2. 确认无问题后解注释 sitemap 对应 section，重新提交
+1. 解注释 sitemap 对应 section，重新提交
+2. 用 Search Console「URL 检查」抽查 service 页确认 FAQPage 富摘要被识别
 
 ---
 
@@ -124,7 +128,7 @@
 | mg-zs-ev DTC 页（~900 页）| 仅 2 条记录 | 补全至 500+ 条 |
 | Updates pages（32 页）| 仅 7 条 OTA 记录 | 每车型至少 3 个版本 |
 | 非 AU 市场 warning lights | 重复内容 | 内容本地化后再开放 |
-| Service pages 内容 | serviceCosts 表为空 | 补充价格数据后发布 |
+| Service pages 内容 | ~~serviceCosts 表为空~~ FAQ + JSON-LD + 车主报告已就绪 | ✅ 可随第三批发布 |
 
 ---
 
