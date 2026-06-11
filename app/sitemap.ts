@@ -5,6 +5,8 @@ import { getAllDTCCodesForSitemap } from '@/lib/db/dtcs'
 import { getWarningLightBrands, getWarningLightSlugs, getWarningLightModelSlugs } from '@/lib/db/static-params'
 import { BASE_URL } from '@/lib/config'
 
+const DTC_EXCLUDED_MODELS = ['byd-dolphin', 'mg-mg4', 'mg-zs-ev']
+
 export const revalidate = 3600
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -99,7 +101,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // DTC list pages — one per market × model combination present in dtcModelNotes
   const modelMarketPairs = new Set(
     dtcRows
-      .filter((r) => r.market_code && r.model_slug)
+      .filter((r) => r.market_code && r.model_slug && !DTC_EXCLUDED_MODELS.includes(r.model_slug))
       .map((r) => `${r.market_code}|${r.model_slug}`)
   )
   for (const pair of modelMarketPairs) {
@@ -115,6 +117,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // DTC detail pages — one per market × model × code
   for (const row of dtcRows) {
     if (!row.market_code || !row.model_slug || !row.dtc_code) continue
+    if (DTC_EXCLUDED_MODELS.includes(row.model_slug)) continue
     pages.push({
       url: `${BASE_URL}/${row.market_code}/dtc/${row.model_slug}/${row.dtc_code.toLowerCase()}`,
       lastModified: new Date(),

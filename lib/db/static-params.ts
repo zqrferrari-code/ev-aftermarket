@@ -1,6 +1,9 @@
 import { db } from './index'
 import { markets, models, dtcs, dtcModelNotes, dealers, warningLights } from './schema'
-import { eq } from 'drizzle-orm'
+import { eq, notInArray } from 'drizzle-orm'
+
+// Models with insufficient DTC data — exclude from DTC pages until data is complete
+const DTC_EXCLUDED_MODELS = ['byd-dolphin', 'mg-mg4', 'mg-zs-ev']
 
 export async function getActiveMarketCodes(): Promise<string[]> {
   const rows = await db
@@ -12,10 +15,11 @@ export async function getActiveMarketCodes(): Promise<string[]> {
 
 export async function getAllSlugs(): Promise<string[]> {
   const rows = await db.select({ slug: models.slug }).from(models)
+    .where(notInArray(models.slug, DTC_EXCLUDED_MODELS))
   return rows.map((r) => r.slug)
 }
 
-/** Returns all unique { slug, dtc_code } pairs across all models */
+/** Returns all unique { slug, dtc_code } pairs across models with sufficient DTC data */
 export async function getAllDtcModelCodePairs(): Promise<{ slug: string; code: string }[]> {
   const rows = await db
     .select({
@@ -25,6 +29,7 @@ export async function getAllDtcModelCodePairs(): Promise<{ slug: string; code: s
     .from(dtcModelNotes)
     .innerJoin(dtcs, eq(dtcModelNotes.dtc_id, dtcs.dtc_id))
     .innerJoin(models, eq(dtcModelNotes.model_id, models.model_id))
+    .where(notInArray(models.slug, DTC_EXCLUDED_MODELS))
   // deduplicate
   const seen = new Set<string>()
   return rows.filter((r) => {
