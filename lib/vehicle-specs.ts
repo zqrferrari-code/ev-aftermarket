@@ -28,6 +28,26 @@ export const VEHICLE_SPECS: Record<string, {
   charging: ChargingSpec
   service: ServiceSpec
 }> = {
+  'byd-atto-8': {
+    charging: {
+      batteryCapacity: '90.3 kWh',
+      acChargePower: '11 kW',
+      dcChargePower: '110 kW peak',
+      chargingPort: 'CCS2',
+      range: '480 km (WLTP)',
+      acTime_20_80: '~4-5 hrs',
+      acTime_full: '~8-9 hrs',
+      dcTime_20_80: '~25-30 min',
+      dcTime_full: '~45-55 min',
+    },
+    service: {
+      serviceInterval: '12 months / 20,000 km',
+      warrantyVehicle: '6 years / 150,000 km',
+      warrantyBattery: '8 years / 160,000 km',
+      brakeFluidInterval: '24 months',
+      cabinFilterInterval: '12-24 months',
+    },
+  },
   'byd-atto-3': {
     charging: {
       batteryCapacity: '60.5 kWh',
@@ -59,6 +79,26 @@ export const VEHICLE_SPECS: Record<string, {
       acTime_full: '~8-10 hrs',
       dcTime_20_80: '~35-45 min',
       dcTime_full: '~60-70 min',
+    },
+    service: {
+      serviceInterval: '12 months / 20,000 km',
+      warrantyVehicle: '6 years / 150,000 km',
+      warrantyBattery: '8 years / 160,000 km',
+      brakeFluidInterval: '24 months',
+      cabinFilterInterval: '12-24 months',
+    },
+  },
+  'byd-qin-plus': {
+    charging: {
+      batteryCapacity: '71.8 kWh',
+      acChargePower: '7.4 kW',
+      dcChargePower: '80 kW peak',
+      chargingPort: 'CCS2',
+      range: '420 km (WLTP)',
+      acTime_20_80: '~5-6 hrs',
+      acTime_full: '~10-11 hrs',
+      dcTime_20_80: '~35-40 min',
+      dcTime_full: '~55-65 min',
     },
     service: {
       serviceInterval: '12 months / 20,000 km',
@@ -119,6 +159,26 @@ export const VEHICLE_SPECS: Record<string, {
       acTime_full: '~8-9 hrs',
       dcTime_20_80: '~25-30 min',
       dcTime_full: '~40-50 min',
+    },
+    service: {
+      serviceInterval: '12 months / 20,000 km',
+      warrantyVehicle: '6 years / 150,000 km',
+      warrantyBattery: '8 years / 160,000 km',
+      brakeFluidInterval: '24 months',
+      cabinFilterInterval: '12-24 months',
+    },
+  },
+  'byd-seal-6-ev': {
+    charging: {
+      batteryCapacity: '82.56 kWh',
+      acChargePower: '11 kW',
+      dcChargePower: '150 kW peak',
+      chargingPort: 'CCS2',
+      range: '520 km (WLTP)',
+      acTime_20_80: '~4-5 hrs',
+      acTime_full: '~8-9 hrs',
+      dcTime_20_80: '~20-25 min',
+      dcTime_full: '~35-45 min',
     },
     service: {
       serviceInterval: '12 months / 20,000 km',
