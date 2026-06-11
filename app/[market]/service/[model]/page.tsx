@@ -48,10 +48,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
+function getServiceValues(market: string, modelId: string) {
+  const specs = VEHICLE_SPECS[modelId]?.service
+  const serviceCost = market === 'au' ? '$200–$350' : market === 'uk' ? '£150–£280' : market === 'uae' ? 'AED 700–1,200' : 'NOK 2,000–3,500'
+  const serviceInterval = specs?.serviceInterval || '12 months / 20,000 km'
+  const warrantyBattery = specs?.warrantyBattery || '8 years / 160,000 km'
+  return { specs, serviceCost, serviceInterval, warrantyBattery }
+}
+
 export default async function ServicePage({ params }: Props) {
   const { market, model } = await params
   const vehicleModel = await getModelBySlug(model)
   if (!vehicleModel) notFound()
+
+  const { serviceCost, serviceInterval, warrantyBattery } = getServiceValues(market, vehicleModel.model_id)
 
   return (
     <>
@@ -64,21 +74,44 @@ export default async function ServicePage({ params }: Props) {
           { '@type': 'ListItem', position: 3, name: 'Service Costs', item: `${BASE_URL}/${market}/service/${vehicleModel.slug}` },
         ],
       }} />
+      <JsonLd schema={{
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: [
+          {
+            '@type': 'Question',
+            name: `How much does it cost to service a ${vehicleModel.model_name} in ${market.toUpperCase()}?`,
+            acceptedAnswer: { '@type': 'Answer', text: `Annual service for the ${vehicleModel.model_name} typically costs ${serviceCost} at an authorised dealer. This includes a multi-point inspection, software update check, brake fluid top-up, and battery health check.` },
+          },
+          {
+            '@type': 'Question',
+            name: `How often does the ${vehicleModel.model_name} need servicing?`,
+            acceptedAnswer: { '@type': 'Answer', text: `The ${vehicleModel.model_name} requires a service every ${serviceInterval}, whichever comes first.` },
+          },
+          {
+            '@type': 'Question',
+            name: `Can an independent mechanic service my ${vehicleModel.model_name}?`,
+            acceptedAnswer: { '@type': 'Answer', text: `Independent mechanics can handle tyres, brakes, cabin filters, and general electrical work. However, software updates, BMS-related faults, HV system diagnostics, and warranty repairs must be done at an authorised dealer to maintain warranty coverage.` },
+          },
+          {
+            '@type': 'Question',
+            name: `What is the battery warranty on the ${vehicleModel.model_name}?`,
+            acceptedAnswer: { '@type': 'Answer', text: `The ${vehicleModel.model_name} comes with a ${warrantyBattery} high-voltage battery warranty.` },
+          },
+        ],
+      }} />
       <ServiceContent market={market} vehicleModel={vehicleModel} />
     </>
   )
 }
 
 function ServiceContent({ market, vehicleModel }: { market: string; vehicleModel: { model_name: string; slug: string; model_id: string } }) {
-  const specs = VEHICLE_SPECS[vehicleModel.model_id]?.service
+  const { specs, serviceCost, serviceInterval, warrantyBattery } = getServiceValues(market, vehicleModel.model_id)
   const currency = market === 'au' ? 'AUD' : market === 'uk' ? 'GBP' : market === 'uae' ? 'AED' : 'NOK'
-  const serviceCost = market === 'au' ? '$200–$350' : market === 'uk' ? '£150–£280' : market === 'uae' ? 'AED 700–1,200' : 'NOK 2,000–3,500'
   const brakeFluidCost = market === 'au' ? '$80–$120' : market === 'uk' ? '£60–£90' : 'Check dealer'
   const cabinFilterCost = market === 'au' ? '$40–$80' : market === 'uk' ? '£30–£60' : 'Check dealer'
 
-  const serviceInterval = specs?.serviceInterval || '12 months / 20,000 km'
   const warrantyVehicle = specs?.warrantyVehicle || '6–8 years'
-  const warrantyBattery = specs?.warrantyBattery || '8 years / 160,000 km'
   const brakeFluidInterval = specs?.brakeFluidInterval || '24 months'
   const cabinFilterInterval = specs?.cabinFilterInterval || '12-24 months'
 
@@ -226,6 +259,20 @@ function ServiceContent({ market, vehicleModel }: { market: string; vehicleModel
           </div>
         </div>
 
+        {/* Service FAQ */}
+        <div style={{ padding: '10px 28px', background: 'oklch(97.5% 0.003 60)', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border-soft)' }}>
+          <span className="section-label">Frequently Asked Questions</span>
+        </div>
+
+        <div style={{ borderBottom: '1px solid var(--border-soft)' }}>
+          {SERVICE_FAQ(vehicleModel.model_name, market, serviceCost, serviceInterval, warrantyBattery).map((item, idx, arr) => (
+            <div key={idx} style={{ padding: '16px 28px', borderBottom: idx < arr.length - 1 ? '1px solid oklch(93.5% 0.003 60)' : 'none' }}>
+              <p style={{ fontWeight: 600, fontSize: '13.5px', color: 'oklch(22% 0.01 60)', marginBottom: '6px', lineHeight: 1.4 }}>{item.q}</p>
+              <p style={{ fontSize: '13px', color: 'oklch(36% 0.01 60)', lineHeight: 1.6 }}>{item.a}</p>
+            </div>
+          ))}
+        </div>
+
         {/* Link back */}
         <div style={{
           padding: '16px 28px',
@@ -242,4 +289,25 @@ function ServiceContent({ market, vehicleModel }: { market: string; vehicleModel
       </article>
     </div>
   )
+}
+
+function SERVICE_FAQ(modelName: string, market: string, serviceCost: string, serviceInterval: string, warrantyBattery: string): { q: string; a: string }[] {
+  return [
+    {
+      q: `How much does it cost to service a ${modelName} in ${market.toUpperCase()}?`,
+      a: `Annual service for the ${modelName} typically costs ${serviceCost} at an authorised dealer. This includes a multi-point inspection, software update check, brake fluid top-up, and battery health check.`,
+    },
+    {
+      q: `How often does the ${modelName} need servicing?`,
+      a: `The ${modelName} requires a service every ${serviceInterval}, whichever comes first.`,
+    },
+    {
+      q: `Can an independent mechanic service my ${modelName}?`,
+      a: `Independent mechanics can handle tyres, brakes, cabin filters, and general electrical work. However, software updates, BMS-related faults, HV system diagnostics, and warranty repairs must be done at an authorised dealer to maintain warranty coverage.`,
+    },
+    {
+      q: `What is the battery warranty on the ${modelName}?`,
+      a: `The ${modelName} comes with a ${warrantyBattery} high-voltage battery warranty.`,
+    },
+  ]
 }
