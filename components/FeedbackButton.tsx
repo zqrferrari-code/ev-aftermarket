@@ -33,6 +33,7 @@ export function FeedbackButton({ context, defaultType = 'error' }: Props) {
   const [type, setType] = useState<FeedbackType>(defaultType)
   const [message, setMessage] = useState('')
   const [email, setEmail] = useState('')
+  const [hp, setHp] = useState('')  // honeypot
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const dialogRef = useRef<HTMLDivElement>(null)
@@ -64,7 +65,7 @@ export function FeedbackButton({ context, defaultType = 'error' }: Props) {
     e.preventDefault()
     setError('')
     setLoading(true)
-    const result = await submitFeedback({ type, message, email: email || undefined, context })
+    const result = await submitFeedback({ type, message, email: email || undefined, context, _hp: hp })
     setLoading(false)
     if (result.ok) {
       router.push('/feedback/thanks')
@@ -237,6 +238,17 @@ export function FeedbackButton({ context, defaultType = 'error' }: Props) {
                   outline: 'none',
                   boxSizing: 'border-box',
                 }}
+              />
+
+              {/* Honeypot — hidden from real users, bots will fill it */}
+              <input
+                type="text"
+                value={hp}
+                onChange={(e) => setHp(e.target.value)}
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0 }}
               />
 
               {error && (
