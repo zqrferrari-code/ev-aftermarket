@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { submitFeedback, type FeedbackType } from '@/lib/actions/feedback'
 import { useRouter } from 'next/navigation'
 
@@ -81,51 +82,46 @@ export function FeedbackButton({ context, defaultType = 'error' }: Props) {
         style={{
           display: 'inline-flex',
           alignItems: 'center',
-          gap: '5px',
-          fontSize: '11.5px',
+          gap: '6px',
+          fontSize: '12px',
           fontFamily: 'var(--font-cond)',
-          fontWeight: 600,
-          letterSpacing: '0.04em',
-          color: 'var(--text-faint)',
-          background: 'none',
-          border: '1px solid var(--border-soft)',
+          fontWeight: 700,
+          letterSpacing: '0.06em',
+          color: 'var(--green)',
+          background: '#bbf7d0',
+          border: '1px solid #86efac',
           borderRadius: '4px',
-          padding: '5px 10px',
+          padding: '7px 14px',
           cursor: 'pointer',
-          transition: 'color 0.15s, border-color 0.15s',
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.color = 'var(--text-muted)'
-          e.currentTarget.style.borderColor = 'var(--border)'
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.color = 'var(--text-faint)'
-          e.currentTarget.style.borderColor = 'var(--border-soft)'
+          whiteSpace: 'nowrap',
         }}
       >
         <span>✏</span> Suggest an edit
       </button>
 
-      {open && (
+      {open && createPortal(
         <div style={{
           position: 'fixed',
           inset: 0,
           background: 'rgba(0,0,0,0.45)',
-          zIndex: 1000,
+          zIndex: 9999,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           padding: '16px',
+          overflowY: 'auto',
         }}>
           <div
             ref={dialogRef}
             style={{
-              background: 'var(--bg-card)',
+              background: 'var(--bg-card, #fff)',
               border: '1px solid var(--border)',
               borderRadius: '8px',
               width: '100%',
               maxWidth: '480px',
               overflow: 'hidden',
+              margin: 'auto',
+              flexShrink: 0,
             }}
           >
             {/* Header */}
@@ -271,8 +267,7 @@ export function FeedbackButton({ context, defaultType = 'error' }: Props) {
               </button>
             </form>
           </div>
-        </div>
-      )}
+      </div>, document.body)}
     </>
   )
 }

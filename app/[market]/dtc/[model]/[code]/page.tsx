@@ -14,7 +14,9 @@ import { FeedbackButton } from '@/components/FeedbackButton'
 
 
 export async function generateStaticParams() {
-  if (process.env.NODE_ENV === 'development') return []
+  if (process.env.NODE_ENV === 'development') {
+    return [{ market: 'au', model: 'byd-atto-3', code: 'b110913' }]
+  }
   const [markets, pairs] = await Promise.all([getActiveMarketCodes(), getAllDtcModelCodePairs()])
   return markets.flatMap((market) =>
     pairs.map((p) => ({
@@ -201,9 +203,12 @@ export default async function DtcCodePage({ params }: Props) {
 
           {/* Hero */}
           <div className="detail-hero">
-            <div className="code-row">
-              <span className="big-code">{dtcCode}</span>
-              {dtc.severity && <SeverityBadge severity={dtc.severity as Severity} />}
+            <div className="code-row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <span className="big-code">{dtcCode}</span>
+                {dtc.severity && <SeverityBadge severity={dtc.severity as Severity} />}
+              </div>
+              <FeedbackButton context={`${dtcCode} — ${modelData.model_name} — ${market.toUpperCase()}`} />
             </div>
             <h1 className="detail-h1">
               {dtc.description_en
@@ -343,10 +348,6 @@ export default async function DtcCodePage({ params }: Props) {
             confidence={(note?.data_confidence ?? 'community') as DataConfidence}
             sourceUrls={parsedSourceUrls}
           />
-
-          <div style={{ padding: '16px 28px 24px', display: 'flex', justifyContent: 'flex-end' }}>
-            <FeedbackButton context={`${dtcCode} — ${modelData.model_name} — ${market.toUpperCase()}`} />
-          </div>
         </article>
       </div>
     </>
