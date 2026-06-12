@@ -27,9 +27,6 @@ export function RealWorldCases({ cases }: Props) {
                   <span className="case-source">{c.report_date}</span>
                 </>
               )}
-              {c.source_language === 'zh' && (
-                <span className="case-tag">From Chinese market (translated)</span>
-              )}
             </div>
             {c.symptom_summary && (
               <p className="case-body">{c.symptom_summary}</p>
