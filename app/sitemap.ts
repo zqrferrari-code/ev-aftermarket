@@ -9,7 +9,6 @@ export const dynamic = 'force-static'
 
 const DTC_EXCLUDED_MODELS = ['byd-dolphin', 'mg-mg4', 'mg-zs-ev']
 
-
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [markets, modelSlugs, dtcRows, wlBrands] = await Promise.all([
     getAllMarkets(),
@@ -18,10 +17,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     getWarningLightBrands(),
   ])
 
+  // Only include AU for now
+  const activeMarkets = markets.filter(m => m.market_code === 'au')
+
   const pages: MetadataRoute.Sitemap = []
 
   // Market home pages
-  for (const market of markets) {
+  for (const market of activeMarkets) {
     pages.push({
       url: `${BASE_URL}/${market.market_code}`,
       lastModified: new Date(),
@@ -31,7 +33,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   // Model overview pages
-  for (const market of markets) {
+  for (const market of activeMarkets) {
     for (const model of modelSlugs) {
       pages.push({
         url: `${BASE_URL}/${market.market_code}/models/${model.slug}`,
@@ -43,16 +45,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   // Problems index pages
-  const problemsIndexUrls = markets.map(m => ({
-    url: `${BASE_URL}/${m.market_code}/problems`,
-    lastModified: new Date(),
-    changeFrequency: 'weekly' as const,
-    priority: 0.8,
-  }))
-  pages.push(...problemsIndexUrls)
+  for (const market of activeMarkets) {
+    pages.push({
+      url: `${BASE_URL}/${market.market_code}/problems`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    })
+  }
 
   // Problems detail pages
-  for (const market of markets) {
+  for (const market of activeMarkets) {
     for (const model of modelSlugs) {
       pages.push({
         url: `${BASE_URL}/${market.market_code}/problems/${model.slug}`,
@@ -64,7 +67,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   // Charging pages
-  for (const market of markets) {
+  for (const market of activeMarkets) {
     for (const model of modelSlugs) {
       pages.push({
         url: `${BASE_URL}/${market.market_code}/charging/${model.slug}`,
@@ -76,7 +79,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   // Service pages
-  for (const market of markets) {
+  for (const market of activeMarkets) {
     for (const model of modelSlugs) {
       pages.push({
         url: `${BASE_URL}/${market.market_code}/service/${model.slug}`,
@@ -88,7 +91,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   // Software updates pages
-  for (const market of markets) {
+  for (const market of activeMarkets) {
     for (const model of modelSlugs) {
       pages.push({
         url: `${BASE_URL}/${market.market_code}/updates/${model.slug}`,
@@ -99,10 +102,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  // DTC list pages — one per market × model combination present in dtcModelNotes
+  // DTC list pages — AU only
   const modelMarketPairs = new Set(
     dtcRows
-      .filter((r) => r.market_code && r.model_slug && !DTC_EXCLUDED_MODELS.includes(r.model_slug))
+      .filter((r) => r.market_code === 'au' && r.model_slug && !DTC_EXCLUDED_MODELS.includes(r.model_slug))
       .map((r) => `${r.market_code}|${r.model_slug}`)
   )
   for (const pair of modelMarketPairs) {
@@ -115,9 +118,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })
   }
 
-  // DTC detail pages — one per market × model × code
+  // DTC detail pages — AU only
   for (const row of dtcRows) {
-    if (!row.market_code || !row.model_slug || !row.dtc_code) continue
+    if (row.market_code !== 'au' || !row.model_slug || !row.dtc_code) continue
     if (DTC_EXCLUDED_MODELS.includes(row.model_slug)) continue
     pages.push({
       url: `${BASE_URL}/${row.market_code}/dtc/${row.model_slug}/${row.dtc_code.toLowerCase()}`,
@@ -163,7 +166,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  // Dealers pages — AU only for now, BYD + MG × 5 states
+  // Dealers pages — AU only, BYD + MG × 5 states
   const AU_STATES = ['nsw', 'vic', 'qld', 'wa', 'sa']
   for (const brand of ['byd', 'mg']) {
     for (const state of AU_STATES) {
