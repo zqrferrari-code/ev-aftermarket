@@ -9,6 +9,7 @@ import { JsonLd } from '@/components/JsonLd'
 import type { Severity, DataConfidence, Case, ActionStep } from '@/lib/types'
 import { BASE_URL } from '@/lib/config'
 import { getActiveMarketCodes, getAllDtcModelCodePairs } from '@/lib/db/static-params'
+import { FeedbackButton } from '@/components/FeedbackButton'
 
 
 
@@ -342,6 +343,10 @@ export default async function DtcCodePage({ params }: Props) {
             confidence={(note?.data_confidence ?? 'community') as DataConfidence}
             sourceUrls={parsedSourceUrls}
           />
+
+          <div style={{ padding: '16px 28px 24px', display: 'flex', justifyContent: 'flex-end' }}>
+            <FeedbackButton context={`${dtcCode} — ${modelData.model_name} — ${market.toUpperCase()}`} />
+          </div>
         </article>
       </div>
     </>
