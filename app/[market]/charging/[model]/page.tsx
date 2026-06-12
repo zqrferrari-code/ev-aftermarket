@@ -7,6 +7,7 @@ import { AU_CHARGING_NETWORKS, UK_CHARGING_NETWORKS, HOME_CHARGER_MODELS, HOME_C
 import { BASE_URL } from '@/lib/config'
 import { JsonLd } from '@/components/JsonLd'
 import { getActiveMarketCodes, getAllSlugs } from '@/lib/db/static-params'
+import { FeedbackButton } from '@/components/FeedbackButton'
 
 
 export async function generateStaticParams() {
@@ -148,6 +149,9 @@ function ChargingContent({ market, vehicleModel, chargingCases }: {
           <span className="sep">›</span>
           <span style={{ fontWeight: 600, color: 'oklch(22% 0.01 60)' }}>Charging Guide</span>
         </nav>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '8px 28px 0' }}>
+          <FeedbackButton context={`${vehicleModel.model_name} Charging — ${market.toUpperCase()}`} defaultType="error" />
+        </div>
 
         {/* Hero */}
         <div className="list-hero">

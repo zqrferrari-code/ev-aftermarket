@@ -7,6 +7,7 @@ import { DisclaimerBox } from '@/components/DisclaimerBox'
 import { JsonLd } from '@/components/JsonLd'
 import { BASE_URL } from '@/lib/config'
 import type { Severity } from '@/lib/types'
+import { FeedbackButton } from '@/components/FeedbackButton'
 
 
 export async function generateStaticParams() {
@@ -116,6 +117,9 @@ export default async function WarningLightDetailPage({ params }: Props) {
           <span className="sep">›</span>
           <span style={{ fontWeight: 600, color: 'oklch(22% 0.01 60)' }}>{wl.name_en}</span>
         </nav>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '8px 28px 0' }}>
+          <FeedbackButton context={`${wl.name_en} — ${brandLabel} — ${market.toUpperCase()}`} defaultType="error" />
+        </div>
 
         {/* Hero */}
         <div style={{ padding: '28px 28px 20px' }}>

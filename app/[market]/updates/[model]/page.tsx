@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { getUpdatesByModel } from '@/lib/db/updates'
 import { getModelBySlug } from '@/lib/db/models'
 import { getActiveMarketCodes, getAllSlugs } from '@/lib/db/static-params'
+import { FeedbackButton } from '@/components/FeedbackButton'
 
 
 
@@ -69,6 +70,9 @@ export default async function UpdatesListPage({ params }: Props) {
           <span className="sep">›</span>
           <span style={{ fontWeight: 600, color: 'var(--text-base)' }}>Software Updates</span>
         </nav>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '8px 28px 0' }}>
+          <FeedbackButton context={`${modelData.model_name} Updates — ${market.toUpperCase()}`} defaultType="missing" />
+        </div>
 
         {/* Hero */}
         <div style={{ padding: '32px 28px 24px', borderBottom: '1px solid var(--border)' }}>
