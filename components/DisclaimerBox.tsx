@@ -22,24 +22,6 @@ export function DisclaimerBox({ confidence, sourceUrls }: Props) {
           This information is for reference only. Always consult a qualified technician for
           diagnosis and repair. Do not attempt high-voltage system repairs yourself.
         </span>
-        {sourceUrls && sourceUrls.length > 0 && (
-          <span>
-            {' '}Sources:{' '}
-            {sourceUrls.map((url, i) => (
-              <span key={i}>
-                <a
-                  href={url}
-                  style={{ color: 'var(--green)', textDecoration: 'underline' }}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  [{i + 1}]
-                </a>
-                {i < sourceUrls.length - 1 && ' '}
-              </span>
-            ))}
-          </span>
-        )}
       </div>
     </div>
   )
