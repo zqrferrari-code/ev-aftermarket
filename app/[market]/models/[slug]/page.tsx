@@ -9,6 +9,9 @@ import { BASE_URL } from '@/lib/config'
 import { JsonLd } from '@/components/JsonLd'
 import { getActiveMarketCodes, getAllSlugs } from '@/lib/db/static-params'
 import { FeedbackButton } from '@/components/FeedbackButton'
+import { getPurchasePricesForModel } from '@/lib/db/purchase-prices'
+import { getReviewsForModel } from '@/lib/db/cases'
+import { getAggregateRatingForModel } from '@/lib/db/aggregate-ratings'
 
 
 
@@ -76,9 +79,12 @@ export default async function ModelPage({
   const model = await getModelBySlug(slug)
   if (!model) notFound()
 
-  const [dtcNotes, updates] = await Promise.all([
+  const [dtcNotes, updates, purchasePrices, reviews, aggregateRating] = await Promise.all([
     getDTCsForModel(model.model_id),
     getUpdatesForModel(model.model_id, market),
+    getPurchasePricesForModel(model.model_id, market),
+    getReviewsForModel(model.model_id, market),
+    getAggregateRatingForModel(model.model_id, market),
   ])
 
   const criticalCount = dtcNotes.filter(n => n.severity === 'CRITICAL').length
@@ -97,6 +103,42 @@ export default async function ModelPage({
           },
           description: `${model.model_name} specifications, common fault codes, and real owner experiences.`,
           url: `${BASE_URL}/${market}/models/${slug}`,
+          ...(purchasePrices.length > 0 && {
+            offers: purchasePrices.map((p) => ({
+              '@type': 'Offer',
+              name: p.variant_name,
+              price: p.price,
+              priceCurrency: p.currency,
+              url: `${BASE_URL}/${market}/models/${slug}`,
+              availability: 'https://schema.org/InStock',
+              priceValidUntil: `${new Date().getFullYear() + 1}-01-01`,
+            })),
+          }),
+          ...(aggregateRating && {
+            aggregateRating: {
+              '@type': 'AggregateRating',
+              ratingValue: aggregateRating.rating_value,
+              reviewCount: aggregateRating.review_count,
+              bestRating: 5,
+              worstRating: 1,
+            },
+          }),
+          ...(reviews.length > 0 && {
+            review: reviews.slice(0, 5).map((r) => ({
+              '@type': 'Review',
+              author: { '@type': 'Person', name: r.source_name ?? 'Verified Owner' },
+              datePublished: r.report_date ?? undefined,
+              reviewBody: r.symptom_summary,
+              ...(r.rating != null && {
+                reviewRating: {
+                  '@type': 'Rating',
+                  ratingValue: r.rating,
+                  bestRating: 5,
+                  worstRating: 1,
+                },
+              }),
+            })),
+          }),
         }}
       />
       <div className="page-wrapper">
@@ -311,6 +353,87 @@ export default async function ModelPage({
                 </li>
               ))}
             </ul>
+          </>
+        )}
+
+        {/* Owner Reviews */}
+        {(aggregateRating || reviews.length > 0) && (
+          <>
+            <div style={{
+              padding: '10px 28px',
+              background: 'oklch(97.5% 0.003 60)',
+              borderTop: '1px solid var(--border)',
+              borderBottom: '1px solid var(--border-soft)',
+            }}>
+              <span className="section-label">Owner Reviews</span>
+            </div>
+
+            {aggregateRating && (
+              <div style={{
+                padding: '16px 28px',
+                borderBottom: '1px solid var(--border-soft)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '14px',
+              }}>
+                <span style={{ fontSize: '32px', fontWeight: 700, color: 'oklch(22% 0.01 60)', lineHeight: 1 }}>
+                  {aggregateRating.rating_value.toFixed(1)}
+                </span>
+                <div>
+                  <div style={{ display: 'flex', gap: '2px', marginBottom: '3px' }}>
+                    {[1,2,3,4,5].map(i => (
+                      <span key={i} style={{
+                        fontSize: '16px',
+                        color: i <= Math.round(aggregateRating.rating_value) ? 'oklch(75% 0.15 80)' : 'oklch(85% 0.01 60)',
+                      }}>★</span>
+                    ))}
+                  </div>
+                  <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                    {aggregateRating.review_count} reviews via{' '}
+                    <a href={aggregateRating.source_url ?? '#'} target="_blank" rel="noopener noreferrer"
+                      style={{ color: 'var(--green)', textDecoration: 'none' }}>
+                      ProductReview.com.au
+                    </a>
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {reviews.length > 0 && (
+              <ul style={{ listStyle: 'none' }}>
+                {reviews.slice(0, 5).map((r, idx) => (
+                  <li key={r.case_id} style={{
+                    padding: '14px 28px',
+                    borderBottom: idx < Math.min(reviews.length, 5) - 1 ? '1px solid oklch(93.5% 0.003 60)' : 'none',
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                      {r.rating != null && (
+                        <div style={{ display: 'flex', gap: '1px' }}>
+                          {[1,2,3,4,5].map(i => (
+                            <span key={i} style={{
+                              fontSize: '13px',
+                              color: i <= r.rating! ? 'oklch(75% 0.15 80)' : 'oklch(85% 0.01 60)',
+                            }}>★</span>
+                          ))}
+                        </div>
+                      )}
+                      {r.report_date && (
+                        <span style={{ fontSize: '11px', color: 'var(--text-faint)' }}>{r.report_date}</span>
+                      )}
+                    </div>
+                    <p style={{ fontSize: '13px', color: 'oklch(34% 0.01 60)', lineHeight: 1.55 }}>
+                      {r.symptom_summary}
+                    </p>
+                    {r.source_url && (
+                      <a href={r.source_url} target="_blank" rel="noopener noreferrer"
+                        style={{ fontSize: '11px', color: 'var(--green)', textDecoration: 'none', marginTop: '4px', display: 'inline-block' }}>
+                        via {r.source_name} →
+                      </a>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
           </>
         )}
 

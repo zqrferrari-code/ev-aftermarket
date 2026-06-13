@@ -228,6 +228,20 @@ export const warningLights = pgTable('mf_nv_warning_lights', {
   index('idx_mf_nv_wl_model_id').on(t.model_id),
 ])
 
+// ─── 购车价格表 ───────────────────────────────────────────────────────────────
+export const purchasePrices = pgTable('mf_nv_purchase_prices', {
+  id: serial('id').primaryKey(),
+  model_id: varchar('model_id', { length: 100 }).references(() => models.model_id).notNull(),
+  market_code: varchar('market_code', { length: 10 }).references(() => markets.market_code).notNull(),
+  variant_name: varchar('variant_name', { length: 200 }).notNull(),
+  price: integer('price').notNull(),
+  currency: varchar('currency', { length: 10 }).notNull(),
+  source_url: text('source_url'),
+  last_verified: varchar('last_verified', { length: 20 }),
+}, (t) => [
+  unique().on(t.model_id, t.market_code, t.variant_name),
+])
+
 // ─── 警告灯-故障码关联表 ──────────────────────────────────────────────────────
 export const warningLightDtcLinks = pgTable('mf_nv_warning_light_dtc_links', {
   warning_light_id: integer('warning_light_id').references(() => warningLights.id).notNull(),
