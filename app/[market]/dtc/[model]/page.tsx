@@ -143,6 +143,27 @@ export default async function DtcModelPage({ params }: Props) {
               ))}
             </ul>
           )}
+
+          {/* Cross-links */}
+          <div style={{
+            padding: '16px 28px',
+            borderTop: '1px solid var(--border)',
+            background: 'oklch(97.5% 0.003 60)',
+            display: 'flex',
+            gap: '24px',
+            flexWrap: 'wrap',
+          }}>
+            <a href={`/${market}/problems/${model}`} style={{
+              fontSize: '13px', color: 'var(--green)', fontWeight: 600, textDecoration: 'none',
+            }}>
+              Common problems reported for {modelData.model_name} →
+            </a>
+            <a href={`/${market}/models/${model}`} style={{
+              fontSize: '13px', color: 'var(--green)', fontWeight: 600, textDecoration: 'none',
+            }}>
+              {modelData.model_name} overview →
+            </a>
+          </div>
         </div>
       </div>
     </>

@@ -15,6 +15,16 @@ export const metadata: Metadata = {
   alternates: { canonical: `${BASE_URL}/au/buying-guide` },
 }
 
+const MODEL_LINKS = [
+  { name: 'BYD Atto 3', slug: 'byd-atto-3' },
+  { name: 'BYD Dolphin', slug: 'byd-dolphin' },
+  { name: 'BYD Seal', slug: 'byd-seal' },
+  { name: 'BYD Sealion 6', slug: 'byd-seal-6-ev' },
+  { name: 'MG4', slug: 'mg-mg4' },
+  { name: 'MG ZS EV', slug: 'mg-zs-ev' },
+  { name: 'GWM Ora', slug: 'gwm-ora' },
+]
+
 export default async function BuyingGuidePage({ params }: { params: Promise<{ market: string }> }) {
   const { market } = await params
 
@@ -59,6 +69,42 @@ export default async function BuyingGuidePage({ params }: { params: Promise<{ ma
         </div>
 
         <BuyingGuideCalculator />
+
+        {/* Model links */}
+        <div style={{ padding: '24px 28px', borderTop: '1px solid var(--border-soft)' }}>
+          <span style={{
+            display: 'block',
+            fontSize: '11px',
+            fontWeight: 700,
+            letterSpacing: '0.1em',
+            textTransform: 'uppercase',
+            color: 'var(--text-faint)',
+            fontFamily: 'var(--font-cond)',
+            marginBottom: '14px',
+          }}>
+            Model Reliability &amp; Service Info
+          </span>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+            {MODEL_LINKS.map(({ name, slug }) => (
+              <Link
+                key={slug}
+                href={`/${market}/models/${slug}`}
+                style={{
+                  fontSize: '13px',
+                  color: 'var(--green)',
+                  fontWeight: 600,
+                  textDecoration: 'none',
+                  padding: '6px 12px',
+                  border: '1px solid var(--border)',
+                  borderRadius: '3px',
+                  background: 'var(--surface)',
+                }}
+              >
+                {name}
+              </Link>
+            ))}
+          </div>
+        </div>
       </div>
     </main>
   )
