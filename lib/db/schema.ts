@@ -46,6 +46,7 @@ export const models = pgTable('mf_nv_models', {
   charge_ac_kw: decimal('charge_ac_kw', { precision: 4, scale: 1 }),
   charge_dc_kw: decimal('charge_dc_kw', { precision: 4, scale: 1 }),
   cargo_l: integer('cargo_l'),
+  image_url: text('image_url'),
 })
 
 // ─── 故障码表 ─────────────────────────────────────────────────────────────────

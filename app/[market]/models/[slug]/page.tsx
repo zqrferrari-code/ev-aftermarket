@@ -97,6 +97,7 @@ export default async function ModelPage({
           '@context': 'https://schema.org',
           '@type': 'Product',
           name: model.model_name,
+          ...(model.image_url && { image: model.image_url }),
           brand: {
             '@type': 'Brand',
             name: model.brand_id,
