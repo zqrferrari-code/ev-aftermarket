@@ -74,7 +74,7 @@ export default async function PartDetailPage({ params }: Props) {
 
         {/* Breadcrumb */}
         <nav style={{ fontSize: '12px', color: 'var(--text-faint)', marginBottom: '24px' }}>
-          <a href={`/${market}/parts`} style={{ color: 'var(--accent)' }}>配件</a>
+          <a href={`/${market}/parts`} style={{ color: 'var(--accent)' }}>Parts</a>
           {' / '}
           <a href={`/${market}/parts/${brand}`} style={{ color: 'var(--accent)' }}>{brand.toUpperCase()}</a>
           {' / '}
@@ -93,25 +93,25 @@ export default async function PartDetailPage({ params }: Props) {
           </p>
         )}
         <p style={{ fontSize: '14px', color: 'var(--text-faint)', marginBottom: '32px' }}>
-          适配车型：{partData.compatible_models.map(m => m.model_name).join('、')}
+          Compatible with: {partData.compatible_models.map(m => m.model_name).join(', ')}
           {modelInfo?.years && ` · ${modelInfo.years}`}
         </p>
 
         {/* Part meta */}
         <div style={{ display: 'flex', gap: '24px', marginBottom: '32px', flexWrap: 'wrap' }}>
-          {partData.category && <MetaChip label="分类" value={partData.category} />}
-          {partData.material && <MetaChip label="材质" value={partData.material} />}
-          {partData.is_dangerous && <MetaChip label="危险品" value="是" warn />}
+          {partData.category && <MetaChip label="Category" value={partData.category} />}
+          {partData.material && <MetaChip label="Material" value={partData.material} />}
+          {partData.is_dangerous && <MetaChip label="Dangerous Goods" value="Yes" warn />}
         </div>
 
         {/* HS code link */}
         {auHsCode && (
           <p style={{ fontSize: '13px', color: 'var(--text-faint)', marginBottom: '24px' }}>
-            澳洲海关编码：
+            AU HS Code:{' '}
             <a href={buildHsCodeUrl(market, auHsCode.hs_code)} style={{ color: 'var(--accent)', fontFamily: 'monospace' }}>
               {auHsCode.hs_code}
             </a>
-            {' '}— 查看该编码下的所有配件
+            {' '}— view all parts under this code
           </p>
         )}
 

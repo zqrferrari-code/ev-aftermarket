@@ -1,7 +1,25 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { calculateTariff } from '@/lib/db/parts'
+
+function calculateTariff(params: {
+  partPrice: number
+  shipping: number
+  dutyRate: number
+  vatRate: number
+}) {
+  const { partPrice, shipping, dutyRate, vatRate } = params
+  const cif = partPrice + shipping
+  const duty = cif * (dutyRate / 100)
+  const vat = (cif + duty) * (vatRate / 100)
+  const total = cif + duty + vat
+  return {
+    cif: Math.round(cif * 100) / 100,
+    duty: Math.round(duty * 100) / 100,
+    vat: Math.round(vat * 100) / 100,
+    total: Math.round(total * 100) / 100,
+  }
+}
 
 interface CostCalculatorProps {
   dutyRate: number
@@ -36,32 +54,32 @@ export default function CostCalculator({ dutyRate, vatRate }: CostCalculatorProp
         color: 'var(--text-faint)',
         fontFamily: 'var(--font-cond)',
       }}>
-        到岸费用估算
+        Landed Cost Estimator
       </div>
 
       <div style={{ padding: '16px 20px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
           <label style={{ display: 'block' }}>
-            <span style={labelStyle}>配件价格（CNY 或 AUD）</span>
+            <span style={labelStyle}>Part Price (CNY or AUD)</span>
             <input
               type="number"
               min="0"
               step="0.01"
               value={partPrice}
               onChange={e => setPartPrice(e.target.value)}
-              placeholder="例：500"
+              placeholder="e.g. 500"
               style={inputStyle}
             />
           </label>
           <label style={{ display: 'block' }}>
-            <span style={labelStyle}>运费</span>
+            <span style={labelStyle}>Shipping</span>
             <input
               type="number"
               min="0"
               step="0.01"
               value={shipping}
               onChange={e => setShipping(e.target.value)}
-              placeholder="例：80"
+              placeholder="e.g. 80"
               style={inputStyle}
             />
           </label>
@@ -70,20 +88,20 @@ export default function CostCalculator({ dutyRate, vatRate }: CostCalculatorProp
         {result ? (
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
             <tbody>
-              <ResultRow label="CIF（货价+运费）" value={fmt(result.cif)} />
-              <ResultRow label={`关税（${dutyRate}%）`} value={fmt(result.duty)} />
-              <ResultRow label={`GST（${vatRate}%）`} value={fmt(result.vat)} />
-              <ResultRow label="合计到岸费用" value={fmt(result.total)} bold />
+              <ResultRow label="CIF (Part + Shipping)" value={fmt(result.cif)} />
+              <ResultRow label={`Import Duty (${dutyRate}%)`} value={fmt(result.duty)} />
+              <ResultRow label={`GST (${vatRate}%)`} value={fmt(result.vat)} />
+              <ResultRow label="Total Landed Cost" value={fmt(result.total)} bold />
             </tbody>
           </table>
         ) : (
           <p style={{ fontSize: '13px', color: 'var(--text-faint)', margin: 0 }}>
-            输入配件价格后自动计算
+            Enter a part price to calculate
           </p>
         )}
 
         <p style={{ marginTop: '12px', fontSize: '11px', color: 'var(--text-faint)', lineHeight: 1.5, margin: '12px 0 0' }}>
-          仅供估算参考，实际费用以海关核定为准。汇率波动可能影响最终金额。
+          Estimate only. Actual charges are determined by Australian Border Force at time of import. Currency fluctuations may affect the final amount.
         </p>
       </div>
     </div>

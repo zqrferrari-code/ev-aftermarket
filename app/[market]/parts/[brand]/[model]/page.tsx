@@ -40,7 +40,7 @@ export default async function ModelPartsPage({ params }: Props) {
   return (
     <div style={{ maxWidth: '760px', margin: '0 auto', padding: '32px 20px' }}>
       <nav style={{ fontSize: '12px', color: 'var(--text-faint)', marginBottom: '24px' }}>
-        <a href={`/${market}/parts`} style={{ color: 'var(--accent)' }}>配件</a>
+        <a href={`/${market}/parts`} style={{ color: 'var(--accent)' }}>Parts</a>
         {' / '}
         <a href={`/${market}/parts/${brand}`} style={{ color: 'var(--accent)' }}>{brand.toUpperCase()}</a>
         {' / '}
@@ -48,14 +48,14 @@ export default async function ModelPartsPage({ params }: Props) {
       </nav>
 
       <h1 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '8px' }}>
-        {modelData.model_name} 配件进口税费
+        {modelData.model_name} — Import Duty & HS Codes
       </h1>
       <p style={{ fontSize: '14px', color: 'var(--text-faint)', marginBottom: '32px' }}>
-        {parts.length} 个配件 · 点击查看海关编码与澳洲进口关税详情
+        {parts.length} {parts.length === 1 ? 'part' : 'parts'} · Select a part to view HS codes and AU import duty
       </p>
 
       {parts.length === 0 ? (
-        <p style={{ color: 'var(--text-faint)', fontSize: '14px' }}>暂无配件数据。</p>
+        <p style={{ color: 'var(--text-faint)', fontSize: '14px' }}>No parts data available.</p>
       ) : (
         <div style={{ display: 'grid', gap: '8px' }}>
           {parts.map(part => (

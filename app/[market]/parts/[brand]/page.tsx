@@ -33,16 +33,16 @@ export default async function BrandPartsPage({ params }: Props) {
   return (
     <div style={{ maxWidth: '760px', margin: '0 auto', padding: '32px 20px' }}>
       <nav style={{ fontSize: '12px', color: 'var(--text-faint)', marginBottom: '24px' }}>
-        <a href={`/${market}/parts`} style={{ color: 'var(--accent)' }}>配件</a>
+        <a href={`/${market}/parts`} style={{ color: 'var(--accent)' }}>Parts</a>
         {' / '}
         <span>{brand.toUpperCase()}</span>
       </nav>
 
       <h1 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '8px' }}>
-        {brand.toUpperCase()} 配件进口税费
+        {brand.toUpperCase()} Parts — Import Duty & HS Codes
       </h1>
       <p style={{ fontSize: '14px', color: 'var(--text-faint)', marginBottom: '32px' }}>
-        选择车型查看配件海关编码和澳洲进口关税信息。
+        Select a model to view HS codes and AU import duty details.
       </p>
 
       <div style={{ display: 'grid', gap: '8px' }}>
@@ -64,7 +64,7 @@ export default async function BrandPartsPage({ params }: Props) {
             }}
           >
             <span>{model.model_name}</span>
-            <span style={{ color: 'var(--text-faint)', fontWeight: 400 }}>查看配件 →</span>
+            <span style={{ color: 'var(--text-faint)', fontWeight: 400 }}>View parts →</span>
           </a>
         ))}
       </div>

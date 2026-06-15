@@ -9,8 +9,8 @@ interface AliexpressCardsProps {
 export default function AliexpressCards({ part, modelName }: AliexpressCardsProps) {
   const queries = [
     `${modelName} ${part.name_en}`,
-    `${part.name_cn ?? part.name_en} 比亚迪`,
-  ]
+    part.name_cn ? `${part.name_cn} 比亚迪` : null,
+  ].filter(Boolean) as string[]
 
   return (
     <div style={{ border: '1px solid var(--border)', borderRadius: '4px', overflow: 'hidden' }}>
@@ -25,7 +25,7 @@ export default function AliexpressCards({ part, modelName }: AliexpressCardsProp
         color: 'var(--text-faint)',
         fontFamily: 'var(--font-cond)',
       }}>
-        速卖通采购参考
+        AliExpress Sourcing
       </div>
 
       <div style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -51,18 +51,18 @@ export default function AliexpressCards({ part, modelName }: AliexpressCardsProp
             <span style={{ fontSize: '18px', flexShrink: 0 }}>🛒</span>
             <span style={{ flex: 1 }}>
               <span style={{ display: 'block', fontWeight: 600 }}>
-                {i === 0 ? '英文搜索' : '中文搜索'}
+                {i === 0 ? 'English search' : 'Chinese search'}
               </span>
               <span style={{ fontSize: '11px', color: 'var(--text-faint)' }}>{q}</span>
             </span>
             <span style={{ fontSize: '11px', color: 'var(--text-faint)', flexShrink: 0 }}>
-              速卖通 ↗
+              AliExpress ↗
             </span>
           </a>
         ))}
 
         <p style={{ fontSize: '11px', color: 'var(--text-faint)', margin: '4px 0 0', lineHeight: 1.5 }}>
-          以上链接直达速卖通搜索结果，请自行核对规格与适配年份后下单。
+          These links open AliExpress search results. Always verify fitment and year compatibility before ordering.
         </p>
       </div>
     </div>

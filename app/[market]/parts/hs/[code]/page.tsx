@@ -60,9 +60,9 @@ export default async function HsCodePage({ params }: Props) {
 
         {/* Breadcrumb */}
         <nav style={{ fontSize: '12px', color: 'var(--text-faint)', marginBottom: '24px' }}>
-          <a href={`/${market}/parts`} style={{ color: 'var(--accent)' }}>配件</a>
+          <a href={`/${market}/parts`} style={{ color: 'var(--accent)' }}>Parts</a>
           {' / '}
-          <a href={`/${market}/parts/hs`} style={{ color: 'var(--accent)' }}>海关编码</a>
+          <a href={`/${market}/parts/hs`} style={{ color: 'var(--accent)' }}>HS Codes</a>
           {' / '}
           <span style={{ fontFamily: 'monospace' }}>{code}</span>
         </nav>
@@ -83,7 +83,7 @@ export default async function HsCodePage({ params }: Props) {
         )}
         {!hsCode.description_en && !hsCode.description_local && (
           <p style={{ fontSize: '14px', color: 'var(--text-faint)', marginBottom: '24px' }}>
-            {market.toUpperCase()} 进口海关编码
+            {market.toUpperCase()} import HS code
           </p>
         )}
 
@@ -96,7 +96,7 @@ export default async function HsCodePage({ params }: Props) {
         {hsCode.declaration_elements && (
           <section style={{ marginBottom: '32px' }}>
             <h2 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-faint)' }}>
-              申报要素
+              Declaration Elements
             </h2>
             <p style={{ fontSize: '13px', color: 'var(--text-soft)', lineHeight: 1.6 }}>
               {hsCode.declaration_elements}
@@ -108,7 +108,7 @@ export default async function HsCodePage({ params }: Props) {
         {relatedParts.length > 0 && (
           <section style={{ marginBottom: '32px' }}>
             <h2 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-faint)' }}>
-              使用该编码的配件
+              Parts Using This Code
             </h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {relatedParts.map(part => (
@@ -143,7 +143,7 @@ export default async function HsCodePage({ params }: Props) {
                       rel="noopener noreferrer sponsored"
                       style={{ fontSize: '12px', color: 'var(--text-faint)' }}
                     >
-                      速卖通搜索 ↗
+                      Search AliExpress ↗
                     </a>
                   </div>
                 </div>

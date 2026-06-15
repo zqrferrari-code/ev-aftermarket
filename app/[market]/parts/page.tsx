@@ -31,14 +31,14 @@ export default async function PartsIndexPage({ params }: Props) {
   return (
     <div style={{ maxWidth: '760px', margin: '0 auto', padding: '32px 20px' }}>
       <h1 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '8px' }}>
-        BYD EV 配件进口税费查询
+        BYD EV Parts — Import Duty & HS Codes
       </h1>
       <p style={{ fontSize: '14px', color: 'var(--text-faint)', marginBottom: '32px', lineHeight: 1.6 }}>
-        查询澳洲进口中国产 BYD 配件的海关编码（HS Code）和关税税率，包含到岸费用估算和速卖通采购链接。
+        Look up Australian import HS codes and duty rates for BYD EV replacement parts sourced from China. Includes a landed cost calculator and AliExpress sourcing links.
       </p>
 
       <h2 style={{ fontSize: '14px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-faint)', marginBottom: '12px' }}>
-        选择车型
+        Select a model
       </h2>
 
       <div style={{ display: 'grid', gap: '8px' }}>
@@ -60,7 +60,7 @@ export default async function PartsIndexPage({ params }: Props) {
             }}
           >
             <span>{model.model_name}</span>
-            <span style={{ color: 'var(--text-faint)', fontWeight: 400 }}>查看配件 →</span>
+            <span style={{ color: 'var(--text-faint)', fontWeight: 400 }}>View parts →</span>
           </a>
         ))}
       </div>
