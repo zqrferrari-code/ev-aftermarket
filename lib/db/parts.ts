@@ -259,3 +259,8 @@ export async function getAllBydModelSlugs(): Promise<string[]> {
 
   return ((data ?? []) as any[]).map(r => r.slug)
 }
+
+export async function getPartsForHome(): Promise<{ slug: string; name_en: string }[]> {
+  const { data } = await sb.from('mf_parts').select('slug, name_en').order('id')
+  return data ?? []
+}
