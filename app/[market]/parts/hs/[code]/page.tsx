@@ -55,7 +55,7 @@ export default async function HsCodePage({ params }: Props) {
 
   return (
     <>
-      <JsonLd data={jsonLd} />
+      <JsonLd schema={jsonLd} />
       <div style={{ maxWidth: '760px', margin: '0 auto', padding: '32px 20px' }}>
 
         {/* Breadcrumb */}

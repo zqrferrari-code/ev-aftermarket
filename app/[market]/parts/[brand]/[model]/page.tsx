@@ -2,8 +2,7 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { BASE_URL } from '@/lib/config'
 import { getModelBySlug } from '@/lib/db/models'
-import { getPartsByModel, buildPartUrl } from '@/lib/db/parts'
-import { getAllBydModelSlugs } from '@/lib/db/parts'
+import { getPartsByModel, buildPartUrl, getAllBydModelSlugs } from '@/lib/db/parts'
 
 export async function generateStaticParams() {
   const modelIds = await getAllBydModelSlugs()
