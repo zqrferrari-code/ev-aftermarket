@@ -29,6 +29,12 @@ const FEATURES = [
 
 type FeatureKey = (typeof FEATURES)[number]['key']
 
+const FEATURE_LABELS: Record<Exclude<FeatureKey, 'parts'>, string> = {
+  dtc: 'Fault Codes',
+  problems: 'Problems',
+  charging: 'Charging',
+}
+
 export default function FeatureGrid({ market, models, parts }: FeatureGridProps) {
   const [active, setActive] = useState<FeatureKey | null>(null)
 
@@ -103,14 +109,8 @@ function ModelListPanel({
 }: {
   market: string
   models: Model[]
-  feature: 'dtc' | 'problems' | 'charging'
+  feature: Exclude<FeatureKey, 'parts'>
 }) {
-  const LABEL: Record<typeof feature, string> = {
-    dtc: 'Fault Codes',
-    problems: 'Problems',
-    charging: 'Charging',
-  }
-
   return (
     <div>
       <div style={{
@@ -123,7 +123,7 @@ function ModelListPanel({
         color: 'var(--text-muted)',
         borderBottom: '1px solid var(--border-soft)',
       }}>
-        Select model → {LABEL[feature]}
+        Select model → {FEATURE_LABELS[feature]}
       </div>
       <ul className="dtc-list" style={{ margin: 0 }}>
         {models.map((m) => (
