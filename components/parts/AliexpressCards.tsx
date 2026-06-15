@@ -7,10 +7,10 @@ interface AliexpressCardsProps {
 }
 
 export default function AliexpressCards({ part, modelName }: AliexpressCardsProps) {
-  const queries = [
-    `${modelName} ${part.name_en}`,
-    part.name_cn ? `${part.name_cn} 比亚迪` : null,
-  ].filter(Boolean) as string[]
+  const queries: { label: string; q: string }[] = [
+    { label: 'English search', q: `${modelName} ${part.name_en}` },
+    ...(part.name_cn ? [{ label: 'Chinese search', q: `${part.name_cn} 比亚迪` }] : []),
+  ]
 
   return (
     <div style={{ borderTop: '1px solid var(--border-soft)' }}>
@@ -28,7 +28,7 @@ export default function AliexpressCards({ part, modelName }: AliexpressCardsProp
       </div>
 
       <div style={{ padding: '16px 28px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-        {queries.map((q, i) => (
+        {queries.map(({ label, q }, i) => (
           <a
             key={i}
             href={buildAliexpressSearchUrl(q)}
@@ -55,12 +55,12 @@ export default function AliexpressCards({ part, modelName }: AliexpressCardsProp
                 fontWeight: 700,
                 letterSpacing: '0.06em',
                 textTransform: 'uppercase',
-                color: 'var(--text-faint)',
+                color: 'var(--text-muted)',
                 marginBottom: '2px',
               }}>
-                {i === 0 ? 'English search' : 'Chinese search'}
+                {label}
               </span>
-              <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>{q}</span>
+              <span style={{ fontSize: '13px', color: 'var(--text-base)' }}>{q}</span>
             </span>
             <span style={{ fontSize: '12px', color: 'var(--green)', fontWeight: 600, flexShrink: 0 }}>
               AliExpress ↗
@@ -68,7 +68,7 @@ export default function AliexpressCards({ part, modelName }: AliexpressCardsProp
           </a>
         ))}
 
-        <p style={{ fontSize: '11px', color: 'var(--text-faint)', marginTop: '4px', lineHeight: 1.6 }}>
+        <p style={{ fontSize: '11px', color: 'var(--text-base)', marginTop: '4px', lineHeight: 1.6 }}>
           These links open AliExpress search results. Always verify fitment and year compatibility before ordering.
         </p>
       </div>

@@ -100,13 +100,13 @@ export default async function PartDetailPage({ params }: Props) {
               )}
             </div>
 
-            <p style={{ fontSize: '13px', color: 'var(--text-faint)', marginBottom: '12px' }}>
+            <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '12px' }}>
               Compatible with: {partData.compatible_models.map(m => m.model_name).join(', ')}
               {modelInfo?.years && ` · ${modelInfo.years}`}
             </p>
 
             {auHsCode && (
-              <p style={{ fontSize: '13px', color: 'var(--text-faint)' }}>
+              <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
                 AU HS Code:{' '}
                 <a href={buildHsCodeUrl(market, auHsCode.hs_code)}
                   style={{ fontFamily: 'var(--font-mono)', color: 'var(--green)', fontWeight: 600 }}>

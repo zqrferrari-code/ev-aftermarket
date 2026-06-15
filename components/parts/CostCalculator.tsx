@@ -85,21 +85,45 @@ export default function CostCalculator({ dutyRate, vatRate }: CostCalculatorProp
         </div>
 
         {result ? (
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
-            <tbody>
-              <ResultRow label={`CIF (Part + Shipping)`} value={fmt(result.cif)} />
-              <ResultRow label={`Import Duty (${dutyRate}%)`} value={fmt(result.duty)} />
-              <ResultRow label={`GST (${vatRate}%)`} value={fmt(result.vat)} />
-              <ResultRow label="Total Landed Cost" value={fmt(result.total)} bold />
-            </tbody>
-          </table>
+          <>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+              <tbody>
+                <ResultRow label={`CIF (Part + Shipping)`} value={fmt(result.cif)} />
+                <ResultRow label={`Import Duty (${dutyRate}%)`} value={fmt(result.duty)} />
+                <ResultRow label={`GST (${vatRate}%)`} value={fmt(result.vat)} />
+                <ResultRow label="Total Landed Cost" value={fmt(result.total)} bold />
+              </tbody>
+            </table>
+            {result.cif <= 1000 && (
+              <div style={{
+                marginTop: '14px',
+                padding: '10px 12px',
+                background: 'color-mix(in srgb, var(--green) 10%, transparent)',
+                border: '1px solid color-mix(in srgb, var(--green) 30%, transparent)',
+                borderRadius: '4px',
+                fontSize: '12px',
+                lineHeight: 1.6,
+                color: 'var(--text-muted)',
+              }}>
+                <strong style={{ color: 'var(--green)' }}>Under the A$1,000 low value threshold</strong> — customs duty is not collected at the border. GST (10%) is still payable, typically collected by the seller at checkout.{' '}
+                <a
+                  href="https://www.ato.gov.au/businesses-and-organisations/international-tax-for-business/gst-for-non-resident-businesses/gst-on-low-value-imported-goods"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: 'var(--green)', textDecoration: 'none' }}
+                >
+                  ATO source ↗
+                </a>
+              </div>
+            )}
+          </>
         ) : (
-          <p style={{ fontSize: '13px', color: 'var(--text-faint)' }}>
+          <p style={{ fontSize: '13px', color: 'var(--text-base)' }}>
             Enter a part price to calculate
           </p>
         )}
 
-        <p style={{ marginTop: '12px', fontSize: '11px', color: 'var(--text-faint)', lineHeight: 1.6 }}>
+        <p style={{ marginTop: '12px', fontSize: '11px', color: 'var(--text-base)', lineHeight: 1.6 }}>
           Estimate only. Actual charges are determined by Australian Border Force at time of import.
         </p>
       </div>
@@ -129,7 +153,7 @@ const labelStyle: React.CSSProperties = {
   fontWeight: 700,
   letterSpacing: '0.08em',
   textTransform: 'uppercase',
-  color: 'var(--text-faint)',
+  color: 'var(--text-base)',
   display: 'block',
   marginBottom: '6px',
 }

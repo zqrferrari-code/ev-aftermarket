@@ -46,7 +46,7 @@ export default function TariffSummary({ cnHsCode, auHsCode, tariffRate }: Tariff
         )}
 
         {tariffRate?.source_url && (
-          <p style={{ marginTop: '10px', fontSize: '11px', color: 'var(--text-faint)' }}>
+          <p style={{ marginTop: '10px', fontSize: '11px', color: 'var(--text-base)' }}>
             Source:{' '}
             <a href={tariffRate.source_url} target="_blank" rel="noopener noreferrer"
               style={{ color: 'var(--green)' }}>
@@ -63,12 +63,12 @@ export default function TariffSummary({ cnHsCode, auHsCode, tariffRate }: Tariff
 function TariffRow({ label, value, bold, mono }: { label: string; value: string; bold?: boolean; mono?: boolean }) {
   return (
     <tr style={{ borderBottom: '1px solid var(--border-soft)' }}>
-      <td style={{ padding: '9px 0', color: 'var(--text-faint)', width: '55%', fontSize: '13px' }}>{label}</td>
+      <td style={{ padding: '9px 0', color: 'var(--text-base)', width: '55%', fontSize: '13px' }}>{label}</td>
       <td style={{
         padding: '9px 0',
         fontWeight: bold ? 700 : 400,
         fontFamily: mono ? 'var(--font-mono)' : 'inherit',
-        color: 'var(--text-muted)',
+        color: 'var(--text-base)',
         textAlign: 'right',
         fontSize: mono ? '12px' : '13px',
       }}>
