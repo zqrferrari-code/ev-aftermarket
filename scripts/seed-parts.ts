@@ -65,8 +65,8 @@ const HS_CODES: Record<string, { cn: string; au: string }> = {
   'rear-bumper':  { cn: '8708101000', au: '87081000' },
   'headlights':   { cn: '8512201000', au: '85122000' },
   'tail-lights':  { cn: '8512209000', au: '85122000' },
-  'front-fender': { cn: '8708299090', au: '87082900' }, // TODO: verify AU sub-heading
-  'side-mirror':  { cn: '8708291000', au: '87082900' }, // TODO: verify AU sub-heading
+  'front-fender': { cn: '8708299090', au: '87082991' },
+  'side-mirror':  { cn: '8708291000', au: '87082991' },
 }
 
 // ─── 澳洲关税数据 ──────────────────────────────────────────
@@ -98,14 +98,14 @@ const AU_TARIFF_RATES = [
   },
   {
     country_code: 'AU',
-    hs_code: '87082900', // TODO: verify exact sub-heading for fender/mirror
-    mfn_rate: '0.00',
-    fta_name: null,
-    fta_rate: null,
-    fta_conditions: null,
+    hs_code: '87082991', // "Of a kind used as components in passenger motor vehicles" — fender, mirror
+    mfn_rate: '5.00',
+    fta_name: 'ChAFTA',
+    fta_rate: '0.00',
+    fta_conditions: 'Goods must meet ChAFTA Rules of Origin',
     vat_rate: '10.00',
     last_verified: '2026-06-15',
-    source_url: 'https://www.abf.gov.au/importing-exporting-and-manufacturing/tariff-classification/working-tariff',
+    source_url: 'https://www.abf.gov.au/importing-exporting-and-manufacturing/tariff-classification/current-tariff',
   },
 ]
 
