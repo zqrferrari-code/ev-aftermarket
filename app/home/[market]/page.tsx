@@ -14,8 +14,7 @@ interface Props {
   params: Promise<{ market: string }>
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  await params
+export async function generateMetadata(): Promise<Metadata> {
   const title = 'Chinese EV Fault Codes, Problems & Parts — Australia'
   const description =
     'Fault code lookup, owner problem reports, import duty for parts, charging guides and service costs for BYD, MG and other Chinese EVs in Australia.'
