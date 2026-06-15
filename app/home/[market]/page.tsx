@@ -45,14 +45,6 @@ export default async function HomeMarketPage({ params }: Props) {
     getPartsForHome(),
   ])
 
-  // 按品牌分组
-  const brandGroups: Record<string, typeof models> = {}
-  for (const m of models) {
-    const brand = m.brand_name_en ?? 'Other'
-    if (!brandGroups[brand]) brandGroups[brand] = []
-    brandGroups[brand].push(m)
-  }
-
   const featureModels = models.map((m) => ({
     model_id: m.model_id,
     model_name: m.model_name,
@@ -93,62 +85,43 @@ export default async function HomeMarketPage({ params }: Props) {
         {/* 功能卡片网格（交互） */}
         <FeatureGrid market={market} models={featureModels} parts={parts} />
 
-        {/* 车型列表，按品牌分组 */}
-        {Object.entries(brandGroups).map(([brandName, brandModels]) => (
-          <div key={brandName}>
-            <div style={{
-              padding: '10px 28px',
-              background: 'oklch(97.5% 0.003 60)',
-              borderTop: '1px solid var(--border)',
-              borderBottom: '1px solid var(--border-soft)',
-            }}>
-              <span className="section-label">{brandName}</span>
-            </div>
-            <ul className="dtc-list">
-              {brandModels.map((m) => (
-                <li key={m.model_id}>
-                  <a href={`/${market}/models/${m.slug}`} className="dtc-row">
-                    <div className="dtc-row-top">
-                      <span style={{ fontWeight: 600, fontSize: '14px' }}>{m.model_name}</span>
-                      {m.years && <span className="dtc-desc-cell">{m.years}</span>}
-                      <span className="dtc-arrow">›</span>
-                    </div>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
-
         {/* 次级链接栏 — 仅 AU 市场 */}
         {market === 'au' && (
-          <div style={{ padding: '16px 28px', display: 'flex', flexWrap: 'wrap', gap: '8px', borderTop: '1px solid var(--border-soft)' }}>
-            {[
-              { label: '🏪 Find a Dealer', href: '/au/dealers/byd/nsw' },
-              { label: '🔄 Updates', href: '/au/updates/byd-atto-3' },
-              { label: '⚠️ Warning Lights', href: '/au/warnings/byd' },
-              { label: '📖 Buying Guide', href: '/au/buying-guide' },
-              { label: '🔧 Service', href: '/au/service/byd-atto-3' },
-            ].map(({ label, href }) => (
-              <a
-                key={href}
-                href={href}
-                style={{
-                  padding: '6px 12px',
-                  border: '1px solid var(--border-soft)',
-                  borderRadius: '5px',
-                  fontSize: '12px',
-                  fontWeight: 600,
-                  fontFamily: 'var(--font-cond)',
-                  letterSpacing: '0.06em',
-                  textDecoration: 'none',
-                  color: 'oklch(36% 0.01 60)',
-                  background: 'oklch(99% 0 0)',
-                }}
-              >
-                {label}
-              </a>
-            ))}
+          <div style={{ borderTop: '1px solid var(--border)', background: 'var(--bg)' }}>
+            <div style={{
+              padding: '8px 14px 8px 0',
+              display: 'flex',
+              flexWrap: 'wrap',
+            }}>
+              {[
+                { label: 'Find a Dealer', icon: '📍', href: '/au/dealers/byd/nsw' },
+                { label: 'Software Updates', icon: '↺', href: '/au/updates/byd-atto-3' },
+                { label: 'Warning Lights', icon: '△', href: '/au/warnings/byd' },
+                { label: 'Buying Guide', icon: '◎', href: '/au/buying-guide' },
+                { label: 'Service Costs', icon: '⚙', href: '/au/service/byd-atto-3' },
+              ].map(({ label, icon, href }) => (
+                <a
+                  key={href}
+                  href={href}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '8px 14px',
+                    fontSize: '12px',
+                    fontFamily: 'var(--font-cond)',
+                    fontWeight: 700,
+                    letterSpacing: '0.05em',
+                    textTransform: 'uppercase',
+                    textDecoration: 'none',
+                    color: 'var(--text-muted)',
+                  }}
+                >
+                  <span style={{ fontSize: '13px', opacity: 0.7 }}>{icon}</span>
+                  {label}
+                </a>
+              ))}
+            </div>
           </div>
         )}
 

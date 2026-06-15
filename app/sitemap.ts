@@ -26,12 +26,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Market home pages
   for (const market of activeMarkets) {
     pages.push({
-      url: `${BASE_URL}/${market.market_code}`,
+      url: `${BASE_URL}/home/${market.market_code}`,
       lastModified: new Date(),
       changeFrequency: 'weekly' as const,
       priority: 1.0,
     })
   }
+
+  // Buying guide — AU only
+  pages.push({
+    url: `${BASE_URL}/au/buying-guide`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly' as const,
+    priority: 0.8,
+  })
+
+  // Parts index — AU only
+  pages.push({
+    url: `${BASE_URL}/au/parts`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly' as const,
+    priority: 0.7,
+  })
 
   // Model overview pages
   for (const market of activeMarkets) {

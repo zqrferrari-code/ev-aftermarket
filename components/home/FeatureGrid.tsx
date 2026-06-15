@@ -35,6 +35,13 @@ const FEATURE_LABELS: Record<Exclude<FeatureKey, 'parts'>, string> = {
   charging: 'Charging',
 }
 
+const FEATURE_DESCS: Record<FeatureKey, string> = {
+  dtc: 'Look up fault codes by model',
+  problems: 'Owner-reported issues & fixes',
+  parts: 'Import duty & HS codes for parts',
+  charging: 'Real-world charging data',
+}
+
 export default function FeatureGrid({ market, models, parts }: FeatureGridProps) {
   const [active, setActive] = useState<FeatureKey | null>(null)
 
@@ -43,54 +50,80 @@ export default function FeatureGrid({ market, models, parts }: FeatureGridProps)
   }
 
   return (
-    <div style={{ padding: '0 0 4px' }}>
-      {/* 2×2 网格 */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        gap: '1px',
-        background: 'var(--border)',
-        borderTop: '1px solid var(--border)',
-      }}>
+    <div>
+      {/* 功能卡片列表 */}
+      <div style={{ borderTop: '1px solid var(--border)' }}>
         {FEATURES.map(({ key, label, icon }) => (
           <button
             key={key}
             onClick={() => handleCardClick(key)}
             style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'flex-start',
-              gap: '4px',
-              padding: '16px 20px',
-              background: active === key ? 'oklch(97% 0.015 145)' : 'var(--card-bg, #fff)',
+              width: '100%',
+              display: 'grid',
+              gridTemplateColumns: '52px 1fr auto',
+              alignItems: 'center',
+              gap: '0',
+              padding: '0',
+              background: active === key ? 'oklch(97.5% 0.012 145)' : '#fff',
               border: 'none',
-              borderBottom: active === key ? '2px solid var(--green)' : '2px solid transparent',
+              borderBottom: '1px solid var(--border-soft)',
+              borderLeft: active === key ? '3px solid var(--green)' : '3px solid transparent',
               cursor: 'pointer',
               textAlign: 'left',
-              minHeight: '72px',
+              transition: 'background 0.1s',
             }}
           >
-            <span style={{ fontSize: '20px', lineHeight: 1 }}>{icon}</span>
-            <span style={{
-              fontSize: '13px',
-              fontWeight: 700,
-              fontFamily: 'var(--font-cond)',
-              letterSpacing: '0.06em',
-              textTransform: 'uppercase',
-              color: active === key ? 'var(--green-text)' : 'oklch(30% 0.01 60)',
+            {/* 图标列 */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '100%',
+              padding: '20px 0',
+              fontSize: '22px',
+              borderRight: '1px solid var(--border-soft)',
             }}>
-              {label}
-            </span>
+              {icon}
+            </div>
+            {/* 文字列 */}
+            <div style={{ padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: '3px' }}>
+              <span style={{
+                fontFamily: 'var(--font-cond)',
+                fontSize: '15px',
+                fontWeight: 700,
+                letterSpacing: '0.05em',
+                textTransform: 'uppercase',
+                color: active === key ? 'var(--green-text)' : 'var(--text-base)',
+                lineHeight: 1,
+              }}>
+                {label}
+              </span>
+              <span style={{
+                fontSize: '12.5px',
+                color: 'var(--text-muted)',
+                lineHeight: 1.4,
+              }}>
+                {FEATURE_DESCS[key]}
+              </span>
+            </div>
+            {/* 箭头列 */}
+            <div style={{
+              padding: '0 20px',
+              color: active === key ? 'var(--green)' : 'var(--text-faint)',
+              fontSize: '18px',
+              fontWeight: 300,
+              transition: 'transform 0.15s',
+              transform: active === key ? 'rotate(90deg)' : 'none',
+            }}>
+              ›
+            </div>
           </button>
         ))}
       </div>
 
       {/* 展开面板 */}
       {active !== null && (
-        <div style={{
-          borderTop: '1px solid var(--border-soft)',
-          borderBottom: '1px solid var(--border-soft)',
-        }}>
+        <div style={{ background: 'oklch(98.5% 0.003 145)', borderTop: '1px solid var(--border-soft)', borderBottom: '1px solid var(--border-soft)' }}>
           {active === 'parts' ? (
             <PartsPanel market={market} models={models} parts={parts} />
           ) : (
