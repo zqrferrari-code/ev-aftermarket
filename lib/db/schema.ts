@@ -11,6 +11,8 @@ import {
   primaryKey,
   index,
   unique,
+  char,
+  date,
 } from 'drizzle-orm/pg-core'
 
 // ─── 市场配置表 ───────────────────────────────────────────────────────────────
@@ -249,4 +251,60 @@ export const warningLightDtcLinks = pgTable('mf_nv_warning_light_dtc_links', {
   dtc_id: integer('dtc_id').references(() => dtcs.dtc_id).notNull(),
 }, (t) => [
   primaryKey({ columns: [t.warning_light_id, t.dtc_id] }),
+])
+
+// ─── 配件相关表 ───────────────────────────────────────────────────────────────
+
+export const parts = pgTable('mf_parts', {
+  id: serial('id').primaryKey(),
+  slug: varchar('slug', { length: 100 }).notNull().unique(),
+  name_en: varchar('name_en', { length: 100 }).notNull(),
+  name_cn: varchar('name_cn', { length: 100 }),
+  category: varchar('category', { length: 50 }),
+  material: varchar('material', { length: 100 }),
+  is_dangerous: boolean('is_dangerous').default(false),
+  notes: text('notes'),
+  created_at: timestamp('created_at').defaultNow(),
+})
+
+export const partModelCompatibility = pgTable('mf_part_model_compatibility', {
+  id: serial('id').primaryKey(),
+  part_id: integer('part_id').references(() => parts.id),
+  model_id: varchar('model_id', { length: 100 }).references(() => models.model_id),
+  years: varchar('years', { length: 50 }),
+  oem_number: varchar('oem_number', { length: 100 }),
+  notes: text('notes'),
+})
+
+export const partHsCodes = pgTable('mf_part_hs_codes', {
+  id: serial('id').primaryKey(),
+  part_id: integer('part_id').notNull().references(() => parts.id),
+  country_code: char('country_code', { length: 2 }).notNull(),
+  hs_code: varchar('hs_code', { length: 12 }).notNull(),
+  hs_code_type: varchar('hs_code_type', { length: 10 }).notNull(),
+  description_en: text('description_en'),
+  description_local: text('description_local'),
+  declaration_elements: text('declaration_elements'),
+  regulatory_conditions: varchar('regulatory_conditions', { length: 100 }),
+  last_verified: date('last_verified'),
+  source_url: varchar('source_url', { length: 255 }),
+  notes: text('notes'),
+}, (t) => [
+  unique().on(t.part_id, t.country_code, t.hs_code_type),
+])
+
+export const tariffRates = pgTable('mf_tariff_rates', {
+  id: serial('id').primaryKey(),
+  country_code: char('country_code', { length: 2 }).notNull(),
+  hs_code: varchar('hs_code', { length: 12 }).notNull(),
+  mfn_rate: decimal('mfn_rate', { precision: 5, scale: 2 }),
+  fta_name: varchar('fta_name', { length: 50 }),
+  fta_rate: decimal('fta_rate', { precision: 5, scale: 2 }),
+  fta_conditions: text('fta_conditions'),
+  vat_rate: decimal('vat_rate', { precision: 5, scale: 2 }),
+  additional_duties: text('additional_duties'),
+  last_verified: date('last_verified'),
+  source_url: varchar('source_url', { length: 255 }),
+}, (t) => [
+  unique().on(t.country_code, t.hs_code),
 ])
