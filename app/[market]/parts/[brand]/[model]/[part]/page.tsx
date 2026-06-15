@@ -5,20 +5,21 @@ import { JsonLd } from '@/components/JsonLd'
 import {
   getPartPageData,
   getAllPartSlugsForModel,
-  getAllBydModelSlugs,
   buildHsCodeUrl,
 } from '@/lib/db/parts'
+import { getModelBySlug, getAllModelSlugs } from '@/lib/db/models'
 import TariffSummary from '@/components/parts/TariffSummary'
 import CostCalculator from '@/components/parts/CostCalculator'
 import AliexpressCards from '@/components/parts/AliexpressCards'
 
 export async function generateStaticParams() {
-  const modelSlugs = await getAllBydModelSlugs()
+  const allModels = await getAllModelSlugs()
+  const bydModels = allModels.filter(m => m.model_id.startsWith('byd'))
   const params: { market: string; brand: string; model: string; part: string }[] = []
-  for (const modelSlug of modelSlugs) {
-    const partSlugs = await getAllPartSlugsForModel(modelSlug)
+  for (const m of bydModels) {
+    const partSlugs = await getAllPartSlugsForModel(m.model_id)
     for (const partSlug of partSlugs) {
-      params.push({ market: 'au', brand: 'byd', model: modelSlug, part: partSlug })
+      params.push({ market: 'au', brand: 'byd', model: m.slug, part: partSlug })
     }
   }
   return params
@@ -29,15 +30,17 @@ interface Props {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { market, brand, model, part } = await params
-  const data = await getPartPageData(model, part, market.toUpperCase())
+  const { market, brand, model: modelSlug, part } = await params
+  const modelRow = await getModelBySlug(modelSlug)
+  if (!modelRow) return {}
+  const data = await getPartPageData(modelRow.model_id, part, market.toUpperCase())
   if (!data) return {}
 
   const partName = data.part.name_en
-  const modelName = data.part.compatible_models.find(m => m.model_id === model)?.model_name ?? model
+  const modelName = modelRow.model_name
   const title = `${partName} for ${modelName} — Import Duty & HS Code (${market.toUpperCase()})`
   const description = `${partName} HS code and import duty for ${modelName} to ${market.toUpperCase()}. AU customs code, tariff rate, GST, and AliExpress sourcing links.`
-  const url = `${BASE_URL}/${market}/parts/${brand}/${model}/${part}`
+  const url = `${BASE_URL}/${market}/parts/${brand}/${modelSlug}/${part}`
 
   return {
     title,
@@ -49,13 +52,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function PartDetailPage({ params }: Props) {
-  const { market, brand, model, part } = await params
-  const data = await getPartPageData(model, part, market.toUpperCase())
+  const { market, brand, model: modelSlug, part } = await params
+  const modelRow = await getModelBySlug(modelSlug)
+  if (!modelRow) notFound()
+  const data = await getPartPageData(modelRow.model_id, part, market.toUpperCase())
   if (!data) notFound()
 
   const { part: partData, cnHsCode, auHsCode, tariffRate } = data
-  const modelInfo = partData.compatible_models.find(m => m.model_id === model)
-  const modelName = modelInfo?.model_name ?? model
+  const modelName = modelRow.model_name
+  const modelInfo = partData.compatible_models.find(m => m.model_id === modelRow.model_id)
   const dutyRate = tariffRate?.mfn_rate ? parseFloat(tariffRate.mfn_rate) : 0
   const vatRate = tariffRate?.vat_rate ? parseFloat(tariffRate.vat_rate) : 10
 
@@ -79,7 +84,7 @@ export default async function PartDetailPage({ params }: Props) {
             <span className="sep">›</span>
             <a href={`/${market}/parts/${brand}`}>{brand.toUpperCase()}</a>
             <span className="sep">›</span>
-            <a href={`/${market}/parts/${brand}/${model}`}>{modelName}</a>
+            <a href={`/${market}/parts/${brand}/${modelSlug}`}>{modelName}</a>
             <span className="sep">›</span>
             <span style={{ fontWeight: 600, color: 'var(--text-base)' }}>{partData.name_en}</span>
           </nav>

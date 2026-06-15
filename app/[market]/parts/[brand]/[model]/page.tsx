@@ -1,12 +1,14 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { BASE_URL } from '@/lib/config'
-import { getModelBySlug } from '@/lib/db/models'
-import { getPartsByModel, buildPartUrl, getAllBydModelSlugs } from '@/lib/db/parts'
+import { getModelBySlug, getAllModelSlugs } from '@/lib/db/models'
+import { getPartsByModel, buildPartUrl } from '@/lib/db/parts'
 
 export async function generateStaticParams() {
-  const modelIds = await getAllBydModelSlugs()
-  return modelIds.map(model => ({ market: 'au', brand: 'byd', model }))
+  const allModels = await getAllModelSlugs()
+  return allModels
+    .filter(m => m.model_id.startsWith('byd'))
+    .map(m => ({ market: 'au', brand: 'byd', model: m.slug }))
 }
 
 interface Props {
@@ -31,11 +33,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ModelPartsPage({ params }: Props) {
   const { market, brand, model } = await params
-  const [modelData, parts] = await Promise.all([
-    getModelBySlug(model),
-    getPartsByModel(model),
-  ])
+  const modelData = await getModelBySlug(model)
   if (!modelData) notFound()
+  const parts = await getPartsByModel(modelData.model_id)
 
   return (
     <div className="page-wrapper">
