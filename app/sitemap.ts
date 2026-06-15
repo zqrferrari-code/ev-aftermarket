@@ -4,6 +4,7 @@ import { getAllModelSlugs } from '@/lib/db/models'
 import { getAllDTCCodesForSitemap } from '@/lib/db/dtcs'
 import { getWarningLightBrands, getWarningLightSlugs, getWarningLightModelSlugs } from '@/lib/db/static-params'
 import { BASE_URL } from '@/lib/config'
+import { getAllBydModelSlugs, getAllPartSlugsForModel, getAllHsCodesForSitemap } from '@/lib/db/parts'
 
 export const dynamic = 'force-static'
 
@@ -177,6 +178,37 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.6,
       })
     }
+  }
+
+  // Parts pages — AU only, BYD models
+  const bydModelIds = await getAllBydModelSlugs()
+  for (const modelId of bydModelIds) {
+    pages.push({
+      url: `${BASE_URL}/au/parts/byd/${modelId}`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.7,
+    })
+    const partSlugs = await getAllPartSlugsForModel(modelId)
+    for (const partSlug of partSlugs) {
+      pages.push({
+        url: `${BASE_URL}/au/parts/byd/${modelId}/${partSlug}`,
+        lastModified: new Date(),
+        changeFrequency: 'monthly' as const,
+        priority: 0.7,
+      })
+    }
+  }
+
+  // HS code pages — AU only
+  const hsCodes = await getAllHsCodesForSitemap('AU')
+  for (const code of hsCodes) {
+    pages.push({
+      url: `${BASE_URL}/au/parts/hs/${code}`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.6,
+    })
   }
 
   return pages
