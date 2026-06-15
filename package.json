@@ -19,7 +19,8 @@
     "collect:charging:dry": "dotenv -e .env.local -- tsx scripts/collect-charging-cases.ts --dry-run",
     "review": "dotenv -e .env.local -- tsx scripts/review-cases.ts",
     "review:list": "dotenv -e .env.local -- tsx scripts/review-cases.ts --list",
-    "seed:warnings": "dotenv -e .env.local -- tsx scripts/seed-warning-lights.ts"
+    "seed:warnings": "dotenv -e .env.local -- tsx scripts/seed-warning-lights.ts",
+    "seed:parts": "dotenv -e .env.local -- tsx scripts/seed-parts.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.98.0",
