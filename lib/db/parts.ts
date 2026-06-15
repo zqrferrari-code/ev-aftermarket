@@ -76,6 +76,10 @@ export function buildHsCodeUrl(market: string, hsCode: string): string {
 
 export function buildAliexpressSearchUrl(query: string): string {
   const encoded = encodeURIComponent(query)
+  const trackingId = process.env.NEXT_PUBLIC_ALIEXPRESS_TRACKING_ID
+  if (trackingId) {
+    return `https://www.aliexpress.com/wholesale?SearchText=${encoded}&aff_fcid=${trackingId}&aff_fsk=&aff_platform=portals-search&sk=_dT9BpKL&aff_trace_key=`
+  }
   return `https://www.aliexpress.com/wholesale?SearchText=${encoded}`
 }
 
