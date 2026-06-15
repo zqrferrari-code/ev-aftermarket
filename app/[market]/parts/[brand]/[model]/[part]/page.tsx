@@ -87,11 +87,6 @@ export default async function PartDetailPage({ params }: Props) {
         <h1 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '4px' }}>
           {partData.name_en}
         </h1>
-        {partData.name_cn && (
-          <p style={{ fontSize: '14px', color: 'var(--text-faint)', marginBottom: '8px' }}>
-            {partData.name_cn}
-          </p>
-        )}
         <p style={{ fontSize: '14px', color: 'var(--text-faint)', marginBottom: '32px' }}>
           Compatible with: {partData.compatible_models.map(m => m.model_name).join(', ')}
           {modelInfo?.years && ` · ${modelInfo.years}`}

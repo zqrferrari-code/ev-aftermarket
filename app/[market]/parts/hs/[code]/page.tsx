@@ -119,10 +119,7 @@ export default async function HsCodePage({ params }: Props) {
                 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px' }}>
                     <div>
-                      <p style={{ fontWeight: 600, fontSize: '14px', margin: '0 0 2px' }}>{part.name_en}</p>
-                      {part.name_cn && (
-                        <p style={{ fontSize: '12px', color: 'var(--text-faint)', margin: 0 }}>{part.name_cn}</p>
-                      )}
+                      <p style={{ fontWeight: 600, fontSize: '14px', margin: 0 }}>{part.name_en}</p>
                     </div>
                     <div style={{ display: 'flex', gap: '8px', flexShrink: 0, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
                       {part.model_slugs.map(modelSlug => (

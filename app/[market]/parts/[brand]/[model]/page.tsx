@@ -74,10 +74,7 @@ export default async function ModelPartsPage({ params }: Props) {
               }}
             >
               <div>
-                <p style={{ fontWeight: 600, fontSize: '14px', margin: '0 0 2px' }}>{part.name_en}</p>
-                {part.name_cn && (
-                  <p style={{ fontSize: '12px', color: 'var(--text-faint)', margin: 0 }}>{part.name_cn}</p>
-                )}
+                <p style={{ fontWeight: 600, fontSize: '14px', margin: 0 }}>{part.name_en}</p>
               </div>
               <span style={{ fontSize: '13px', color: 'var(--text-faint)', flexShrink: 0, marginLeft: '16px' }}>
                 {part.category ?? ''} →
