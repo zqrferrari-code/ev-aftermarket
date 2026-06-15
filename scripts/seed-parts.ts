@@ -61,8 +61,8 @@ const MODEL_COMPATIBILITY: Record<string, { model_id: string; years: string }[]>
 // 注：翼子板和后视镜的 AU 8 位子目待核实，暂用 87082900
 
 const HS_CODES: Record<string, { cn: string; au: string }> = {
-  'front-bumper': { cn: '8708101000', au: '87081000' },
-  'rear-bumper':  { cn: '8708101000', au: '87081000' },
+  'front-bumper': { cn: '8708101000', au: '87081010' },
+  'rear-bumper':  { cn: '8708101000', au: '87081010' },
   'headlights':   { cn: '8512201000', au: '85122000' },
   'tail-lights':  { cn: '8512209000', au: '85122000' },
   'front-fender': { cn: '8708299090', au: '87082991' },
@@ -70,42 +70,43 @@ const HS_CODES: Record<string, { cn: string; au: string }> = {
 }
 
 // ─── 澳洲关税数据 ──────────────────────────────────────────
-// 来源：ABF Working Tariff（已核实）
-// 澳洲对上述所有配件 MFN 关税为 0%，与原产地无关，无需原产地证书
+// 来源：ABF Current Tariff（已核实）
+// 澳洲对上述所有配件 MFN 关税为 5%，ChAFTA（中澳自贸协定）税率为 0%
+// 需提供原产地证明方可享受 ChAFTA 优惠税率
 
 const AU_TARIFF_RATES = [
   {
     country_code: 'AU',
-    hs_code: '87081000',
-    mfn_rate: '0.00',
-    fta_name: null,
-    fta_rate: null,
-    fta_conditions: null,
-    vat_rate: '10.00',
-    last_verified: '2026-06-15',
-    source_url: 'https://www.abf.gov.au/importing-exporting-and-manufacturing/tariff-classification/working-tariff',
-  },
-  {
-    country_code: 'AU',
-    hs_code: '85122000',
-    mfn_rate: '0.00',
-    fta_name: null,
-    fta_rate: null,
-    fta_conditions: null,
-    vat_rate: '10.00',
-    last_verified: '2026-06-15',
-    source_url: 'https://www.abf.gov.au/importing-exporting-and-manufacturing/tariff-classification/working-tariff',
-  },
-  {
-    country_code: 'AU',
-    hs_code: '87082991', // "Of a kind used as components in passenger motor vehicles" — fender, mirror
+    hs_code: '87081010', // Bumpers — of a kind used as components in passenger motor vehicles
     mfn_rate: '5.00',
     fta_name: 'ChAFTA',
     fta_rate: '0.00',
     fta_conditions: 'Goods must meet ChAFTA Rules of Origin',
     vat_rate: '10.00',
     last_verified: '2026-06-15',
-    source_url: 'https://www.abf.gov.au/importing-exporting-and-manufacturing/tariff-classification/current-tariff',
+    source_url: 'https://www.abf.gov.au/importing-exporting-and-manufacturing/tariff-classification/current-tariff/schedule-3/section-xvii/chapter-87',
+  },
+  {
+    country_code: 'AU',
+    hs_code: '85122000', // Lighting equipment for motor vehicles
+    mfn_rate: '5.00',
+    fta_name: 'ChAFTA',
+    fta_rate: '0.00',
+    fta_conditions: 'Goods must meet ChAFTA Rules of Origin',
+    vat_rate: '10.00',
+    last_verified: '2026-06-15',
+    source_url: 'https://www.abf.gov.au/importing-exporting-and-manufacturing/tariff-classification/current-tariff/schedule-3/section-xvi/chapter-85',
+  },
+  {
+    country_code: 'AU',
+    hs_code: '87082991', // Other body parts — of a kind used as components in passenger motor vehicles
+    mfn_rate: '5.00',
+    fta_name: 'ChAFTA',
+    fta_rate: '0.00',
+    fta_conditions: 'Goods must meet ChAFTA Rules of Origin',
+    vat_rate: '10.00',
+    last_verified: '2026-06-15',
+    source_url: 'https://www.abf.gov.au/importing-exporting-and-manufacturing/tariff-classification/current-tariff/schedule-3/section-xvii/chapter-87',
   },
 ]
 
