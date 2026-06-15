@@ -42,23 +42,22 @@ export default function CostCalculator({ dutyRate, vatRate }: CostCalculatorProp
   }, [partPrice, shipping, dutyRate, vatRate])
 
   return (
-    <div style={{ border: '1px solid var(--border)', borderRadius: '4px', overflow: 'hidden' }}>
-      <div style={{
-        padding: '11px 20px',
-        background: 'var(--bg)',
-        borderBottom: '1px solid var(--border-soft)',
-        fontSize: '11px',
-        fontWeight: 700,
-        letterSpacing: '0.1em',
-        textTransform: 'uppercase',
-        color: 'var(--text-faint)',
-        fontFamily: 'var(--font-cond)',
-      }}>
-        Landed Cost Estimator
+    <div style={{ borderTop: '1px solid var(--border-soft)' }}>
+      <div className="model-section-head">
+        <span style={{
+          fontFamily: 'var(--font-cond)',
+          fontSize: '11px',
+          fontWeight: 700,
+          letterSpacing: '0.1em',
+          textTransform: 'uppercase',
+          color: 'var(--text-faint)',
+        }}>
+          Landed Cost Estimator
+        </span>
       </div>
 
-      <div style={{ padding: '16px 20px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
+      <div style={{ padding: '20px 28px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '18px' }}>
           <label style={{ display: 'block' }}>
             <span style={labelStyle}>Part Price (CNY or AUD)</span>
             <input
@@ -88,20 +87,20 @@ export default function CostCalculator({ dutyRate, vatRate }: CostCalculatorProp
         {result ? (
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
             <tbody>
-              <ResultRow label="CIF (Part + Shipping)" value={fmt(result.cif)} />
+              <ResultRow label={`CIF (Part + Shipping)`} value={fmt(result.cif)} />
               <ResultRow label={`Import Duty (${dutyRate}%)`} value={fmt(result.duty)} />
               <ResultRow label={`GST (${vatRate}%)`} value={fmt(result.vat)} />
               <ResultRow label="Total Landed Cost" value={fmt(result.total)} bold />
             </tbody>
           </table>
         ) : (
-          <p style={{ fontSize: '13px', color: 'var(--text-faint)', margin: 0 }}>
+          <p style={{ fontSize: '13px', color: 'var(--text-faint)' }}>
             Enter a part price to calculate
           </p>
         )}
 
-        <p style={{ marginTop: '12px', fontSize: '11px', color: 'var(--text-faint)', lineHeight: 1.5, margin: '12px 0 0' }}>
-          Estimate only. Actual charges are determined by Australian Border Force at time of import. Currency fluctuations may affect the final amount.
+        <p style={{ marginTop: '12px', fontSize: '11px', color: 'var(--text-faint)', lineHeight: 1.6 }}>
+          Estimate only. Actual charges are determined by Australian Border Force at time of import.
         </p>
       </div>
     </div>
@@ -111,11 +110,11 @@ export default function CostCalculator({ dutyRate, vatRate }: CostCalculatorProp
 function ResultRow({ label, value, bold }: { label: string; value: string; bold?: boolean }) {
   return (
     <tr style={{ borderBottom: '1px solid var(--border-soft)' }}>
-      <td style={{ padding: '8px 0', color: 'var(--text-faint)', width: '55%' }}>{label}</td>
+      <td style={{ padding: '9px 0', color: 'var(--text-faint)', width: '55%' }}>{label}</td>
       <td style={{
-        padding: '8px 0',
+        padding: '9px 0',
         fontWeight: bold ? 700 : 400,
-        color: bold ? 'var(--text-base)' : 'var(--text-soft)',
+        color: bold ? 'var(--text-base)' : 'var(--text-muted)',
         textAlign: 'right',
       }}>
         {value}
@@ -125,14 +124,14 @@ function ResultRow({ label, value, bold }: { label: string; value: string; bold?
 }
 
 const labelStyle: React.CSSProperties = {
-  fontSize: '11px',
-  fontWeight: 600,
+  fontFamily: 'var(--font-cond)',
+  fontSize: '10.5px',
+  fontWeight: 700,
   letterSpacing: '0.08em',
   textTransform: 'uppercase',
   color: 'var(--text-faint)',
   display: 'block',
   marginBottom: '6px',
-  fontFamily: 'var(--font-cond)',
 }
 
 const inputStyle: React.CSSProperties = {
@@ -141,7 +140,8 @@ const inputStyle: React.CSSProperties = {
   border: '1px solid var(--border)',
   borderRadius: '3px',
   fontSize: '14px',
+  fontFamily: 'var(--font-ui)',
   color: 'var(--text-base)',
-  background: 'var(--bg)',
+  background: 'var(--surface)',
   boxSizing: 'border-box',
 }

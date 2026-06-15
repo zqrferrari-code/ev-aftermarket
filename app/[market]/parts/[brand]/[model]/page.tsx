@@ -38,51 +38,49 @@ export default async function ModelPartsPage({ params }: Props) {
   if (!modelData) notFound()
 
   return (
-    <div style={{ maxWidth: '760px', margin: '0 auto', padding: '32px 20px' }}>
-      <nav style={{ fontSize: '12px', color: 'var(--text-faint)', marginBottom: '24px' }}>
-        <a href={`/${market}/parts`} style={{ color: 'var(--accent)' }}>Parts</a>
-        {' / '}
-        <a href={`/${market}/parts/${brand}`} style={{ color: 'var(--accent)' }}>{brand.toUpperCase()}</a>
-        {' / '}
-        <span>{modelData.model_name}</span>
-      </nav>
+    <div className="page-wrapper">
+      <article className="dtc-card">
+        <nav className="breadcrumb">
+          <a href={`/${market}/parts`}>Parts</a>
+          <span className="sep">›</span>
+          <a href={`/${market}/parts/${brand}`}>{brand.toUpperCase()}</a>
+          <span className="sep">›</span>
+          <span style={{ fontWeight: 600, color: 'var(--text-base)' }}>{modelData.model_name}</span>
+        </nav>
 
-      <h1 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '8px' }}>
-        {modelData.model_name} — Import Duty & HS Codes
-      </h1>
-      <p style={{ fontSize: '14px', color: 'var(--text-faint)', marginBottom: '32px' }}>
-        {parts.length} {parts.length === 1 ? 'part' : 'parts'} · Select a part to view HS codes and AU import duty
-      </p>
-
-      {parts.length === 0 ? (
-        <p style={{ color: 'var(--text-faint)', fontSize: '14px' }}>No parts data available.</p>
-      ) : (
-        <div style={{ display: 'grid', gap: '8px' }}>
-          {parts.map(part => (
-            <a
-              key={part.id}
-              href={buildPartUrl(market, brand, model, part.slug)}
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: '14px 18px',
-                border: '1px solid var(--border)',
-                borderRadius: '4px',
-                textDecoration: 'none',
-                color: 'var(--text-base)',
-              }}
-            >
-              <div>
-                <p style={{ fontWeight: 600, fontSize: '14px', margin: 0 }}>{part.name_en}</p>
-              </div>
-              <span style={{ fontSize: '13px', color: 'var(--text-faint)', flexShrink: 0, marginLeft: '16px' }}>
-                {part.category ?? ''} →
-              </span>
-            </a>
-          ))}
+        <div className="list-hero">
+          <h1>{modelData.model_name} — Import Duty & HS Codes</h1>
+          <p>
+            {parts.length} {parts.length === 1 ? 'part' : 'parts'} available.
+            Select a part to view its HS code and AU import duty.
+          </p>
         </div>
-      )}
+
+        {parts.length === 0 ? (
+          <div className="model-empty">No parts data available.</div>
+        ) : (
+          <ul className="dtc-list">
+            {parts.map(part => (
+              <li key={part.id}>
+                <a href={buildPartUrl(market, brand, model, part.slug)} className="dtc-row">
+                  <div className="dtc-row-top">
+                    <span style={{ fontWeight: 600, fontSize: '14px' }}>{part.name_en}</span>
+                    {part.category && (
+                      <span className="badge badge-info" style={{ textTransform: 'capitalize', fontSize: '10px' }}>
+                        {part.category}
+                      </span>
+                    )}
+                  </div>
+                  {part.material && (
+                    <span className="dtc-desc-cell">{part.material}</span>
+                  )}
+                  <span className="dtc-arrow">→</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
+      </article>
     </div>
   )
 }

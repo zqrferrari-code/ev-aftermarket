@@ -70,68 +70,64 @@ export default async function PartDetailPage({ params }: Props) {
   return (
     <>
       <JsonLd schema={jsonLd} />
-      <div style={{ maxWidth: '760px', margin: '0 auto', padding: '32px 20px' }}>
+      <div className="page-wrapper">
+        <article className="dtc-card">
 
-        {/* Breadcrumb */}
-        <nav style={{ fontSize: '12px', color: 'var(--text-faint)', marginBottom: '24px' }}>
-          <a href={`/${market}/parts`} style={{ color: 'var(--accent)' }}>Parts</a>
-          {' / '}
-          <a href={`/${market}/parts/${brand}`} style={{ color: 'var(--accent)' }}>{brand.toUpperCase()}</a>
-          {' / '}
-          <a href={`/${market}/parts/${brand}/${model}`} style={{ color: 'var(--accent)' }}>{modelName}</a>
-          {' / '}
-          <span>{partData.name_en}</span>
-        </nav>
+          {/* Breadcrumb */}
+          <nav className="breadcrumb">
+            <a href={`/${market}/parts`}>Parts</a>
+            <span className="sep">›</span>
+            <a href={`/${market}/parts/${brand}`}>{brand.toUpperCase()}</a>
+            <span className="sep">›</span>
+            <a href={`/${market}/parts/${brand}/${model}`}>{modelName}</a>
+            <span className="sep">›</span>
+            <span style={{ fontWeight: 600, color: 'var(--text-base)' }}>{partData.name_en}</span>
+          </nav>
 
-        {/* Header */}
-        <h1 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '4px' }}>
-          {partData.name_en}
-        </h1>
-        <p style={{ fontSize: '14px', color: 'var(--text-faint)', marginBottom: '32px' }}>
-          Compatible with: {partData.compatible_models.map(m => m.model_name).join(', ')}
-          {modelInfo?.years && ` · ${modelInfo.years}`}
-        </p>
+          {/* Hero */}
+          <div className="detail-hero">
+            <h1 className="detail-h1">{partData.name_en}</h1>
 
-        {/* Part meta */}
-        <div style={{ display: 'flex', gap: '24px', marginBottom: '32px', flexWrap: 'wrap' }}>
-          {partData.category && <MetaChip label="Category" value={partData.category} />}
-          {partData.material && <MetaChip label="Material" value={partData.material} />}
-          {partData.is_dangerous && <MetaChip label="Dangerous Goods" value="Yes" warn />}
-        </div>
+            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '12px' }}>
+              {partData.category && (
+                <span className="badge badge-info" style={{ textTransform: 'capitalize' }}>{partData.category}</span>
+              )}
+              {partData.material && (
+                <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>{partData.material}</span>
+              )}
+              {partData.is_dangerous && (
+                <span className="badge badge-critical">Dangerous Goods</span>
+              )}
+            </div>
 
-        {/* HS code link */}
-        {auHsCode && (
-          <p style={{ fontSize: '13px', color: 'var(--text-faint)', marginBottom: '24px' }}>
-            AU HS Code:{' '}
-            <a href={buildHsCodeUrl(market, auHsCode.hs_code)} style={{ color: 'var(--accent)', fontFamily: 'monospace' }}>
-              {auHsCode.hs_code}
-            </a>
-            {' '}— view all parts under this code
-          </p>
-        )}
+            <p style={{ fontSize: '13px', color: 'var(--text-faint)', marginBottom: '12px' }}>
+              Compatible with: {partData.compatible_models.map(m => m.model_name).join(', ')}
+              {modelInfo?.years && ` · ${modelInfo.years}`}
+            </p>
 
-        {/* Main sections */}
-        <div style={{ display: 'grid', gap: '24px' }}>
+            {auHsCode && (
+              <p style={{ fontSize: '13px', color: 'var(--text-faint)' }}>
+                AU HS Code:{' '}
+                <a href={buildHsCodeUrl(market, auHsCode.hs_code)}
+                  style={{ fontFamily: 'var(--font-mono)', color: 'var(--green)', fontWeight: 600 }}>
+                  {auHsCode.hs_code}
+                </a>
+                {' '}— view all parts under this code
+              </p>
+            )}
+          </div>
+
+          {/* Tariff summary */}
           <TariffSummary cnHsCode={cnHsCode} auHsCode={auHsCode} tariffRate={tariffRate} />
-          <CostCalculator dutyRate={dutyRate} vatRate={vatRate} />
-          <AliexpressCards part={partData} modelName={modelName} />
-        </div>
 
+          {/* Cost calculator */}
+          <CostCalculator dutyRate={dutyRate} vatRate={vatRate} />
+
+          {/* AliExpress */}
+          <AliexpressCards part={partData} modelName={modelName} />
+
+        </article>
       </div>
     </>
-  )
-}
-
-function MetaChip({ label, value, warn }: { label: string; value: string; warn?: boolean }) {
-  return (
-    <span style={{
-      fontSize: '12px',
-      padding: '3px 10px',
-      borderRadius: '3px',
-      border: `1px solid ${warn ? 'var(--warn, #f59e0b)' : 'var(--border)'}`,
-      color: warn ? 'var(--warn, #f59e0b)' : 'var(--text-faint)',
-    }}>
-      <strong>{label}：</strong>{value}
-    </span>
   )
 }

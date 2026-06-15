@@ -8,27 +8,26 @@ interface TariffSummaryProps {
 
 export default function TariffSummary({ cnHsCode, auHsCode, tariffRate }: TariffSummaryProps) {
   return (
-    <div style={{ border: '1px solid var(--border)', borderRadius: '4px', overflow: 'hidden' }}>
-      <div style={{
-        padding: '11px 20px',
-        background: 'var(--bg)',
-        borderBottom: '1px solid var(--border-soft)',
-        fontSize: '11px',
-        fontWeight: 700,
-        letterSpacing: '0.1em',
-        textTransform: 'uppercase',
-        color: 'var(--text-faint)',
-        fontFamily: 'var(--font-cond)',
-      }}>
-        Import Duty Summary
+    <div>
+      <div className="model-section-head">
+        <span style={{
+          fontFamily: 'var(--font-cond)',
+          fontSize: '11px',
+          fontWeight: 700,
+          letterSpacing: '0.1em',
+          textTransform: 'uppercase',
+          color: 'var(--text-faint)',
+        }}>
+          Import Duty Summary
+        </span>
       </div>
 
-      <div style={{ padding: '16px 20px' }}>
+      <div style={{ padding: '20px 28px' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
           <tbody>
-            <TariffRow label="CN Export HS Code" value={cnHsCode ? formatHsCode(cnHsCode.hs_code, 'CN') : '—'} />
-            <TariffRow label="AU Import HS Code" value={auHsCode ? formatHsCode(auHsCode.hs_code, 'AU') : '—'} />
-            <TariffRow label="AU MFN Duty Rate" value={tariffRate?.mfn_rate != null ? `${tariffRate.mfn_rate}%` : '—'} highlight />
+            <TariffRow label="CN Export HS Code" value={cnHsCode ? formatHsCode(cnHsCode.hs_code, 'CN') : '—'} mono />
+            <TariffRow label="AU Import HS Code" value={auHsCode ? formatHsCode(auHsCode.hs_code, 'AU') : '—'} mono />
+            <TariffRow label="AU MFN Duty Rate" value={tariffRate?.mfn_rate != null ? `${tariffRate.mfn_rate}%` : '—'} bold />
             {tariffRate?.fta_name && tariffRate.fta_rate != null && (
               <TariffRow label={`${tariffRate.fta_name} FTA Rate`} value={`${tariffRate.fta_rate}%`} />
             )}
@@ -39,17 +38,18 @@ export default function TariffSummary({ cnHsCode, auHsCode, tariffRate }: Tariff
           </tbody>
         </table>
 
-        {tariffRate?.mfn_rate === '0.00' || tariffRate?.mfn_rate === '0' ? (
-          <p style={{ marginTop: '12px', fontSize: '12px', color: 'var(--text-faint)', lineHeight: 1.5 }}>
-            ✓ AU MFN duty rate is 0% for this part. No certificate of origin required — only 10% GST applies.
+        {(tariffRate?.mfn_rate === '0.00' || tariffRate?.mfn_rate === '0') && (
+          <p style={{ marginTop: '14px', fontSize: '12px', color: 'var(--text-faint)', lineHeight: 1.6, display: 'flex', gap: '6px' }}>
+            <span style={{ color: 'var(--green)', flexShrink: 0 }}>✓</span>
+            AU MFN duty rate is 0% for this part. No certificate of origin required — only 10% GST applies.
           </p>
-        ) : null}
+        )}
 
         {tariffRate?.source_url && (
-          <p style={{ marginTop: '8px', fontSize: '11px', color: 'var(--text-faint)' }}>
+          <p style={{ marginTop: '10px', fontSize: '11px', color: 'var(--text-faint)' }}>
             Source:{' '}
             <a href={tariffRate.source_url} target="_blank" rel="noopener noreferrer"
-              style={{ color: 'var(--accent)' }}>
+              style={{ color: 'var(--green)' }}>
               ABF Working Tariff
             </a>
             {tariffRate.last_verified && ` · Verified ${tariffRate.last_verified}`}
@@ -60,15 +60,17 @@ export default function TariffSummary({ cnHsCode, auHsCode, tariffRate }: Tariff
   )
 }
 
-function TariffRow({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
+function TariffRow({ label, value, bold, mono }: { label: string; value: string; bold?: boolean; mono?: boolean }) {
   return (
     <tr style={{ borderBottom: '1px solid var(--border-soft)' }}>
-      <td style={{ padding: '8px 0', color: 'var(--text-faint)', width: '55%' }}>{label}</td>
+      <td style={{ padding: '9px 0', color: 'var(--text-faint)', width: '55%', fontSize: '13px' }}>{label}</td>
       <td style={{
-        padding: '8px 0',
-        fontWeight: highlight ? 700 : 400,
-        color: highlight ? 'var(--text-base)' : 'var(--text-soft)',
+        padding: '9px 0',
+        fontWeight: bold ? 700 : 400,
+        fontFamily: mono ? 'var(--font-mono)' : 'inherit',
+        color: 'var(--text-muted)',
         textAlign: 'right',
+        fontSize: mono ? '12px' : '13px',
       }}>
         {value}
       </td>
