@@ -261,6 +261,7 @@ export async function getAllBydModelSlugs(): Promise<string[]> {
 }
 
 export async function getPartsForHome(): Promise<{ slug: string; name_en: string }[]> {
-  const { data } = await sb.from('mf_parts').select('slug, name_en').order('id')
+  const { data, error } = await sb.from('mf_parts').select('slug, name_en').order('id')
+  if (error) return []
   return data ?? []
 }
