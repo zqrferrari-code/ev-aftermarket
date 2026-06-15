@@ -265,3 +265,9 @@ export async function getPartsForHome(): Promise<{ slug: string; name_en: string
   if (error) return []
   return data ?? []
 }
+
+export async function getModelsWithParts(): Promise<string[]> {
+  const { data, error } = await sb.from('mf_part_model_compatibility').select('model_id')
+  if (error) return []
+  return [...new Set((data ?? []).map((r: any) => r.model_id))]
+}

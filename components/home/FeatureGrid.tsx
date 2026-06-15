@@ -17,6 +17,7 @@ interface Part {
 export interface FeatureGridProps {
   market: string
   models: Model[]
+  partModels: Model[]
   parts: Part[]
 }
 
@@ -42,7 +43,7 @@ const FEATURE_DESCS: Record<FeatureKey, string> = {
   charging: 'Real-world charging data',
 }
 
-export default function FeatureGrid({ market, models, parts }: FeatureGridProps) {
+export default function FeatureGrid({ market, models, partModels, parts }: FeatureGridProps) {
   const [active, setActive] = useState<FeatureKey | null>(null)
 
   function handleCardClick(key: FeatureKey) {
@@ -125,7 +126,7 @@ export default function FeatureGrid({ market, models, parts }: FeatureGridProps)
       {active !== null && (
         <div style={{ background: 'oklch(98.5% 0.003 145)', borderTop: '1px solid var(--border-soft)', borderBottom: '1px solid var(--border-soft)' }}>
           {active === 'parts' ? (
-            <PartsPanel market={market} models={models} parts={parts} />
+            <PartsPanel market={market} models={partModels} parts={parts} />
           ) : (
             <ModelListPanel market={market} models={models} feature={active} />
           )}

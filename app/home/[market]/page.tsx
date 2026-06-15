@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { getAllModelsWithBrand } from '@/lib/db/models'
 import { getDTCNoteCount } from '@/lib/db/dtcs'
 import { getProblemCasesCount } from '@/lib/db/cases'
-import { getPartsForHome } from '@/lib/db/parts'
+import { getPartsForHome, getModelsWithParts } from '@/lib/db/parts'
 import { BASE_URL } from '@/lib/config'
 import FeatureGrid from '@/components/home/FeatureGrid'
 
@@ -38,11 +38,12 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function HomeMarketPage({ params }: Props) {
   const { market } = await params
 
-  const [models, dtcCount, casesCount, parts] = await Promise.all([
+  const [models, dtcCount, casesCount, parts, modelsWithParts] = await Promise.all([
     getAllModelsWithBrand(),
     getDTCNoteCount(),
     getProblemCasesCount(),
     getPartsForHome(),
+    getModelsWithParts(),
   ])
 
   const featureModels = models.map((m) => ({
@@ -51,6 +52,8 @@ export default async function HomeMarketPage({ params }: Props) {
     brand_id: m.brand_id,
     slug: m.slug,
   }))
+
+  const partModels = featureModels.filter(m => modelsWithParts.includes(m.model_id))
 
   return (
     <div className="page-wrapper">
@@ -83,7 +86,7 @@ export default async function HomeMarketPage({ params }: Props) {
         </div>
 
         {/* 功能卡片网格（交互） */}
-        <FeatureGrid market={market} models={featureModels} parts={parts} />
+        <FeatureGrid market={market} models={featureModels} partModels={partModels} parts={parts} />
 
         {/* 次级链接栏 — 仅 AU 市场 */}
         {market === 'au' && (
