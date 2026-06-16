@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
   const citations: string[] = data.citations ?? []
   const allText = text + ' ' + citations.join(' ')
   const cited = allText.toLowerCase().includes(SITE)
-  const citationUrl = citations.find(c => c.includes(SITE)) ?? null
+  const citationUrl = citations.find(c => c.toLowerCase().includes(SITE)) ?? null
 
   return NextResponse.json({
     query,
