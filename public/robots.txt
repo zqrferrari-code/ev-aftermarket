@@ -1,5 +1,4 @@
 User-agent: *
-Allow: /
 Disallow: /api/
 
 # AI crawlers — explicitly allowed
