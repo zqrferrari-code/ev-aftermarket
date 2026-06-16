@@ -8,8 +8,27 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: '*',
-        allow: '/',
         disallow: ['/api/'],
+      },
+      {
+        userAgent: 'GPTBot',
+        allow: '/',
+      },
+      {
+        userAgent: 'ClaudeBot',
+        allow: '/',
+      },
+      {
+        userAgent: 'PerplexityBot',
+        allow: '/',
+      },
+      {
+        userAgent: 'anthropic-ai',
+        allow: '/',
+      },
+      {
+        userAgent: 'Googlebot-Extended',
+        allow: '/',
       },
       {
         userAgent: 'AhrefsBot',
