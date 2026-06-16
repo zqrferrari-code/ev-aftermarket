@@ -70,6 +70,10 @@ export default async function PartDetailPage({ params }: Props) {
     name: partData.name_en,
     description: `${partData.name_en} compatible with ${modelName}`,
     brand: { '@type': 'Brand', name: 'BYD' },
+    speakable: {
+      '@type': 'SpeakableSpecification',
+      cssSelector: ['.tariff-summary'],
+    },
   }
 
   return (
@@ -121,6 +125,23 @@ export default async function PartDetailPage({ params }: Props) {
               </p>
             )}
           </div>
+
+          {/* GEO Tariff Summary */}
+          {(partData as any).geo_summary && (
+            <div className="tariff-summary" style={{
+              margin: '0',
+              padding: '16px 28px',
+              background: 'oklch(97.5% 0.005 145)',
+              borderTop: '1px solid var(--border-soft)',
+              borderBottom: '1px solid var(--border-soft)',
+              fontSize: '13.5px',
+              lineHeight: 1.75,
+              color: 'var(--text-base)',
+              whiteSpace: 'pre-line',
+            }}>
+              {(partData as any).geo_summary}
+            </div>
+          )}
 
           {/* Tariff summary */}
           <TariffSummary cnHsCode={cnHsCode} auHsCode={auHsCode} tariffRate={tariffRate} />
