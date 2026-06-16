@@ -27,7 +27,7 @@ async function generateDtcSummary(row: {
   const causes = Array.isArray(row.likely_causes)
     ? (row.likely_causes as string[]).slice(0, 2).join(' and ')
     : typeof row.likely_causes === 'string'
-    ? (JSON.parse(row.likely_causes) as string[]).slice(0, 2).join(' and ')
+    ? (() => { try { return (JSON.parse(row.likely_causes) as string[]).slice(0, 2).join(' and ') } catch { return 'various electrical or software faults' } })()
     : 'various electrical or software faults'
 
   const actions = Array.isArray(row.suggested_actions)
@@ -52,7 +52,9 @@ Start with "The ${row.dtc_code} fault code on the ${row.model_name} indicates...
     messages: [{ role: 'user', content: prompt }],
   })
 
-  return response.content[0].type === 'text' ? response.content[0].text.trim() : ''
+  const content = response.content[0]
+  if (!content || content.type !== 'text') throw new Error(`Unexpected API response type: ${content?.type ?? 'empty'}`)
+  return content.text.trim()
 }
 
 async function processDtcs() {
@@ -108,10 +110,11 @@ async function processDtcs() {
       if (dryRun) {
         console.log(`[DRY RUN] ${dtc.dtc_code} — ${model.model_name}:\n${summary}\n`)
       } else {
-        await sb
+        const { error: updateError } = await sb
           .from('mf_nv_dtc_model_notes')
           .update({ geo_summary: summary })
           .eq('id', note.id)
+        if (updateError) throw new Error(`Update failed: ${updateError.message}`)
         success++
         if (samples.length < 3) samples.push(`${dtc.dtc_code} (${model.model_name}): ${summary.slice(0, 80)}...`)
       }
@@ -175,7 +178,9 @@ Format as 3-4 bullet points listing the rates, then one sentence with the exampl
     messages: [{ role: 'user', content: prompt }],
   })
 
-  return response.content[0].type === 'text' ? response.content[0].text.trim() : ''
+  const content = response.content[0]
+  if (!content || content.type !== 'text') throw new Error(`Unexpected API response type: ${content?.type ?? 'empty'}`)
+  return content.text.trim()
 }
 
 async function processParts() {
@@ -234,10 +239,11 @@ async function processParts() {
       if (dryRun) {
         console.log(`[DRY RUN] ${part.name_en}:\n${summary}\n`)
       } else {
-        await sb
+        const { error: updateError } = await sb
           .from('mf_parts')
           .update({ geo_summary: summary })
           .eq('id', part.id)
+        if (updateError) throw new Error(`Update failed: ${updateError.message}`)
         success++
       }
 
@@ -283,7 +289,9 @@ Output only the content, no extra headings.`
     messages: [{ role: 'user', content: prompt }],
   })
 
-  return response.content[0].type === 'text' ? response.content[0].text.trim() : ''
+  const content = response.content[0]
+  if (!content || content.type !== 'text') throw new Error(`Unexpected API response type: ${content?.type ?? 'empty'}`)
+  return content.text.trim()
 }
 
 async function processModels() {
@@ -338,10 +346,11 @@ async function processModels() {
       if (dryRun) {
         console.log(`[DRY RUN] ${model.model_name}:\n${summary}\n`)
       } else {
-        await sb
+        const { error: updateError } = await sb
           .from('mf_nv_models')
           .update({ geo_summary: summary })
           .eq('model_id', model.model_id)
+        if (updateError) throw new Error(`Update failed: ${updateError.message}`)
         success++
       }
 
