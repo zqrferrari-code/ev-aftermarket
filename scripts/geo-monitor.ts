@@ -60,7 +60,7 @@ async function askPerplexity(query: string): Promise<{ text: string; citations: 
 function checkCitation(text: string, citations: string[]): { cited: boolean; url: string | null } {
   const allText = text + ' ' + citations.join(' ')
   const cited = allText.toLowerCase().includes(SITE)
-  const url = citations.find(c => c.includes(SITE)) ?? null
+  const url = citations.find(c => c.toLowerCase().includes(SITE.toLowerCase())) ?? null
   return { cited, url }
 }
 
@@ -152,7 +152,11 @@ async function main() {
   }
 
   console.log(`\n📊 Results: ${cited} cited / ${notCited} not cited out of ${queries.length} queries`)
-  console.log(`Citation rate: ${Math.round(cited / queries.length * 100)}%`)
+  if (queries.length > 0) {
+    console.log(`Citation rate: ${Math.round(cited / queries.length * 100)}%`)
+  } else {
+    console.log('No queries sampled — check that geo_summary content has been generated first.')
+  }
 }
 
 main().catch(console.error)
