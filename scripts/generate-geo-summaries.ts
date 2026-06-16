@@ -19,7 +19,7 @@ const client = new OpenAI({
   baseURL: llmConfig.llm_base_url,
 })
 
-const MODEL = 'pub-kimi-k2.5'
+const MODEL = 'pub-gpt-5.5'
 
 const args = process.argv.slice(2)
 const typeArg = args.find(a => a.startsWith('--type='))?.split('=')[1] ?? 'all'
