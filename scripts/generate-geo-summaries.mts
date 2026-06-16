@@ -23,6 +23,17 @@ const client = new OpenAI({
 })
 
 const MODEL = 'pub-kimi-k2.5'
+const CONCURRENCY = 5
+
+async function runInBatches<T>(items: T[], fn: (item: T) => Promise<void>) {
+  for (let i = 0; i < items.length; i += CONCURRENCY) {
+    const batch = items.slice(i, i + CONCURRENCY)
+    await Promise.all(batch.map(fn))
+    if (i + CONCURRENCY < items.length) {
+      await new Promise(r => setTimeout(r, 200))
+    }
+  }
+}
 
 const args = process.argv.slice(2)
 const typeArg = args.find(a => a.startsWith('--type='))?.split('=')[1] ?? 'all'
@@ -102,11 +113,10 @@ async function processDtcs() {
   let failed = 0
   const samples: string[] = []
 
-  for (const note of notes as any[]) {
+  await runInBatches(notes as any[], async (note) => {
     const dtc = note.mf_nv_dtcs
     const model = note.mf_nv_models
 
-    // Count cases for this DTC
     const { count } = await sb
       .from('mf_nv_case_dtc_links')
       .select('*', { count: 'exact', head: true })
@@ -135,13 +145,11 @@ async function processDtcs() {
         success++
         if (samples.length < 3) samples.push(`${dtc.dtc_code} (${model.model_name}): ${summary.slice(0, 80)}...`)
       }
-
-      await new Promise(r => setTimeout(r, 300))
     } catch (e) {
       console.error(`Failed for note ${note.id}:`, e)
       failed++
     }
-  }
+  })
 
   console.log(`\n✅ DTC: ${success} generated, ${failed} failed`)
   console.log('\nSamples:')
@@ -219,8 +227,7 @@ async function processParts() {
   let success = 0
   let failed = 0
 
-  for (const part of parts) {
-    // Get AU HS code and tariff
+  await runInBatches(parts, async (part) => {
     const { data: hsCodes } = await sb
       .from('mf_part_hs_codes')
       .select('hs_code, description_en')
@@ -229,7 +236,7 @@ async function processParts() {
       .eq('hs_code_type', 'import')
       .limit(1)
 
-    if (!hsCodes || hsCodes.length === 0) continue
+    if (!hsCodes || hsCodes.length === 0) return
 
     const hsCode = hsCodes[0]
 
@@ -263,13 +270,11 @@ async function processParts() {
         if (updateError) throw new Error(`Update failed: ${updateError.message}`)
         success++
       }
-
-      await new Promise(r => setTimeout(r, 300))
     } catch (e) {
       console.error(`Failed for part ${part.id}:`, e)
       failed++
     }
-  }
+  })
 
   console.log(`\n✅ Parts: ${success} generated, ${failed} failed`)
 }
@@ -330,7 +335,7 @@ async function processModels() {
   let success = 0
   let failed = 0
 
-  for (const model of models) {
+  await runInBatches(models, async (model) => {
     const { data: cases } = await sb
       .from('mf_nv_cases')
       .select('symptom_summary, cost_info')
@@ -338,9 +343,8 @@ async function processModels() {
       .eq('content_type', 'problem')
       .not('symptom_summary', 'is', null)
 
-    if (!cases || cases.length === 0) continue
+    if (!cases || cases.length === 0) return
 
-    // Group by symptom similarity — simple approach: count distinct symptom_summary, take top 5
     const countMap: Record<string, { cost_info: string | null; count: number }> = {}
     for (const c of cases) {
       const key = c.symptom_summary.slice(0, 60)
@@ -370,13 +374,11 @@ async function processModels() {
         if (updateError) throw new Error(`Update failed: ${updateError.message}`)
         success++
       }
-
-      await new Promise(r => setTimeout(r, 300))
     } catch (e) {
       console.error(`Failed for model ${model.model_id}:`, e)
       failed++
     }
-  }
+  })
 
   console.log(`\n✅ Models: ${success} generated, ${failed} failed`)
 }
