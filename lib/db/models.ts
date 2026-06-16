@@ -9,6 +9,7 @@ export interface Model {
   slug: string
   brand_id: string
   geo_summary: string | null
+  image_url: string | null
 }
 
 export async function getModelBySlug(slug: string): Promise<Model | null> {
