@@ -1,0 +1,26 @@
+# EVAftermarket — Chinese EV resource for Australia
+# https://evaftermarket.io
+
+## What this site covers
+- Fault code (DTC) lookup for BYD, MG, Chery, and other Chinese EVs in Australia
+- Import duty & HS codes for EV replacement parts (China → Australia)
+- Real owner problem reports with repair costs (sourced from ProductReview.com.au and Whirlpool forums)
+- Charging guides, service costs, software update history
+
+## Key page types
+- /au/dtc/[model]/[code] — fault code detail: description, severity, causes, fixes, repair costs from real cases
+- /au/parts/[brand]/[model]/[part] — import duty calculator: HS code, MFN rate, ChAFTA rate, GST
+- /au/problems/[model] — owner-reported issues with resolution status and costs
+- /au/charging/[model] — real-world charging data and home setup guides
+- /au/service/[model] — service costs from owner reports
+
+## Data sources
+- Owner reports from ProductReview.com.au and Whirlpool forums (Australia)
+- Australian Border Force Working Tariff schedule
+- Official manufacturer DTC databases
+- Real repair cost data from Australian owners
+
+## Coverage
+- Models: BYD Atto 3, BYD Seal, BYD Dolphin, BYD Atto 8, MG ZS EV, and more
+- Market: Australia (AUD pricing, Australian regulations)
+- Fault codes: 1,000+ DTC codes with causes and repair guidance
