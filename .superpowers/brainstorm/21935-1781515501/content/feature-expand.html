@@ -1,0 +1,84 @@
+<h2>功能卡片展开方式</h2>
+<p class="subtitle">点击 Fault Codes 后，车型列表如何展开？</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="padding:10px 14px;background:#f7f5f0;font-size:11px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px">
+          <div style="padding:9px 12px;border:2px solid #4a8c5c;border-radius:4px;background:white">
+            <div style="font-weight:700;font-size:12px;margin-bottom:2px">🔧 Fault Codes</div>
+            <div style="color:#666;font-size:10px">DTC lookup by model</div>
+          </div>
+          <div style="padding:9px 12px;border:1px solid #e5e2db;border-radius:4px;background:white">
+            <div style="font-weight:700;font-size:12px;margin-bottom:2px">⚠️ Problems</div>
+            <div style="color:#666;font-size:10px">Owner reports</div>
+          </div>
+          <div style="padding:9px 12px;border:1px solid #e5e2db;border-radius:4px;background:white">
+            <div style="font-weight:700;font-size:12px;margin-bottom:2px">🔩 Parts</div>
+            <div style="color:#666;font-size:10px">HS codes & import duty</div>
+          </div>
+          <div style="padding:9px 12px;border:1px solid #e5e2db;border-radius:4px;background:white">
+            <div style="font-weight:700;font-size:12px;margin-bottom:2px">⚡ Charging</div>
+            <div style="color:#666;font-size:10px">Speed & costs</div>
+          </div>
+        </div>
+        <!-- Expanded panel slides open below the grid -->
+        <div style="background:white;border:1px solid #4a8c5c;border-radius:4px;padding:10px 12px;font-size:11px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#888;margin-bottom:6px">Select model → Fault Codes</div>
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <a style="display:flex;justify-content:space-between;padding:5px 8px;background:#f7f5f0;border-radius:3px;text-decoration:none;color:#1a1a1a;font-weight:600">BYD Atto 3 <span style="color:#4a8c5c">→</span></a>
+            <a style="display:flex;justify-content:space-between;padding:5px 8px;background:#f7f5f0;border-radius:3px;text-decoration:none;color:#1a1a1a;font-weight:600">BYD Dolphin <span style="color:#4a8c5c">→</span></a>
+            <a style="display:flex;justify-content:space-between;padding:5px 8px;background:#f7f5f0;border-radius:3px;text-decoration:none;color:#1a1a1a;font-weight:600">BYD Seal 6 EV <span style="color:#4a8c5c">→</span></a>
+            <a style="display:flex;justify-content:space-between;padding:5px 8px;background:#f7f5f0;border-radius:3px;text-decoration:none;color:#1a1a1a;font-weight:600">MG MG4 <span style="color:#4a8c5c">→</span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — 卡片下方展开</h3>
+      <p>点击卡片后，整个 2×2 grid 下方滑出车型列表 panel。点另一个功能则切换内容。</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="padding:10px 14px;background:#f7f5f0;font-size:11px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+          <!-- Fault Codes card expanded inline -->
+          <div style="border:2px solid #4a8c5c;border-radius:4px;background:white;overflow:hidden">
+            <div style="padding:9px 12px;border-bottom:1px solid #e5e2db">
+              <div style="font-weight:700;font-size:12px;margin-bottom:2px">🔧 Fault Codes</div>
+              <div style="color:#666;font-size:10px">DTC lookup by model</div>
+            </div>
+            <div style="padding:8px 10px;display:flex;flex-direction:column;gap:3px">
+              <a style="display:flex;justify-content:space-between;padding:4px 6px;background:#f7f5f0;border-radius:2px;text-decoration:none;color:#1a1a1a;font-size:10px;font-weight:600">Atto 3 <span style="color:#4a8c5c">→</span></a>
+              <a style="display:flex;justify-content:space-between;padding:4px 6px;background:#f7f5f0;border-radius:2px;text-decoration:none;color:#1a1a1a;font-size:10px;font-weight:600">Dolphin <span style="color:#4a8c5c">→</span></a>
+              <a style="display:flex;justify-content:space-between;padding:4px 6px;background:#f7f5f0;border-radius:2px;text-decoration:none;color:#1a1a1a;font-size:10px;font-weight:600">Seal 6 EV <span style="color:#4a8c5c">→</span></a>
+              <a style="display:flex;justify-content:space-between;padding:4px 6px;background:#f7f5f0;border-radius:2px;text-decoration:none;color:#1a1a1a;font-size:10px;font-weight:600">MG MG4 <span style="color:#4a8c5c">→</span></a>
+            </div>
+          </div>
+          <!-- Other cards stay compact -->
+          <div style="padding:9px 12px;border:1px solid #e5e2db;border-radius:4px;background:white">
+            <div style="font-weight:700;font-size:12px;margin-bottom:2px">⚠️ Problems</div>
+            <div style="color:#666;font-size:10px">Owner reports</div>
+          </div>
+          <div style="padding:9px 12px;border:1px solid #e5e2db;border-radius:4px;background:white">
+            <div style="font-weight:700;font-size:12px;margin-bottom:2px">🔩 Parts</div>
+            <div style="color:#666;font-size:10px">HS codes & import duty</div>
+          </div>
+          <div style="padding:9px 12px;border:1px solid #e5e2db;border-radius:4px;background:white">
+            <div style="font-weight:700;font-size:12px;margin-bottom:2px">⚡ Charging</div>
+            <div style="color:#666;font-size:10px">Speed & costs</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — 卡片内展开</h3>
+      <p>点击后该卡片自身展开变高，车型列表嵌在卡片里。其他卡片保持紧凑。</p>
+    </div>
+  </div>
+
+</div>

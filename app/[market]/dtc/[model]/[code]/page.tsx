@@ -161,6 +161,16 @@ export default async function DtcCodePage({ params }: Props) {
     ],
   }
 
+  const articleSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: `${dtcCode} ${modelData.model_name} — Fault Code Guide`,
+    speakable: {
+      '@type': 'SpeakableSpecification',
+      cssSelector: ['.geo-summary'],
+    },
+  }
+
   const breadcrumbSchema = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -177,6 +187,7 @@ export default async function DtcCodePage({ params }: Props) {
   return (
     <>
       <JsonLd schema={faqSchema} />
+      <JsonLd schema={articleSchema} />
       <JsonLd schema={breadcrumbSchema} />
       <div className="page-wrapper">
         <article className="dtc-card">
@@ -223,6 +234,22 @@ export default async function DtcCodePage({ params }: Props) {
                 {dtc.description_en.split(/(?<=\.)\s+(?=[A-Z])/).map((para: string, i: number) => (
                   <p key={i}>{para}</p>
                 ))}
+              </div>
+            )}
+
+            {/* GEO Summary — AI 引用优化摘要段 */}
+            {note?.geo_summary && (
+              <div className="geo-summary" style={{
+                margin: '16px 0',
+                padding: '14px 16px',
+                background: 'oklch(97.5% 0.005 145)',
+                borderLeft: '3px solid var(--green)',
+                borderRadius: '0 4px 4px 0',
+                fontSize: '14px',
+                lineHeight: 1.7,
+                color: 'var(--text-base)',
+              }}>
+                {note.geo_summary}
               </div>
             )}
 

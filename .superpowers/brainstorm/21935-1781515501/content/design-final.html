@@ -1,0 +1,125 @@
+<h2>完整设计方案</h2>
+<p class="subtitle">/home/au 首页 — 请确认这个方向</p>
+
+<div class="mockup">
+  <div class="mockup-header">http://localhost:3000/home/au</div>
+  <div class="mockup-body" style="padding:0;font-size:12px;font-family:sans-serif">
+
+    <!-- Nav -->
+    <div style="background:#1a1a1a;color:white;padding:8px 20px;display:flex;align-items:center;gap:10px;font-size:11px">
+      <span style="font-weight:700;letter-spacing:0.08em">⚡ EVAFTERMARKET</span>
+      <span style="margin-left:auto;background:#4a8c5c;color:white;padding:2px 7px;border-radius:2px;font-size:9px;font-weight:700;letter-spacing:0.1em">AU</span>
+    </div>
+
+    <!-- Hero -->
+    <div style="padding:20px 20px 16px;background:#f7f5f0;border-bottom:1px solid #e5e2db">
+      <div style="font-size:20px;font-weight:700;margin-bottom:4px">Chinese EV Resource — Australia</div>
+      <div style="font-size:12px;color:#666;margin-bottom:12px">Fault codes · Problems · Parts · Guides for BYD, MG and other Chinese EVs</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <span style="background:#e8f5e9;color:#2e7d32;padding:3px 9px;border-radius:3px;font-size:10px;font-weight:700">1,200+ Fault Codes</span>
+        <span style="background:#e8f5e9;color:#2e7d32;padding:3px 9px;border-radius:3px;font-size:10px;font-weight:700">6 Models</span>
+        <span style="background:#e8f5e9;color:#2e7d32;padding:3px 9px;border-radius:3px;font-size:10px;font-weight:700">Parts Import Duty</span>
+        <span style="background:#e8f5e9;color:#2e7d32;padding:3px 9px;border-radius:3px;font-size:10px;font-weight:700">Owner Reports</span>
+      </div>
+    </div>
+
+    <!-- 2x2 Feature Grid -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid #e5e2db">
+      <div style="padding:12px 16px;border-right:1px solid #e5e2db;border-bottom:1px solid #e5e2db;cursor:pointer;background:white">
+        <div style="font-weight:700;margin-bottom:2px">🔧 Fault Codes</div>
+        <div style="color:#888;font-size:10px">DTC lookup by model</div>
+      </div>
+      <div style="padding:12px 16px;border-bottom:1px solid #e5e2db;cursor:pointer;background:white">
+        <div style="font-weight:700;margin-bottom:2px">⚠️ Problems</div>
+        <div style="color:#888;font-size:10px">Owner reports</div>
+      </div>
+      <div style="padding:12px 16px;border-right:1px solid #e5e2db;cursor:pointer;background:#f0faf2;border:2px solid #4a8c5c;border-top:none;border-left:none">
+        <div style="font-weight:700;margin-bottom:2px">🔩 Parts</div>
+        <div style="color:#888;font-size:10px">HS codes & import duty</div>
+      </div>
+      <div style="padding:12px 16px;cursor:pointer;background:white">
+        <div style="font-weight:700;margin-bottom:2px">⚡ Charging</div>
+        <div style="color:#888;font-size:10px">Speed & costs</div>
+      </div>
+    </div>
+
+    <!-- Parts expanded panel (example) -->
+    <div style="background:white;border-bottom:2px solid #4a8c5c;padding:12px 16px;font-size:11px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div>
+          <div style="font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#888;margin-bottom:6px">By Model</div>
+          <div style="display:flex;flex-direction:column;gap:3px">
+            <a style="display:flex;justify-content:space-between;padding:5px 8px;background:#f7f5f0;border-radius:3px;text-decoration:none;color:#1a1a1a;font-weight:600">BYD Atto 3 <span style="color:#4a8c5c">→</span></a>
+            <a style="display:flex;justify-content:space-between;padding:5px 8px;background:#f7f5f0;border-radius:3px;text-decoration:none;color:#1a1a1a;font-weight:600">BYD Dolphin <span style="color:#4a8c5c">→</span></a>
+            <a style="display:flex;justify-content:space-between;padding:5px 8px;background:#f7f5f0;border-radius:3px;text-decoration:none;color:#1a1a1a;font-weight:600">BYD Seal 6 EV <span style="color:#4a8c5c">→</span></a>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#888;margin-bottom:6px">By Part Type</div>
+          <div style="display:flex;flex-direction:column;gap:3px">
+            <a style="display:flex;justify-content:space-between;padding:5px 8px;background:#f7f5f0;border-radius:3px;text-decoration:none;color:#1a1a1a;font-weight:600">Front Bumper <span style="color:#4a8c5c">→</span></a>
+            <a style="display:flex;justify-content:space-between;padding:5px 8px;background:#f7f5f0;border-radius:3px;text-decoration:none;color:#1a1a1a;font-weight:600">Headlights <span style="color:#4a8c5c">→</span></a>
+            <a style="display:flex;justify-content:space-between;padding:5px 8px;background:#f7f5f0;border-radius:3px;text-decoration:none;color:#1a1a1a;font-weight:600">View all parts → <span style="color:#4a8c5c">↗</span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Model list -->
+    <div style="padding:8px 16px;background:#f7f5f0;border-bottom:1px solid #e5e2db;font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#888">BYD</div>
+    <div style="border-bottom:1px solid #f0ede6">
+      <div style="padding:10px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #f0ede6">
+        <div>
+          <span style="font-weight:600">Atto 3</span>
+          <span style="margin-left:8px;font-size:10px;color:#888">2021–2025</span>
+        </div>
+        <span style="color:#4a8c5c;font-size:10px">›</span>
+      </div>
+      <div style="padding:10px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #f0ede6">
+        <div>
+          <span style="font-weight:600">Dolphin</span>
+          <span style="margin-left:8px;font-size:10px;color:#888">2021–2025</span>
+        </div>
+        <span style="color:#4a8c5c;font-size:10px">›</span>
+      </div>
+      <div style="padding:10px 16px;display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <span style="font-weight:600">Seal 6 EV</span>
+          <span style="margin-left:8px;font-size:10px;color:#888">2022–2025</span>
+        </div>
+        <span style="color:#4a8c5c;font-size:10px">›</span>
+      </div>
+    </div>
+    <div style="padding:8px 16px;background:#f7f5f0;border-bottom:1px solid #e5e2db;font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#888">MG</div>
+    <div style="padding:10px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #f0ede6">
+      <div>
+        <span style="font-weight:600">MG4</span>
+        <span style="margin-left:8px;font-size:10px;color:#888">2022–2025</span>
+      </div>
+      <span style="color:#4a8c5c;font-size:10px">›</span>
+    </div>
+
+    <!-- Secondary links -->
+    <div style="padding:12px 16px;display:flex;gap:6px;flex-wrap:wrap;border-top:1px solid #e5e2db">
+      <span style="padding:4px 10px;border:1px solid #ddd;border-radius:3px;font-size:10px;color:#555">🏪 Dealers</span>
+      <span style="padding:4px 10px;border:1px solid #ddd;border-radius:3px;font-size:10px;color:#555">🔄 Updates</span>
+      <span style="padding:4px 10px;border:1px solid #ddd;border-radius:3px;font-size:10px;color:#555">⚠️ Warning Lights</span>
+      <span style="padding:4px 10px;border:1px solid #ddd;border-radius:3px;font-size:10px;color:#555">📖 Buying Guide</span>
+      <span style="padding:4px 10px;border:1px solid #ddd;border-radius:3px;font-size:10px;color:#555">🔧 Service</span>
+    </div>
+
+  </div>
+</div>
+
+<div style="margin-top:20px" class="section">
+  <h3>架构说明</h3>
+  <ul>
+    <li><strong>路由：</strong> <code>app/home/[market]/page.tsx</code>（新建），<code>/</code> 和 <code>/au</code> redirect 到 <code>/home/au</code></li>
+    <li><strong>交互：</strong> 功能卡片点击展开 panel（Client Component），车型列表是静态渲染（Server Component）</li>
+    <li><strong>Parts 展开面板：</strong> 左列"By Model"→ 车型列表；右列"By Part Type"→ 配件列表 + "View all"链接</li>
+    <li><strong>Fault Codes / Problems / Charging：</strong> 展开后只显示车型列表</li>
+    <li><strong>SEO：</strong> <code>/home/au</code> 设置 canonical，<code>/au</code> 301 redirect</li>
+  </ul>
+</div>
+
+<p class="subtitle" style="margin-top:16px">这个方向对吗？确认后写 spec 开始实现。</p>

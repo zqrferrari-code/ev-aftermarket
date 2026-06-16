@@ -1,0 +1,120 @@
+<h2>Home Page Layout — Which approach?</h2>
+<p class="subtitle">For <code>/home/au</code> — a public-facing landing page for Australian EV owners</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="mock-nav" style="font-size:11px">⚡ EVAftermarket &nbsp;&nbsp; AU ▾</div>
+      <div style="padding:12px 16px; background:#f7f5f0; border-bottom:1px solid #e5e2db">
+        <div style="font-size:18px;font-weight:700;margin-bottom:4px">Chinese EV Resource — Australia</div>
+        <div style="font-size:12px;color:#888;margin-bottom:10px">Fault codes · Problems · Parts · Guides</div>
+        <div style="display:flex;gap:8px;font-size:11px">
+          <span style="background:#e8f5e9;color:#2e7d32;padding:3px 8px;border-radius:3px;font-weight:600">1,200+ Fault Codes</span>
+          <span style="background:#e8f5e9;color:#2e7d32;padding:3px 8px;border-radius:3px;font-weight:600">6 Models</span>
+          <span style="background:#e8f5e9;color:#2e7d32;padding:3px 8px;border-radius:3px;font-weight:600">Parts Import Duty</span>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;font-size:11px">
+        <div style="padding:10px 14px;border-right:1px solid #e5e2db;border-bottom:1px solid #e5e2db">
+          <div style="font-weight:700;margin-bottom:4px">🔧 Fault Codes</div>
+          <div style="color:#888">DTC lookup by model</div>
+        </div>
+        <div style="padding:10px 14px;border-bottom:1px solid #e5e2db">
+          <div style="font-weight:700;margin-bottom:4px">⚠️ Problems</div>
+          <div style="color:#888">Owner reports</div>
+        </div>
+        <div style="padding:10px 14px;border-right:1px solid #e5e2db;border-bottom:1px solid #e5e2db">
+          <div style="font-weight:700;margin-bottom:4px">🔩 Parts</div>
+          <div style="color:#888">HS codes & import duty</div>
+        </div>
+        <div style="padding:10px 14px;border-bottom:1px solid #e5e2db">
+          <div style="font-weight:700;margin-bottom:4px">⚡ Charging</div>
+          <div style="color:#888">Speed & costs</div>
+        </div>
+      </div>
+      <div style="padding:10px 14px;font-size:11px;color:#888">+ Dealers · Service · Warning Lights · Buying Guide</div>
+    </div>
+    <div class="card-body">
+      <h3>A — Feature Grid</h3>
+      <p>Hero stats + 2×2 feature cards + car model list below. Clean overview of all sections.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="mock-nav" style="font-size:11px">⚡ EVAftermarket &nbsp;&nbsp; AU ▾</div>
+      <div style="padding:12px 16px;background:#f7f5f0;border-bottom:1px solid #e5e2db">
+        <div style="font-size:18px;font-weight:700;margin-bottom:6px">Chinese EV Resource — Australia</div>
+        <div style="font-size:12px;color:#666;margin-bottom:8px">Fault codes · Problems · Parts · Guides</div>
+      </div>
+      <div style="padding:10px 14px;font-size:11px;border-bottom:1px solid #e5e2db">
+        <div style="font-weight:700;color:#555;margin-bottom:6px;font-size:10px;letter-spacing:0.08em;text-transform:uppercase">BYD</div>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid #f0ede6">
+            <span style="font-weight:600">Atto 3</span>
+            <span style="color:#4a8c5c;font-size:10px">Fault codes · Parts ↗</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid #f0ede6">
+            <span style="font-weight:600">Dolphin</span>
+            <span style="color:#4a8c5c;font-size:10px">Fault codes · Parts ↗</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0">
+            <span style="font-weight:600">Seal 6 EV</span>
+            <span style="color:#4a8c5c;font-size:10px">Fault codes · Parts ↗</span>
+          </div>
+        </div>
+      </div>
+      <div style="padding:8px 14px;font-size:11px;display:flex;gap:6px;flex-wrap:wrap">
+        <span style="padding:4px 8px;border:1px solid #ddd;border-radius:3px;font-size:10px">⚠️ Problems</span>
+        <span style="padding:4px 8px;border:1px solid #ddd;border-radius:3px;font-size:10px">🔩 Parts & Import Duty</span>
+        <span style="padding:4px 8px;border:1px solid #ddd;border-radius:3px;font-size:10px">📖 Buying Guide</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Model-First</h3>
+      <p>Lead with car models, show available sections per model. Features as secondary links below.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="mock-nav" style="font-size:11px">⚡ EVAftermarket &nbsp;&nbsp; AU ▾</div>
+      <div style="padding:12px 16px;background:#1a1a1a;color:white">
+        <div style="font-size:18px;font-weight:700;margin-bottom:4px">Chinese EV Resource</div>
+        <div style="font-size:11px;color:#aaa;margin-bottom:8px">Australia · 6 models · 1,200+ fault codes</div>
+        <div style="display:flex;gap:6px">
+          <div style="flex:1;background:#2a2a2a;padding:8px;border-radius:4px;font-size:11px">
+            <div style="color:#4a8c5c;font-weight:700;margin-bottom:2px">Select Model</div>
+            <div style="color:#ccc">BYD Atto 3 ▾</div>
+          </div>
+          <div style="flex:1;background:#2a2a2a;padding:8px;border-radius:4px;font-size:11px">
+            <div style="color:#4a8c5c;font-weight:700;margin-bottom:2px">Find Info</div>
+            <div style="color:#ccc">Fault Codes ▾</div>
+          </div>
+        </div>
+      </div>
+      <div style="padding:10px 14px;font-size:11px">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
+          <div style="padding:8px;background:#f7f5f0;border-radius:3px;text-align:center">
+            <div style="font-size:16px">🔧</div>
+            <div style="font-size:10px;font-weight:600;margin-top:2px">Fault Codes</div>
+          </div>
+          <div style="padding:8px;background:#f7f5f0;border-radius:3px;text-align:center">
+            <div style="font-size:16px">🔩</div>
+            <div style="font-size:10px;font-weight:600;margin-top:2px">Parts</div>
+          </div>
+          <div style="padding:8px;background:#f7f5f0;border-radius:3px;text-align:center">
+            <div style="font-size:16px">⚠️</div>
+            <div style="font-size:10px;font-weight:600;margin-top:2px">Problems</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Search-First</h3>
+      <p>Dark hero with model + section dropdowns. Feels more like a tool/app than a directory.</p>
+    </div>
+  </div>
+
+</div>
