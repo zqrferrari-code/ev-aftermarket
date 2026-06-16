@@ -94,6 +94,20 @@ export default async function ProblemsPage({ params }: Props) {
           )}
         </div>
 
+        {(vehicleModel as any).geo_summary && (
+          <div className="geo-summary" style={{
+            padding: '16px 28px',
+            background: 'oklch(97.5% 0.005 145)',
+            borderBottom: '1px solid var(--border-soft)',
+            fontSize: '14px',
+            lineHeight: 1.7,
+            color: 'var(--text-base)',
+            whiteSpace: 'pre-line',
+          }}>
+            {(vehicleModel as any).geo_summary}
+          </div>
+        )}
+
         {/* Section header */}
         <div style={{
           padding: '10px 28px',
@@ -217,6 +231,20 @@ export default async function ProblemsPage({ params }: Props) {
                 '@type': 'Answer',
                 text: c.resolution ?? 'No confirmed resolution yet — monitor for updates.',
               },
+            })),
+          }} />
+        )}
+        {problemCases.length > 0 && (
+          <JsonLd schema={{
+            '@context': 'https://schema.org',
+            '@type': 'ItemList',
+            name: `Top ${vehicleModel.model_name} Problems in Australia`,
+            numberOfItems: Math.min(problemCases.length, 5),
+            itemListElement: problemCases.slice(0, 5).map((c, i) => ({
+              '@type': 'ListItem',
+              position: i + 1,
+              name: c.symptom_summary.slice(0, 100),
+              description: c.resolution ?? 'No confirmed resolution yet.',
             })),
           }} />
         )}
