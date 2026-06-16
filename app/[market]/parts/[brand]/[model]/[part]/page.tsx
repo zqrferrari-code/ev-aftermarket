@@ -127,7 +127,7 @@ export default async function PartDetailPage({ params }: Props) {
           </div>
 
           {/* GEO Tariff Summary */}
-          {(partData as any).geo_summary && (
+          {partData.geo_summary && (
             <div className="tariff-summary" style={{
               margin: '0',
               padding: '16px 28px',
@@ -139,7 +139,7 @@ export default async function PartDetailPage({ params }: Props) {
               color: 'var(--text-base)',
               whiteSpace: 'pre-line',
             }}>
-              {(partData as any).geo_summary}
+              {partData.geo_summary}
             </div>
           )}
 

@@ -94,7 +94,7 @@ export default async function ProblemsPage({ params }: Props) {
           )}
         </div>
 
-        {(vehicleModel as any).geo_summary && (
+        {vehicleModel.geo_summary && (
           <div className="geo-summary" style={{
             padding: '16px 28px',
             background: 'oklch(97.5% 0.005 145)',
@@ -104,7 +104,7 @@ export default async function ProblemsPage({ params }: Props) {
             color: 'var(--text-base)',
             whiteSpace: 'pre-line',
           }}>
-            {(vehicleModel as any).geo_summary}
+            {vehicleModel.geo_summary}
           </div>
         )}
 

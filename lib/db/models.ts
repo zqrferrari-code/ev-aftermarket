@@ -1,6 +1,17 @@
 import { sb } from './index'
 
-export async function getModelBySlug(slug: string) {
+export interface Model {
+  model_id: string
+  model_name: string
+  vehicle_type: string | null
+  years: string | null
+  steering: string | null
+  slug: string
+  brand_id: string
+  geo_summary: string | null
+}
+
+export async function getModelBySlug(slug: string): Promise<Model | null> {
   const { data, error } = await sb
     .from('mf_nv_models')
     .select('*')
@@ -8,7 +19,7 @@ export async function getModelBySlug(slug: string) {
     .limit(1)
     .single()
   if (error) return null
-  return data
+  return data as Model
 }
 
 export async function getModelsByBrand(brandId: string) {

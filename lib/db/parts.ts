@@ -11,6 +11,7 @@ export interface Part {
   material: string | null
   is_dangerous: boolean
   notes: string | null
+  geo_summary: string | null
 }
 
 export interface PartWithCompatibility extends Part {
