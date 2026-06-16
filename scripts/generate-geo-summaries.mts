@@ -22,8 +22,8 @@ const client = new OpenAI({
   baseURL: llmConfig.llm_base_url,
 })
 
-const MODEL = 'pub-kimi-k2.5'
-const CONCURRENCY = 5
+const MODEL = 'pub-deepseek-v4-pro'
+const CONCURRENCY = 10
 
 async function runInBatches<T>(items: T[], fn: (item: T) => Promise<void>) {
   for (let i = 0; i < items.length; i += CONCURRENCY) {
@@ -86,74 +86,90 @@ Start with "The ${row.dtc_code} fault code on the ${row.model_name} indicates...
 }
 
 async function processDtcs() {
-  console.log('📋 Fetching DTC notes without geo_summary...')
+  let totalSuccess = 0
+  let totalFailed = 0
+  let round = 0
 
-  const { data: notes, error } = await sb
-    .from('mf_nv_dtc_model_notes')
-    .select(`
-      id,
-      dtc_id,
-      model_id,
-      likely_causes,
-      suggested_actions,
-      mf_nv_dtcs!inner(dtc_code, description_en, severity),
-      mf_nv_models!inner(model_name)
-    `)
-    .is('geo_summary', null)
-    .limit(limitArg)
+  while (true) {
+    round++
+    console.log(`📋 Fetching DTC notes without geo_summary (round ${round})...`)
 
-  if (error || !notes) {
-    console.error('Error fetching DTC notes:', error)
-    return
+    const { data: notes, error } = await sb
+      .from('mf_nv_dtc_model_notes')
+      .select(`
+        id,
+        dtc_id,
+        model_id,
+        likely_causes,
+        suggested_actions,
+        mf_nv_dtcs!inner(dtc_code, description_en, severity),
+        mf_nv_models!inner(model_name)
+      `)
+      .is('geo_summary', null)
+      .limit(1000)
+
+    if (error || !notes) {
+      console.error('Error fetching DTC notes:', error)
+      break
+    }
+
+    if (notes.length === 0) break
+
+    console.log(`Found ${notes.length} DTC notes to process`)
+
+    let success = 0
+    let failed = 0
+    const samples: string[] = []
+
+    await runInBatches(notes as any[], async (note) => {
+      const dtc = note.mf_nv_dtcs
+      const model = note.mf_nv_models
+
+      const { count } = await sb
+        .from('mf_nv_case_dtc_links')
+        .select('*', { count: 'exact', head: true })
+        .eq('dtc_id', note.dtc_id)
+
+      try {
+        const summary = await generateDtcSummary({
+          id: note.id,
+          dtc_code: dtc.dtc_code,
+          description_en: dtc.description_en,
+          severity: dtc.severity,
+          likely_causes: note.likely_causes,
+          suggested_actions: note.suggested_actions,
+          model_name: model.model_name,
+          case_count: count ?? 0,
+        })
+
+        if (dryRun) {
+          console.log(`[DRY RUN] ${dtc.dtc_code} — ${model.model_name}:\n${summary}\n`)
+        } else {
+          const { error: updateError } = await sb
+            .from('mf_nv_dtc_model_notes')
+            .update({ geo_summary: summary })
+            .eq('id', note.id)
+          if (updateError) throw new Error(`Update failed: ${updateError.message}`)
+          success++
+          process.stdout.write(`\r  Progress: ${success + failed}/${notes.length} (✅${success} ❌${failed})`)
+          if (samples.length < 3) samples.push(`${dtc.dtc_code} (${model.model_name}): ${summary.slice(0, 80)}...`)
+        }
+      } catch (e) {
+        console.error(`\nFailed for note ${note.id}:`, e)
+        failed++
+        process.stdout.write(`\r  Progress: ${success + failed}/${notes.length} (✅${success} ❌${failed})`)
+      }
+    })
+
+    totalSuccess += success
+    totalFailed += failed
+    console.log(`Round ${round}: ${success} generated, ${failed} failed (total: ${totalSuccess})`)
+    if (samples.length > 0) samples.forEach(s => console.log(' -', s))
+
+    if (dryRun) break
   }
 
-  console.log(`Found ${notes.length} DTC notes to process`)
-
-  let success = 0
-  let failed = 0
-  const samples: string[] = []
-
-  await runInBatches(notes as any[], async (note) => {
-    const dtc = note.mf_nv_dtcs
-    const model = note.mf_nv_models
-
-    const { count } = await sb
-      .from('mf_nv_case_dtc_links')
-      .select('*', { count: 'exact', head: true })
-      .eq('dtc_id', note.dtc_id)
-
-    try {
-      const summary = await generateDtcSummary({
-        id: note.id,
-        dtc_code: dtc.dtc_code,
-        description_en: dtc.description_en,
-        severity: dtc.severity,
-        likely_causes: note.likely_causes,
-        suggested_actions: note.suggested_actions,
-        model_name: model.model_name,
-        case_count: count ?? 0,
-      })
-
-      if (dryRun) {
-        console.log(`[DRY RUN] ${dtc.dtc_code} — ${model.model_name}:\n${summary}\n`)
-      } else {
-        const { error: updateError } = await sb
-          .from('mf_nv_dtc_model_notes')
-          .update({ geo_summary: summary })
-          .eq('id', note.id)
-        if (updateError) throw new Error(`Update failed: ${updateError.message}`)
-        success++
-        if (samples.length < 3) samples.push(`${dtc.dtc_code} (${model.model_name}): ${summary.slice(0, 80)}...`)
-      }
-    } catch (e) {
-      console.error(`Failed for note ${note.id}:`, e)
-      failed++
-    }
-  })
-
-  console.log(`\n✅ DTC: ${success} generated, ${failed} failed`)
-  console.log('\nSamples:')
-  samples.forEach(s => console.log(' -', s))
+  console.log(`\n✅ DTC: ${totalSuccess} generated, ${totalFailed} failed`)
 }
 
 // ─── PARTS ────────────────────────────────────────────────────────────────────
