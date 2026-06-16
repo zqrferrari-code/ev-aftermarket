@@ -1,11 +1,25 @@
 // scripts/generate-geo-summaries.ts
-// 用法: ANTHROPIC_API_KEY=xxx dotenv -e .env.local -- tsx scripts/generate-geo-summaries.ts
+// 用法: npx dotenv -e .env.local -- tsx scripts/generate-geo-summaries.ts
 // 参数: --type=dtc|parts|problems  --limit=N  --dry-run
+// 配置: 读取 ev-pipeline 的 llm-config.json，使用 pub-kimi-k2.5 模型
 
-import Anthropic from '@anthropic-ai/sdk'
+import { readFileSync } from 'fs'
+import { resolve } from 'path'
+import OpenAI from 'openai'
 import { sb } from '@/lib/db'
 
-const client = new Anthropic()
+const llmConfigPath = resolve(__dirname, '../../ev-pipeline/llm-config.json')
+const llmConfig = JSON.parse(readFileSync(llmConfigPath, 'utf-8')) as {
+  llm_base_url: string
+  llm_api_key: string
+}
+
+const client = new OpenAI({
+  apiKey: llmConfig.llm_api_key,
+  baseURL: llmConfig.llm_base_url,
+})
+
+const MODEL = 'pub-kimi-k2.5'
 
 const args = process.argv.slice(2)
 const typeArg = args.find(a => a.startsWith('--type='))?.split('=')[1] ?? 'all'
@@ -46,18 +60,16 @@ Real cases recorded: ${row.case_count}
 
 Start with "The ${row.dtc_code} fault code on the ${row.model_name} indicates...". Include severity, 1-2 causes, and fix. If case_count > 0, mention typical repair cost data is available. Output only the paragraph, no headings.`
 
-  const response = await client.messages.create({
-    model: 'claude-haiku-4-5-20251001',
+  const response = await client.chat.completions.create({
+    model: MODEL,
     max_tokens: 200,
     messages: [{ role: 'user', content: prompt }],
   })
 
-  const content = response.content[0]
-  if (!content || content.type !== 'text') throw new Error(`Unexpected API response type: ${content?.type ?? 'empty'}`)
-  return content.text.trim()
-}
-
-async function processDtcs() {
+  const text = response.choices[0]?.message?.content?.trim()
+  if (!text) throw new Error('Empty response from model')
+  return text
+} {
   console.log('📋 Fetching DTC notes without geo_summary...')
 
   const { data: notes, error } = await sb
@@ -172,15 +184,15 @@ Example with $200 part + $30 shipping = CIF $${exampleCIF}:
 
 Format as 3-4 bullet points listing the rates, then one sentence with the example calculation. Output only the content, no headings.`
 
-  const response = await client.messages.create({
-    model: 'claude-haiku-4-5-20251001',
+  const response = await client.chat.completions.create({
+    model: MODEL,
     max_tokens: 200,
     messages: [{ role: 'user', content: prompt }],
   })
 
-  const content = response.content[0]
-  if (!content || content.type !== 'text') throw new Error(`Unexpected API response type: ${content?.type ?? 'empty'}`)
-  return content.text.trim()
+  const text = response.choices[0]?.message?.content?.trim()
+  if (!text) throw new Error('Empty response from model')
+  return text
 }
 
 async function processParts() {
@@ -283,15 +295,15 @@ Then a numbered list (max 5), each: brief problem description — N owner report
 End with one sentence about where to find more detail.
 Output only the content, no extra headings.`
 
-  const response = await client.messages.create({
-    model: 'claude-haiku-4-5-20251001',
+  const response = await client.chat.completions.create({
+    model: MODEL,
     max_tokens: 250,
     messages: [{ role: 'user', content: prompt }],
   })
 
-  const content = response.content[0]
-  if (!content || content.type !== 'text') throw new Error(`Unexpected API response type: ${content?.type ?? 'empty'}`)
-  return content.text.trim()
+  const text = response.choices[0]?.message?.content?.trim()
+  if (!text) throw new Error('Empty response from model')
+  return text
 }
 
 async function processModels() {
